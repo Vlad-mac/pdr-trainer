@@ -251,5 +251,65 @@ function openTraining() {
     alert("Оберіть тему на сторінці 'Теми'.");
 }
 
+function renderStats() {
+    const statsSection = document.querySelector('#stats');
+    if (!statsSection) return;
+
+    loadUserStats();
+
+    const total = userStats.length;
+    const correct = userStats.filter(item => item.correct).length;
+    const wrong = total - correct;
+    const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+    const topicStats = {};
+    userStats.forEach(item => {
+        if (!topicStats[item.topic]) {
+            topicStats[item.topic] = {
+                total: 0,
+                correct: 0,
+                wrong: 0
+            };
+        }
+
+        topicStats[item.topic].total++;
+        if (item.correct) {
+            topicStats[item.topic].correct++;
+        } else {
+            topicStats[item.topic].wrong++;
+        }
+    });
+
+    const topicStatsHtml = Object.keys(topicStats).length
+        ? Object.entries(topicStats).map(([topic, data]) => `
+            <div class="panel" style="margin-top:16px;">
+                <h3 style="margin-bottom:10px;">${topic}</h3>
+                <p>Всього: ${data.total}</p>
+                <p>Правильних: ${data.correct}</p>
+                <p>Неправильних: ${data.wrong}</p>
+            </div>
+        `).join('')
+        : '<div class="panel"><p>Поки що немає даних для статистики.</p></div>';
+
+    statsSection.innerHTML = `
+        <h2>Статистика</h2>
+        <div class="panel">
+            <p>Всього відповідей: ${total}</p>
+            <p>Правильних: ${correct}</p>
+            <p>Неправильних: ${wrong}</p>
+            <p>Успішність: ${percent}%</p>
+        </div>
+
+        <h2 style="margin-top:24px;">Статистика по темах</h2>
+        ${topicStatsHtml}
+    `;
+}
+
+function openStats() {
+    location.hash = '#stats';
+    renderStats();
+}
+
 loadUserStats();
 loadQuestions();
+
