@@ -360,15 +360,15 @@ async function registerFromForm() {
 
     const { error: profileError } = await supabaseClient
         .from('profiles')
-        .insert([
-            {
-                id: user.id,
-                email: email,
-                full_name: name,
-                role: 'student',
-                created_at: new Date().toISOString()
-            }
-        ]);
+.insert([
+    {
+        user_id: user.id,
+        email: email,
+        full_name: name,
+        role: 'student',
+        created_at: new Date().toISOString()
+    }
+]);
 
     if (profileError) {
         message.textContent = "Профіль створено з помилкою: " + profileError.message;
