@@ -5,6 +5,7 @@ let score = 0;
 let answered = false;
 let currentTopic = "";
 let questionStates = {};
+let userStats = [];
 
 async function loadQuestions() {
     try {
@@ -26,6 +27,34 @@ async function loadQuestions() {
             `;
         }
     }
+}
+
+function loadUserStats() {
+    const savedStats = localStorage.getItem('pdrUserStats');
+    if (savedStats) {
+        try {
+            userStats = JSON.parse(savedStats);
+        } catch (e) {
+            userStats = [];
+        }
+    } else {
+        userStats = [];
+    }
+}
+
+function saveUserStats() {
+    localStorage.setItem('pdrUserStats', JSON.stringify(userStats));
+}
+
+function addStat(topic, questionId, isCorrect) {
+    userStats.push({
+        topic: topic,
+        questionId: questionId,
+        correct: isCorrect,
+        time: new Date().toISOString()
+    });
+
+    saveUserStats();
 }
 
 function openTopic(topic) {
@@ -163,6 +192,8 @@ function checkAnswer(selectedIndex) {
         isCorrect: isCorrect
     };
 
+    addStat(currentTopic, question.id, isCorrect);
+
     buttons.forEach((button, index) => {
         button.disabled = true;
         if (index === question.correctAnswer) {
@@ -220,4 +251,5 @@ function openTraining() {
     alert("Оберіть тему на сторінці 'Теми'.");
 }
 
+loadUserStats();
 loadQuestions();
