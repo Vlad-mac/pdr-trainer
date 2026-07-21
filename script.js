@@ -47,7 +47,6 @@ function openTopic(topic) {
         return;
     }
 
-    // створюємо сховище для цієї теми
     if (!questionStates[currentTopic]) {
         questionStates[currentTopic] = {
             answers: {}
@@ -84,7 +83,7 @@ function showQuestion() {
                     let extraClass = '';
                     if (savedAnswer !== undefined) {
                         if (index === question.correctAnswer) extraClass = 'correct';
-                        else if (index === savedAnswer && savedAnswer !== question.correctAnswer) extraClass = 'wrong';
+                        else if (index === savedAnswer.selected && !savedAnswer.isCorrect) extraClass = 'wrong';
                     }
                     return `
                         <button class="option-btn ${extraClass}" onclick="checkAnswer(${index})">
@@ -105,7 +104,11 @@ function showQuestion() {
                 ${currentQuestions.map((_, index) => {
                     let cls = 'question-square';
                     if (index === currentQuestionIndex) cls += ' active';
-                    if (state.answers[index] !== undefined) cls += ' answered';
+
+                    if (state.answers[index] !== undefined) {
+                        cls += state.answers[index].isCorrect ? ' correct-answer' : ' wrong-answer';
+                    }
+
                     return `
                         <button class="${cls}" onclick="goToQuestion(${index})">
                             ${index + 1}
@@ -128,13 +131,13 @@ function showQuestion() {
                 button.style.background = '#22c55e';
                 button.style.color = 'white';
             }
-            if (index === savedAnswer && savedAnswer !== question.correctAnswer) {
+            if (index === savedAnswer.selected && !savedAnswer.isCorrect) {
                 button.style.background = '#ef4444';
                 button.style.color = 'white';
             }
         });
 
-        result.innerHTML = savedAnswer === question.correctAnswer
+        result.innerHTML = savedAnswer.isCorrect
             ? '<p style="color:#4ade80; font-size:20px;">✅ Правильно!</p>'
             : '<p style="color:#f87171; font-size:20px;">❌ Неправильно.</p>';
 
@@ -152,7 +155,12 @@ function checkAnswer(selectedIndex) {
     const nextBtn = document.getElementById('nextBtn');
     const state = questionStates[currentTopic];
 
-    state.answers[currentQuestionIndex] = selectedIndex;
+    const isCorrect = selectedIndex === question.correctAnswer;
+
+    state.answers[currentQuestionIndex] = {
+        selected: selectedIndex,
+        isCorrect: isCorrect
+    };
 
     buttons.forEach((button, index) => {
         button.disabled = true;
@@ -160,13 +168,13 @@ function checkAnswer(selectedIndex) {
             button.style.background = '#22c55e';
             button.style.color = 'white';
         }
-        if (index === selectedIndex && selectedIndex !== question.correctAnswer) {
+        if (index === selectedIndex && !isCorrect) {
             button.style.background = '#ef4444';
             button.style.color = 'white';
         }
     });
 
-    if (selectedIndex === question.correctAnswer) {
+    if (isCorrect) {
         score++;
         result.innerHTML = '<p style="color:#4ade80; font-size:20px;">✅ Правильно!</p>';
     } else {
@@ -174,13 +182,6 @@ function checkAnswer(selectedIndex) {
     }
 
     nextBtn.style.display = 'inline-block';
-
-    // оновлюємо квадратики
-    showQuestionCounterOnly();
-}
-
-function showQuestionCounterOnly() {
-    // тут нічого не робимо окремо, бо повне оновлення вже відбудеться при переході
 }
 
 function nextQuestion() {
