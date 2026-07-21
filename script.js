@@ -434,7 +434,25 @@ async function checkCurrentUser() {
         showAuth();
     }
 }
+async function loadUserProfile() {
+    if (!currentUser) return;
 
+    const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('full_name')
+        .eq('user_id', currentUser.id)
+        .single();
+
+    if (error) {
+        console.error('Не вдалося завантажити профіль:', error);
+        return;
+    }
+
+    const greeting = document.getElementById('user-greeting');
+    if (greeting) {
+        greeting.textContent = data.full_name ? `Вітаємо, ${data.full_name}` : 'Вітаємо';
+    }
+}
 loadUserStats();
 loadQuestions();
 checkCurrentUser();
