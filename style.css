@@ -230,6 +230,16 @@ a {
     transform: translateY(-2px);
 }
 
+.option-btn.correct {
+    background: #22c55e;
+    color: #fff;
+}
+
+.option-btn.wrong {
+    background: #ef4444;
+    color: #fff;
+}
+
 #result {
     margin-top: 20px;
 }
@@ -285,9 +295,7 @@ a {
 }
 
 .question-square.active {
-    background: #2563eb;
-    color: white;
-    border-color: #2563eb;
+    outline: 2px solid rgba(37, 99, 235, 0.35);
 }
 
 .question-square.correct-answer {
