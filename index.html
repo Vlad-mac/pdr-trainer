@@ -7,19 +7,72 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header class="topbar">
+        <div class="logo">🚗 PDR Trainer</div>
+        <nav class="menu">
+            <a href="#home">Головна</a>
+            <a href="#topics">Теми</a>
+            <a href="#training">Тренування</a>
+            <a href="#stats">Статистика</a>
+            <a href="#teacher">Викладач</a>
+            <a href="#admin">Адмінка</a>
+        </nav>
+    </header>
 
-    <div class="container">
-        <h1>🚗 PDR Trainer</h1>
+    <main class="page">
+        <section id="home" class="hero">
+            <h1>Підготовка до ПДР онлайн</h1>
+            <p>
+                Тренуйся за темами, проходь іспити, відстежуй прогрес
+                та готуйся до теоретичного іспиту зручніше.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="#topics">Обрати тему</a>
+                <a class="btn btn-secondary" href="#training">Почати тренування</a>
+            </div>
+        </section>
 
-        <p>
-            Онлайн-тренажер для підготовки до теоретичного
-            іспиту з Правил дорожнього руху України.
-        </p>
+        <section id="topics" class="card-section">
+            <h2>Теми</h2>
+            <div class="grid">
+                <article class="card">Дорожні знаки</article>
+                <article class="card">Розмітка</article>
+                <article class="card">Світлофори</article>
+                <article class="card">Пріоритет</article>
+                <article class="card">Маневрування</article>
+                <article class="card">Зупинка і стоянка</article>
+            </div>
+        </section>
 
-        <button onclick="startTest()">
-            Почати тест
-        </button>
-    </div>
+        <section id="training" class="card-section">
+            <h2>Тренування</h2>
+            <div class="panel">
+                <p>Режим для проходження тестів по темах та у форматі іспиту.</p>
+                <button class="btn btn-primary" onclick="openTraining()">Відкрити тренування</button>
+            </div>
+        </section>
+
+        <section id="stats" class="card-section">
+            <h2>Статистика</h2>
+            <div class="panel">
+                <p>Тут буде твоя особиста статистика: результати, помилки, прогрес.</p>
+            </div>
+        </section>
+
+        <section id="teacher" class="card-section">
+            <h2>Кабінет викладача</h2>
+            <div class="panel">
+                <p>Розділ для контролю прогресу студентів та їхніх результатів.</p>
+            </div>
+        </section>
+
+        <section id="admin" class="card-section">
+            <h2>Панель адміністратора</h2>
+            <div class="panel">
+                <p>Тут буде керування питаннями, темами та оновленнями сайту.</p>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
