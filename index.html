@@ -7,117 +7,141 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="topbar">
-        <div class="logo">🚗 PDR Trainer</div>
-        <nav class="menu">
-            <a href="#home">Головна</a>
-            <a href="#topics">Теми</a>
-            <a href="#training">Тренування</a>
-            <a href="#stats" onclick="openStats()">Статистика</a>
-            <a href="#teacher">Викладач</a>
-            <a href="#admin">Адмінка</a>
-        </nav>
-    </header>
 
-    <main class="page">
-        <section id="home" class="hero">
-            <h1>Підготовка до ПДР онлайн</h1>
-            <p>
-                Тренуйся за темами, проходь іспити, відстежуй прогрес
-                та готуйся до теоретичного іспиту зручніше.
-            </p>
-            <div class="hero-actions">
-                <a class="btn btn-primary" href="#topics">Обрати тему</a>
-                <a class="btn btn-secondary" href="#training">Почати тренування</a>
-            </div>
-        </section>
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-card">
+            <h1>Вхід / Реєстрація</h1>
+            <p class="auth-subtitle">Увійдіть або створіть акаунт, щоб почати тренування.</p>
 
-        <section id="topics" class="card-section">
-            <h2>Теми</h2>
-            <div class="grid">
-                <article class="card clickable" onclick="openTopic('Загальні положення')">1. Загальні положення</article>
-                <article class="card clickable" onclick="openTopic('Обовʼязки і права водіїв механічних транспортних засобів')">2. Обовʼязки і права водіїв механічних транспортних засобів</article>
-                <article class="card clickable" onclick="openTopic('Рух транспортних засобів із спеціальними сигналами')">3. Рух транспортних засобів із спеціальними сигналами</article>
-                <article class="card clickable" onclick="openTopic('Обовʼязки і права пішоходів')">4. Обовʼязки і права пішоходів</article>
-                <article class="card clickable" onclick="openTopic('Обовʼязки і права пасажирів')">5. Обовʼязки і права пасажирів</article>
-                <article class="card clickable" onclick="openTopic('Вимоги до велосипедистів')">6. Вимоги до велосипедистів</article>
-                <article class="card clickable" onclick="openTopic('Вимоги до осіб, які керують гужовим транспортом і погоничів тварин')">7. Вимоги до осіб, які керують гужовим транспортом і погоничів тварин</article>
-                <article class="card clickable" onclick="openTopic('Регулювання дорожнього руху (Регульовані перехрестя)')">8.1 Регулювання дорожнього руху (Регульовані перехрестя)</article>
-                <article class="card clickable" onclick="openTopic('Регулювання дорожнього руху (Нерегульовані перехрестя)')">8.2 Регулювання дорожнього руху (Нерегульовані перехрестя)</article>
-                <article class="card clickable" onclick="openTopic('Попереджувальні сигнали')">9. Попереджувальні сигнали</article>
-                <article class="card clickable" onclick="openTopic('Початок руху та зміна його напрямку')">10. Початок руху та зміна його напрямку</article>
-                <article class="card clickable" onclick="openTopic('Розташування транспортних засобів на дорозі')">11. Розташування транспортних засобів на дорозі</article>
-                <article class="card clickable" onclick="openTopic('Швидкість руху')">12. Швидкість руху</article>
-                <article class="card clickable" onclick="openTopic('Дистанція, інтервал, зустрічний розʼїзд')">13. Дистанція, інтервал, зустрічний розʼїзд</article>
-                <article class="card clickable" onclick="openTopic('Обгін')">14. Обгін</article>
-                <article class="card clickable" onclick="openTopic('Зупинка і стоянка')">15. Зупинка і стоянка</article>
-                <article class="card clickable" onclick="openTopic('Проїзд перехресть (Регульовані перехрестя)')">16.1 Проїзд перехресть (Регульовані перехрестя)</article>
-                <article class="card clickable" onclick="openTopic('Проїзд перехресть (Нерегульовані перехрестя)')">16.2 Проїзд перехресть (Нерегульовані перехрестя)</article>
-                <article class="card clickable" onclick="openTopic('Переваги маршрутних транспортних засобів')">17. Переваги маршрутних транспортних засобів</article>
-                <article class="card clickable" onclick="openTopic('Проїзд пішохідних переходів і зупинок транспортних засобів')">18. Проїзд пішохідних переходів і зупинок транспортних засобів</article>
-                <article class="card clickable" onclick="openTopic('Користування зовнішніми світловими приладами')">19. Користування зовнішніми світловими приладами</article>
-                <article class="card clickable" onclick="openTopic('Рух через залізничні переїзди')">20. Рух через залізничні переїзди</article>
-                <article class="card clickable" onclick="openTopic('Перевезення пасажирів')">21. Перевезення пасажирів</article>
-                <article class="card clickable" onclick="openTopic('Перевезення вантажу')">22. Перевезення вантажу</article>
-                <article class="card clickable" onclick="openTopic('Буксирування та експлуатація транспортних составів')">23. Буксирування та експлуатація транспортних составів</article>
-                <article class="card clickable" onclick="openTopic('Навчальна їзда')">24. Навчальна їзда</article>
-                <article class="card clickable" onclick="openTopic('Рух транспортних засобів у колонах')">25. Рух транспортних засобів у колонах</article>
-                <article class="card clickable" onclick="openTopic('Рух у житловій та пішохідній зонах')">26. Рух у житловій та пішохідній зонах</article>
-                <article class="card clickable" onclick="openTopic('Рух автомагістралями та дорогами для автомобілів')">27. Рух автомагістралями та дорогами для автомобілів</article>
-                <article class="card clickable" onclick="openTopic('Рух по гірських дорогах і на крутих спусках')">28. Рух по гірських дорогах і на крутих спусках</article>
-                <article class="card clickable" onclick="openTopic('Міжнародний рух')">29. Міжнародний рух</article>
-                <article class="card clickable" onclick="openTopic('Номерні, розпізнавальні знаки, написи і позначення')">30. Номерні, розпізнавальні знаки, написи і позначення</article>
-                <article class="card clickable" onclick="openTopic('Технічний стан транспортних засобів та їх обладнання')">31. Технічний стан транспортних засобів та їх обладнання</article>
-                <article class="card clickable" onclick="openTopic('Окремі питання дорожнього руху, що потребують узгодження')">32. Окремі питання дорожнього руху, що потребують узгодження</article>
-                <article class="card clickable" onclick="openTopic('Попереджувальні знаки')">33.1 Попереджувальні знаки</article>
-                <article class="card clickable" onclick="openTopic('Знаки пріоритету')">33.2 Знаки пріоритету</article>
-                <article class="card clickable" onclick="openTopic('Заборонні знаки')">33.3 Заборонні знаки</article>
-                <article class="card clickable" onclick="openTopic('Наказові знаки')">33.4 Наказові знаки</article>
-                <article class="card clickable" onclick="openTopic('Інформаційно-вказівні знаки')">33.5 Інформаційно-вказівні знаки</article>
-                <article class="card clickable" onclick="openTopic('Знаки сервісу')">33.6 Знаки сервісу</article>
-                <article class="card clickable" onclick="openTopic('Таблички до дорожніх знаків')">33.7 Таблички до дорожніх знаків</article>
-                <article class="card clickable" onclick="openTopic('Дорожня розмітка')">34. Дорожня розмітка</article>
-                <article class="card clickable" onclick="openTopic('Основи безпечного водіння')">35. Основи безпечного водіння</article>
-                <article class="card clickable" onclick="openTopic('Основи права в області дорожнього руху')">36. Основи права в області дорожнього руху</article>
-                <article class="card clickable" onclick="openTopic('Надання першої медичної допомоги')">37. Надання першої медичної допомоги</article>
-                <article class="card clickable" onclick="openTopic('Етика водіння, культура та відпочинок водія')">38. Етика водіння, культура та відпочинок водія</article>
-                <article class="card clickable" onclick="openTopic('Європротокол')">39. Європротокол</article>
-                <article class="card clickable" onclick="openTopic('Додаткові питання щодо категорії В1, В (загальні)')">40. Додаткові питання щодо категорії В1, В (загальні)</article>
-                <article class="card clickable" onclick="openTopic('Додаткові питання щодо категорії В1, В (будова і терміни)')">41. Додаткові питання щодо категорії В1, В (будова і терміни)</article>
-                <article class="card clickable" onclick="openTopic('Додаткові питання щодо категорії В1, В (юридична відповідальність)')">42. Додаткові питання щодо категорії В1, В (юридична відповідальність)</article>
-                <article class="card clickable" onclick="openTopic('Додаткові питання щодо категорії В1, В (безпека)')">43. Додаткові питання щодо категорії В1, В (безпека)</article>
-            </div>
-        </section>
+            <div class="auth-form">
+                <input type="text" id="auth-name" placeholder="Імʼя та прізвище">
+                <input type="email" id="auth-email" placeholder="Email">
+                <input type="password" id="auth-password" placeholder="Пароль">
 
-        <section id="training" class="card-section">
-            <h2>Тренування</h2>
-            <div class="panel">
-                <p>Режим для проходження тестів по темах та у форматі іспиту.</p>
-                <button class="btn btn-primary" onclick="openTraining()">Відкрити тренування</button>
+                <div class="auth-buttons">
+                    <button class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
+                    <button class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+                </div>
             </div>
-        </section>
 
-        <section id="stats" class="card-section">
-            <h2>Статистика</h2>
-            <div class="panel">
-                <p>Тут буде твоя особиста статистика: результати, помилки, прогрес.</p>
-            </div>
-        </section>
+            <p id="auth-message" class="auth-message"></p>
+        </div>
+    </div>
 
-        <section id="teacher" class="card-section">
-            <h2>Кабінет викладача</h2>
-            <div class="panel">
-                <p>Розділ для контролю прогресу студентів та їхніх результатів.</p>
-            </div>
-        </section>
+    <div id="app-content" style="display:none;">
+        <header class="topbar">
+            <div class="logo">🚗 PDR Trainer</div>
+            <nav class="menu">
+                <a href="#home">Головна</a>
+                <a href="#topics">Теми</a>
+                <a href="#training">Тренування</a>
+                <a href="#stats" onclick="openStats()">Статистика</a>
+                <a href="#teacher">Викладач</a>
+                <a href="#admin">Адмінка</a>
+                <a href="#" onclick="logoutUser(); return false;">Вийти</a>
+            </nav>
+        </header>
 
-        <section id="admin" class="card-section">
-            <h2>Панель адміністратора</h2>
-            <div class="panel">
-                <p>Тут буде керування питаннями, темами та оновленнями сайту.</p>
-            </div>
-        </section>
-    </main>
+        <main class="page">
+            <section id="home" class="hero">
+                <h1>Підготовка до ПДР онлайн</h1>
+                <p>
+                    Тренуйся за темами, проходь іспити, відстежуй прогрес
+                    та готуйся до теоретичного іспиту зручніше.
+                </p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="#topics">Обрати тему</a>
+                    <a class="btn btn-secondary" href="#training">Почати тренування</a>
+                </div>
+            </section>
+
+            <section id="topics" class="card-section">
+                <h2>Теми</h2>
+                <div class="grid">
+                    <article class="card clickable" onclick="openTopic('Загальні положення')">1. Загальні положення</article>
+                    <article class="card clickable" onclick="openTopic('Обовʼязки і права водіїв механічних транспортних засобів')">2. Обовʼязки і права водіїв механічних транспортних засобів</article>
+                    <article class="card clickable" onclick="openTopic('Рух транспортних засобів із спеціальними сигналами')">3. Рух транспортних засобів із спеціальними сигналами</article>
+                    <article class="card clickable" onclick="openTopic('Обовʼязки і права пішоходів')">4. Обовʼязки і права пішоходів</article>
+                    <article class="card clickable" onclick="openTopic('Обовʼязки і права пасажирів')">5. Обовʼязки і права пасажирів</article>
+                    <article class="card clickable" onclick="openTopic('Вимоги до велосипедистів')">6. Вимоги до велосипедистів</article>
+                    <article class="card clickable" onclick="openTopic('Вимоги до осіб, які керують гужовим транспортом і погоничів тварин')">7. Вимоги до осіб, які керують гужовим транспортом і погоничів тварин</article>
+                    <article class="card clickable" onclick="openTopic('Регулювання дорожнього руху (Регульовані перехрестя)')">8.1 Регулювання дорожнього руху (Регульовані перехрестя)</article>
+                    <article class="card clickable" onclick="openTopic('Регулювання дорожнього руху (Нерегульовані перехрестя)')">8.2 Регулювання дорожнього руху (Нерегульовані перехрестя)</article>
+                    <article class="card clickable" onclick="openTopic('Попереджувальні сигнали')">9. Попереджувальні сигнали</article>
+                    <article class="card clickable" onclick="openTopic('Початок руху та зміна його напрямку')">10. Початок руху та зміна його напрямку</article>
+                    <article class="card clickable" onclick="openTopic('Розташування транспортних засобів на дорозі')">11. Розташування транспортних засобів на дорозі</article>
+                    <article class="card clickable" onclick="openTopic('Швидкість руху')">12. Швидкість руху</article>
+                    <article class="card clickable" onclick="openTopic('Дистанція, інтервал, зустрічний розʼїзд')">13. Дистанція, інтервал, зустрічний розʼїзд</article>
+                    <article class="card clickable" onclick="openTopic('Обгін')">14. Обгін</article>
+                    <article class="card clickable" onclick="openTopic('Зупинка і стоянка')">15. Зупинка і стоянка</article>
+                    <article class="card clickable" onclick="openTopic('Проїзд перехресть (Регульовані перехрестя)')">16.1 Проїзд перехресть (Регульовані перехрестя)</article>
+                    <article class="card clickable" onclick="openTopic('Проїзд перехресть (Нерегульовані перехрестя)')">16.2 Проїзд перехресть (Нерегульовані перехрестя)</article>
+                    <article class="card clickable" onclick="openTopic('Переваги маршрутних транспортних засобів')">17. Переваги маршрутних транспортних засобів</article>
+                    <article class="card clickable" onclick="openTopic('Проїзд пішохідних переходів і зупинок транспортних засобів')">18. Проїзд пішохідних переходів і зупинок транспортних засобів</article>
+                    <article class="card clickable" onclick="openTopic('Користування зовнішніми світловими приладами')">19. Користування зовнішніми світловими приладами</article>
+                    <article class="card clickable" onclick="openTopic('Рух через залізничні переїзди')">20. Рух через залізничні переїзди</article>
+                    <article class="card clickable" onclick="openTopic('Перевезення пасажирів')">21. Перевезення пасажирів</article>
+                    <article class="card clickable" onclick="openTopic('Перевезення вантажу')">22. Перевезення вантажу</article>
+                    <article class="card clickable" onclick="openTopic('Буксирування та експлуатація транспортних составів')">23. Буксирування та експлуатація транспортних составів</article>
+                    <article class="card clickable" onclick="openTopic('Навчальна їзда')">24. Навчальна їзда</article>
+                    <article class="card clickable" onclick="openTopic('Рух транспортних засобів у колонах')">25. Рух транспортних засобів у колонах</article>
+                    <article class="card clickable" onclick="openTopic('Рух у житловій та пішохідній зонах')">26. Рух у житловій та пішохідній зонах</article>
+                    <article class="card clickable" onclick="openTopic('Рух автомагістралями та дорогами для автомобілів')">27. Рух автомагістралями та дорогами для автомобілів</article>
+                    <article class="card clickable" onclick="openTopic('Рух по гірських дорогах і на крутих спусках')">28. Рух по гірських дорогах і на крутих спусках</article>
+                    <article class="card clickable" onclick="openTopic('Міжнародний рух')">29. Міжнародний рух</article>
+                    <article class="card clickable" onclick="openTopic('Номерні, розпізнавальні знаки, написи і позначення')">30. Номерні, розпізнавальні знаки, написи і позначення</article>
+                    <article class="card clickable" onclick="openTopic('Технічний стан транспортних засобів та їх обладнання')">31. Технічний стан транспортних засобів та їх обладнання</article>
+                    <article class="card clickable" onclick="openTopic('Окремі питання дорожнього руху, що потребують узгодження')">32. Окремі питання дорожнього руху, що потребують узгодження</article>
+                    <article class="card clickable" onclick="openTopic('Попереджувальні знаки')">33.1 Попереджувальні знаки</article>
+                    <article class="card clickable" onclick="openTopic('Знаки пріоритету')">33.2 Знаки пріоритету</article>
+                    <article class="card clickable" onclick="openTopic('Заборонні знаки')">33.3 Заборонні знаки</article>
+                    <article class="card clickable" onclick="openTopic('Наказові знаки')">33.4 Наказові знаки</article>
+                    <article class="card clickable" onclick="openTopic('Інформаційно-вказівні знаки')">33.5 Інформаційно-вказівні знаки</article>
+                    <article class="card clickable" onclick="openTopic('Знаки сервісу')">33.6 Знаки сервісу</article>
+                    <article class="card clickable" onclick="openTopic('Таблички до дорожніх знаків')">33.7 Таблички до дорожніх знаків</article>
+                    <article class="card clickable" onclick="openTopic('Дорожня розмітка')">34. Дорожня розмітка</article>
+                    <article class="card clickable" onclick="openTopic('Основи безпечного водіння')">35. Основи безпечного водіння</article>
+                    <article class="card clickable" onclick="openTopic('Основи права в області дорожнього руху')">36. Основи права в області дорожнього руху</article>
+                    <article class="card clickable" onclick="openTopic('Надання першої медичної допомоги')">37. Надання першої медичної допомоги</article>
+                    <article class="card clickable" onclick="openTopic('Етика водіння, культура та відпочинок водія')">38. Етика водіння, культура та відпочинок водія</article>
+                    <article class="card clickable" onclick="openTopic('Європротокол')">39. Європротокол</article>
+                    <article class="card clickable" onclick="openTopic('Додаткові питання щодо категорії В1, В (загальні)')">40. Додаткові питання щодо категорії В1, В (загальні)</article>
+                    <article class="card clickable" onclick="openTopic('Додаткові питання щодо категорії В1, В (будова і терміни)')">41. Додаткові питання щодо категорії В1, В (будова і терміни)</article>
+                    <article class="card clickable" onclick="openTopic('Додаткові питання щодо категорії В1, В (юридична відповідальність)')">42. Додаткові питання щодо категорії В1, В (юридична відповідальність)</article>
+                    <article class="card clickable" onclick="openTopic('Додаткові питання щодо категорії В1, В (безпека)')">43. Додаткові питання щодо категорії В1, В (безпека)</article>
+                </div>
+            </section>
+
+            <section id="training" class="card-section">
+                <h2>Тренування</h2>
+                <div class="panel">
+                    <p>Режим для проходження тестів по темах та у форматі іспиту.</p>
+                    <button class="btn btn-primary" onclick="openTraining()">Відкрити тренування</button>
+                </div>
+            </section>
+
+            <section id="stats" class="card-section">
+                <h2>Статистика</h2>
+                <div class="panel">
+                    <p>Тут буде твоя особиста статистика: результати, помилки, прогрес.</p>
+                </div>
+            </section>
+
+            <section id="teacher" class="card-section">
+                <h2>Кабінет викладача</h2>
+                <div class="panel">
+                    <p>Розділ для контролю прогресу студентів та їхніх результатів.</p>
+                </div>
+            </section>
+
+            <section id="admin" class="card-section">
+                <h2>Панель адміністратора</h2>
+                <div class="panel">
+                    <p>Тут буде керування питаннями, темами та оновленнями сайту.</p>
+                </div>
+            </section>
+        </main>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
