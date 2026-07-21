@@ -15,9 +15,14 @@ async function loadQuestions() {
         allQuestions = await response.json();
     } catch (error) {
         console.error('Помилка завантаження питань:', error);
-        const trainingSection = document.querySelector('#training .panel');
+        const trainingSection = document.querySelector('#training');
         if (trainingSection) {
-            trainingSection.innerHTML = '<p>Не вдалося завантажити питання. Перевір файл questions.json.</p>';
+            trainingSection.innerHTML = `
+                <h2>Тренування</h2>
+                <div class="panel">
+                    <p>Не вдалося завантажити питання. Перевір файл questions.json.</p>
+                </div>
+            `;
         }
     }
 }
@@ -50,10 +55,15 @@ function showQuestion() {
     const question = currentQuestions[currentQuestionIndex];
     const trainingSection = document.querySelector('#training');
 
+    const imageHtml = question.image
+        ? `<img src="${question.image}" alt="Зображення до питання" class="question-image">`
+        : '';
+
     trainingSection.innerHTML = `
         <h2>Тема: ${currentTopic}</h2>
         <div class="panel quiz-box">
             <p class="question-text">${question.question}</p>
+            ${imageHtml}
             <div class="options">
                 ${question.options.map((option, index) => `
                     <button class="option-btn" onclick="checkAnswer(${index})">
