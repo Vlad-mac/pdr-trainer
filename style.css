@@ -168,6 +168,67 @@ a {
     color: rgba(255,255,255,0.92);
 }
 
+.clickable {
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.clickable:hover {
+    transform: translateY(-3px);
+    background: rgba(255,255,255,0.14);
+}
+
+.quiz-box {
+    margin-top: 20px;
+}
+
+.question-text {
+    font-size: 24px;
+    margin: 20px 0;
+    line-height: 1.5;
+}
+
+.options {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.option-btn {
+    background: #ffffff;
+    color: #1e293b;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.option-btn:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+#result {
+    margin-top: 20px;
+}
+
+.next-btn {
+    margin-top: 20px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.next-btn:hover {
+    background: #1d4ed8;
+}
+
 @media (max-width: 900px) {
     .grid {
         grid-template-columns: repeat(2, 1fr);
