@@ -7,6 +7,12 @@ let currentTopic = "";
 let questionStates = {};
 let userStats = [];
 
+const SUPABASE_URL = "https://tsqjfphauhphdksstbob.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_hLnSso-oks7c2BNJyneiCA_oNIaGDLU";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+
 async function loadQuestions() {
     try {
         const response = await fetch('questions.json');
@@ -310,6 +316,77 @@ function openStats() {
     renderStats();
 }
 
+// ===== SUPABASE AUTH =====
+
+async function registerUser(email, password, fullName) {
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        alert("Помилка реєстрації: " + error.message);
+        return;
+    }
+
+    const user = data.user;
+    if (!user) {
+        alert("Реєстрація виконана, але користувача не створено.");
+        return;
+    }
+
+    const { error: profileError } = await supabaseClient
+        .from('profiles')
+        .insert([
+            {
+                id: user.id,
+                email: email,
+                full_name: fullName,
+                role: 'student',
+                created_at: new Date().toISOString()
+            }
+        ]);
+
+    if (profileError) {
+        console.error(profileError);
+        alert("Акаунт створено, але профіль не зберігся: " + profileError.message);
+        return;
+    }
+
+    alert("Реєстрація успішна!");
+}
+
+async function loginUser(email, password) {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        alert("Помилка входу: " + error.message);
+        return;
+    }
+
+    currentUser = data.user;
+    alert("Вхід успішний!");
+}
+
+async function logoutUser() {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) {
+        alert("Помилка виходу: " + error.message);
+        return;
+    }
+
+    currentUser = null;
+    alert("Вихід виконано.");
+}
+
+async function checkCurrentUser() {
+    const { data } = await supabaseClient.auth.getUser();
+    currentUser = data.user;
+}
+
 loadUserStats();
 loadQuestions();
-
+checkCurrentUser();
