@@ -35,7 +35,7 @@ async function loadQuestions() {
     }
 }
 
-function loadUserStats() {
+function loadUserStatsLocal() {
     const savedStats = localStorage.getItem('pdrUserStats');
     if (savedStats) {
         try {
@@ -48,8 +48,30 @@ function loadUserStats() {
     }
 }
 
-function saveUserStats() {
+function saveUserStatsLocal() {
     localStorage.setItem('pdrUserStats', JSON.stringify(userStats));
+}
+
+async function loadUserStatsFromSupabase() {
+    if (!currentUser) return;
+
+    const { data, error } = await supabaseClient
+        .from('user_stats')
+        .select('topic, question_id, correct, created_at')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: true });
+
+    if (error) {
+        console.error('Не вдалося завантажити статистику з Supabase:', error);
+        return;
+    }
+
+    userStats = (data || []).map(item => ({
+        topic: item.topic,
+        questionId: item.question_id,
+        correct: item.correct,
+        time: item.created_at
+    }));
 }
 
 async function addStat(topic, questionId, isCorrect) {
@@ -62,7 +84,7 @@ async function addStat(topic, questionId, isCorrect) {
         time: time
     });
 
-    saveUserStats();
+    saveUserStatsLocal();
 
     if (currentUser) {
         const { error } = await supabaseClient
@@ -287,11 +309,15 @@ function openTraining() {
     alert("Оберіть тему на сторінці 'Теми'.");
 }
 
-function renderStats() {
+async function renderStats() {
     const statsSection = document.querySelector('#stats');
     if (!statsSection) return;
 
-    loadUserStats();
+    if (currentUser) {
+        await loadUserStatsFromSupabase();
+    } else {
+        loadUserStatsLocal();
+    }
 
     const total = userStats.length;
     const correct = userStats.filter(item => item.correct).length;
@@ -341,14 +367,14 @@ function renderStats() {
     `;
 }
 
-function openStats() {
+async function openStats() {
     if (!currentUser) {
         alert("Спочатку потрібно увійти або зареєструватися.");
         return;
     }
 
     location.hash = '#stats';
-    renderStats();
+    await renderStats();
 }
 
 async function registerFromForm() {
@@ -485,6 +511,6 @@ async function checkCurrentUser() {
     }
 }
 
-loadUserStats();
+loadUserStatsLocal();
 loadQuestions();
 checkCurrentUser();
