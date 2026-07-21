@@ -64,6 +64,11 @@ function addStat(topic, questionId, isCorrect) {
 }
 
 function openTopic(topic) {
+    if (!currentUser) {
+        alert("Спочатку потрібно увійти або зареєструватися.");
+        return;
+    }
+
     currentTopic = topic;
     currentQuestionIndex = 0;
     score = 0;
@@ -254,6 +259,11 @@ function showResult() {
 }
 
 function openTraining() {
+    if (!currentUser) {
+        alert("Спочатку потрібно увійти або зареєструватися.");
+        return;
+    }
+
     alert("Оберіть тему на сторінці 'Теми'.");
 }
 
@@ -312,26 +322,39 @@ function renderStats() {
 }
 
 function openStats() {
+    if (!currentUser) {
+        alert("Спочатку потрібно увійти або зареєструватися.");
+        return;
+    }
+
     location.hash = '#stats';
     renderStats();
 }
 
-// ===== SUPABASE AUTH =====
+async function registerFromForm() {
+    const name = document.getElementById('auth-name').value.trim();
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value.trim();
+    const message = document.getElementById('auth-message');
 
-async function registerUser(email, password, fullName) {
+    if (!name || !email || !password) {
+        message.textContent = "Заповни всі поля.";
+        return;
+    }
+
     const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: password
     });
 
     if (error) {
-        alert("Помилка реєстрації: " + error.message);
+        message.textContent = "Помилка реєстрації: " + error.message;
         return;
     }
 
     const user = data.user;
     if (!user) {
-        alert("Реєстрація виконана, але користувача не створено.");
+        message.textContent = "Реєстрація виконана, але користувача не створено.";
         return;
     }
 
@@ -341,34 +364,43 @@ async function registerUser(email, password, fullName) {
             {
                 id: user.id,
                 email: email,
-                full_name: fullName,
+                full_name: name,
                 role: 'student',
                 created_at: new Date().toISOString()
             }
         ]);
 
     if (profileError) {
-        console.error(profileError);
-        alert("Акаунт створено, але профіль не зберігся: " + profileError.message);
+        message.textContent = "Профіль створено з помилкою: " + profileError.message;
         return;
     }
 
-    alert("Реєстрація успішна!");
+    message.style.color = "#86efac";
+    message.textContent = "Реєстрація успішна. Тепер увійди.";
 }
 
-async function loginUser(email, password) {
+async function loginFromForm() {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value.trim();
+    const message = document.getElementById('auth-message');
+
+    if (!email || !password) {
+        message.textContent = "Введи email і пароль.";
+        return;
+    }
+
     const { data, error } = await supabaseClient.auth.signInWithPassword({
         email: email,
         password: password
     });
 
     if (error) {
-        alert("Помилка входу: " + error.message);
+        message.textContent = "Помилка входу: " + error.message;
         return;
     }
 
     currentUser = data.user;
-    alert("Вхід успішний!");
+    showApp();
 }
 
 async function logoutUser() {
@@ -379,12 +411,28 @@ async function logoutUser() {
     }
 
     currentUser = null;
-    alert("Вихід виконано.");
+    showAuth();
+}
+
+function showAuth() {
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app-content').style.display = 'none';
+}
+
+function showApp() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app-content').style.display = 'block';
 }
 
 async function checkCurrentUser() {
     const { data } = await supabaseClient.auth.getUser();
     currentUser = data.user;
+
+    if (currentUser) {
+        showApp();
+    } else {
+        showAuth();
+    }
 }
 
 loadUserStats();
