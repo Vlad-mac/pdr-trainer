@@ -360,15 +360,15 @@ async function registerFromForm() {
 
     const { error: profileError } = await supabaseClient
         .from('profiles')
-.insert([
-    {
-        user_id: user.id,
-        email: email,
-        full_name: name,
-        role: 'student',
-        created_at: new Date().toISOString()
-    }
-]);
+        .insert([
+            {
+                user_id: user.id,
+                email: email,
+                full_name: name,
+                role: 'student',
+                created_at: new Date().toISOString()
+            }
+        ]);
 
     if (profileError) {
         message.textContent = "Профіль створено з помилкою: " + profileError.message;
@@ -400,6 +400,7 @@ async function loginFromForm() {
     }
 
     currentUser = data.user;
+    await loadUserProfile();
     showApp();
 }
 
@@ -411,6 +412,8 @@ async function logoutUser() {
     }
 
     currentUser = null;
+    const greeting = document.getElementById('user-greeting');
+    if (greeting) greeting.textContent = '';
     showAuth();
 }
 
@@ -424,16 +427,6 @@ function showApp() {
     document.getElementById('app-content').style.display = 'block';
 }
 
-async function checkCurrentUser() {
-    const { data } = await supabaseClient.auth.getUser();
-    currentUser = data.user;
-
-    if (currentUser) {
-        showApp();
-    } else {
-        showAuth();
-    }
-}
 async function loadUserProfile() {
     if (!currentUser) return;
 
@@ -451,6 +444,18 @@ async function loadUserProfile() {
     const greeting = document.getElementById('user-greeting');
     if (greeting) {
         greeting.textContent = data.full_name ? `Вітаємо, ${data.full_name}` : 'Вітаємо';
+    }
+}
+
+async function checkCurrentUser() {
+    const { data } = await supabaseClient.auth.getUser();
+    currentUser = data.user;
+
+    if (currentUser) {
+        await loadUserProfile();
+        showApp();
+    } else {
+        showAuth();
     }
 }
 
