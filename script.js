@@ -4,7 +4,7 @@ let currentQuestionIndex = 0;
 let score = 0;
 let answered = false;
 let currentTopic = "";
-let questionStates = {}; // збереження відповідей по темі
+let questionStates = {};
 
 async function loadQuestions() {
     try {
@@ -102,15 +102,15 @@ function showQuestion() {
 
             <div class="question-grid">
                 ${currentQuestions.map((_, index) => {
-                let cls = 'question-square';
+                    let cls = 'question-square';
 
-if (state.answers[index] !== undefined) {
-    cls += state.answers[index].isCorrect ? ' correct-answer' : ' wrong-answer';
-}
+                    if (index === currentQuestionIndex) {
+                        cls += ' active';
+                    }
 
-if (index === currentQuestionIndex) {
-    cls += ' active';
-}
+                    if (state.answers[index] !== undefined) {
+                        cls += state.answers[index].isCorrect ? ' correct-answer' : ' wrong-answer';
+                    }
 
                     return `
                         <button class="${cls}" onclick="goToQuestion(${index})">
@@ -131,12 +131,10 @@ if (index === currentQuestionIndex) {
         buttons.forEach((button, index) => {
             button.disabled = true;
             if (index === question.correctAnswer) {
-                button.style.background = '#22c55e';
-                button.style.color = 'white';
+                button.classList.add('correct');
             }
             if (index === savedAnswer.selected && !savedAnswer.isCorrect) {
-                button.style.background = '#ef4444';
-                button.style.color = 'white';
+                button.classList.add('wrong');
             }
         });
 
@@ -168,12 +166,10 @@ function checkAnswer(selectedIndex) {
     buttons.forEach((button, index) => {
         button.disabled = true;
         if (index === question.correctAnswer) {
-            button.style.background = '#22c55e';
-            button.style.color = 'white';
+            button.classList.add('correct');
         }
         if (index === selectedIndex && !isCorrect) {
-            button.style.background = '#ef4444';
-            button.style.color = 'white';
+            button.classList.add('wrong');
         }
     });
 
