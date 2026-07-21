@@ -443,3 +443,12 @@ body {
         grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
     }
 }
+.user-greeting {
+    color: #f8fafc;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(96, 165, 250, 0.15);
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    white-space: nowrap;
+}
