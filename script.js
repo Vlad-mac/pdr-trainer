@@ -52,15 +52,35 @@ function saveUserStats() {
     localStorage.setItem('pdrUserStats', JSON.stringify(userStats));
 }
 
-function addStat(topic, questionId, isCorrect) {
+async function addStat(topic, questionId, isCorrect) {
+    const time = new Date().toISOString();
+
     userStats.push({
         topic: topic,
         questionId: questionId,
         correct: isCorrect,
-        time: new Date().toISOString()
+        time: time
     });
 
     saveUserStats();
+
+    if (currentUser) {
+        const { error } = await supabaseClient
+            .from('user_stats')
+            .insert([
+                {
+                    user_id: currentUser.id,
+                    topic: topic,
+                    question_id: String(questionId),
+                    correct: isCorrect,
+                    created_at: time
+                }
+            ]);
+
+        if (error) {
+            console.error('Не вдалося зберегти статистику в Supabase:', error);
+        }
+    }
 }
 
 function openTopic(topic) {
@@ -186,7 +206,7 @@ function showQuestion() {
     }
 }
 
-function checkAnswer(selectedIndex) {
+async function checkAnswer(selectedIndex) {
     if (answered) return;
 
     answered = true;
@@ -203,7 +223,7 @@ function checkAnswer(selectedIndex) {
         isCorrect: isCorrect
     };
 
-    addStat(currentTopic, question.id, isCorrect);
+    await addStat(currentTopic, question.id, isCorrect);
 
     buttons.forEach((button, index) => {
         button.disabled = true;
@@ -339,6 +359,7 @@ async function registerFromForm() {
 
     if (!name || !email || !password) {
         message.textContent = "Заповни всі поля.";
+        message.style.color = "#fca5a5";
         return;
     }
 
@@ -349,12 +370,14 @@ async function registerFromForm() {
 
     if (error) {
         message.textContent = "Помилка реєстрації: " + error.message;
+        message.style.color = "#fca5a5";
         return;
     }
 
     const user = data.user;
     if (!user) {
         message.textContent = "Реєстрація виконана, але користувача не створено.";
+        message.style.color = "#fca5a5";
         return;
     }
 
@@ -372,6 +395,7 @@ async function registerFromForm() {
 
     if (profileError) {
         message.textContent = "Профіль створено з помилкою: " + profileError.message;
+        message.style.color = "#fca5a5";
         return;
     }
 
@@ -386,6 +410,7 @@ async function loginFromForm() {
 
     if (!email || !password) {
         message.textContent = "Введи email і пароль.";
+        message.style.color = "#fca5a5";
         return;
     }
 
@@ -396,6 +421,7 @@ async function loginFromForm() {
 
     if (error) {
         message.textContent = "Помилка входу: " + error.message;
+        message.style.color = "#fca5a5";
         return;
     }
 
