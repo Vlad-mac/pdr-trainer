@@ -10,18 +10,15 @@
 
     <div id="auth-screen" class="auth-screen">
         <div class="auth-card">
-            <h1>Вхід / Реєстрація</h1>
-            <p class="auth-subtitle">Увійдіть або створіть акаунт, щоб почати тренування.</p>
+            <h1>Реєстрація</h1>
 
             <div class="auth-form">
-                <input type="text" id="auth-name" placeholder="Імʼя та прізвище">
+                <input type="text" id="auth-name" placeholder="ПІБ">
                 <input type="email" id="auth-email" placeholder="Email">
                 <input type="password" id="auth-password" placeholder="Пароль">
 
-                <div class="auth-buttons">
-                    <button class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
-                    <button class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
-                </div>
+                <button class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
+                <button class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
             </div>
 
             <p id="auth-message" class="auth-message"></p>
