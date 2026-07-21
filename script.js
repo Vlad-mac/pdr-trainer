@@ -4,6 +4,7 @@ let currentQuestionIndex = 0;
 let score = 0;
 let answered = false;
 let currentTopic = "";
+let questionStates = {}; // збереження відповідей по темі
 
 async function loadQuestions() {
     try {
@@ -46,6 +47,13 @@ function openTopic(topic) {
         return;
     }
 
+    // створюємо сховище для цієї теми
+    if (!questionStates[currentTopic]) {
+        questionStates[currentTopic] = {
+            answers: {}
+        };
+    }
+
     showQuestion();
     location.hash = '#training';
 }
@@ -54,6 +62,8 @@ function showQuestion() {
     answered = false;
     const question = currentQuestions[currentQuestionIndex];
     const trainingSection = document.querySelector('#training');
+    const state = questionStates[currentTopic];
+    const savedAnswer = state.answers[currentQuestionIndex];
 
     const imageHtml = question.image
         ? `<img src="${question.image}" alt="Зображення до питання" class="question-image">`
@@ -62,19 +72,74 @@ function showQuestion() {
     trainingSection.innerHTML = `
         <h2>Тема: ${currentTopic}</h2>
         <div class="panel quiz-box">
+            <div class="quiz-header">
+                <p class="question-counter">Питання ${currentQuestionIndex + 1} з ${currentQuestions.length}</p>
+            </div>
+
             <p class="question-text">${question.question}</p>
             ${imageHtml}
+
             <div class="options">
-                ${question.options.map((option, index) => `
-                    <button class="option-btn" onclick="checkAnswer(${index})">
-                        ${option}
-                    </button>
-                `).join('')}
+                ${question.options.map((option, index) => {
+                    let extraClass = '';
+                    if (savedAnswer !== undefined) {
+                        if (index === question.correctAnswer) extraClass = 'correct';
+                        else if (index === savedAnswer && savedAnswer !== question.correctAnswer) extraClass = 'wrong';
+                    }
+                    return `
+                        <button class="option-btn ${extraClass}" onclick="checkAnswer(${index})">
+                            ${option}
+                        </button>
+                    `;
+                }).join('')}
             </div>
+
             <div id="result"></div>
-            <button id="nextBtn" class="next-btn" style="display:none;" onclick="nextQuestion()">Далі</button>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''}>Назад</button>
+                <button id="nextBtn" class="nav-btn" style="display:none;" onclick="nextQuestion()">Далі</button>
+            </div>
+
+            <div class="question-grid">
+                ${currentQuestions.map((_, index) => {
+                    let cls = 'question-square';
+                    if (index === currentQuestionIndex) cls += ' active';
+                    if (state.answers[index] !== undefined) cls += ' answered';
+                    return `
+                        <button class="${cls}" onclick="goToQuestion(${index})">
+                            ${index + 1}
+                        </button>
+                    `;
+                }).join('')}
+            </div>
         </div>
     `;
+
+    if (savedAnswer !== undefined) {
+        answered = true;
+        const result = document.getElementById('result');
+        const nextBtn = document.getElementById('nextBtn');
+        const buttons = document.querySelectorAll('.option-btn');
+
+        buttons.forEach((button, index) => {
+            button.disabled = true;
+            if (index === question.correctAnswer) {
+                button.style.background = '#22c55e';
+                button.style.color = 'white';
+            }
+            if (index === savedAnswer && savedAnswer !== question.correctAnswer) {
+                button.style.background = '#ef4444';
+                button.style.color = 'white';
+            }
+        });
+
+        result.innerHTML = savedAnswer === question.correctAnswer
+            ? '<p style="color:#4ade80; font-size:20px;">✅ Правильно!</p>'
+            : '<p style="color:#f87171; font-size:20px;">❌ Неправильно.</p>';
+
+        nextBtn.style.display = 'inline-block';
+    }
 }
 
 function checkAnswer(selectedIndex) {
@@ -85,6 +150,9 @@ function checkAnswer(selectedIndex) {
     const buttons = document.querySelectorAll('.option-btn');
     const result = document.getElementById('result');
     const nextBtn = document.getElementById('nextBtn');
+    const state = questionStates[currentTopic];
+
+    state.answers[currentQuestionIndex] = selectedIndex;
 
     buttons.forEach((button, index) => {
         button.disabled = true;
@@ -106,16 +174,34 @@ function checkAnswer(selectedIndex) {
     }
 
     nextBtn.style.display = 'inline-block';
+
+    // оновлюємо квадратики
+    showQuestionCounterOnly();
+}
+
+function showQuestionCounterOnly() {
+    // тут нічого не робимо окремо, бо повне оновлення вже відбудеться при переході
 }
 
 function nextQuestion() {
-    currentQuestionIndex++;
-
-    if (currentQuestionIndex < currentQuestions.length) {
+    if (currentQuestionIndex < currentQuestions.length - 1) {
+        currentQuestionIndex++;
         showQuestion();
     } else {
         showResult();
     }
+}
+
+function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        showQuestion();
+    }
+}
+
+function goToQuestion(index) {
+    currentQuestionIndex = index;
+    showQuestion();
 }
 
 function showResult() {
@@ -125,7 +211,7 @@ function showResult() {
         <div class="panel">
             <p>Тест завершено.</p>
             <p>Ваш результат: ${score} з ${currentQuestions.length}</p>
-            <button class="next-btn" onclick="location.href='#topics'">Повернутися до тем</button>
+            <button class="nav-btn" onclick="location.href='#topics'">Повернутися до тем</button>
         </div>
     `;
 }
