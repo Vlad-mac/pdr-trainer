@@ -102,12 +102,15 @@ function showQuestion() {
 
             <div class="question-grid">
                 ${currentQuestions.map((_, index) => {
-                    let cls = 'question-square';
-                    if (index === currentQuestionIndex) cls += ' active';
+                let cls = 'question-square';
 
-                    if (state.answers[index] !== undefined) {
-                        cls += state.answers[index].isCorrect ? ' correct-answer' : ' wrong-answer';
-                    }
+if (state.answers[index] !== undefined) {
+    cls += state.answers[index].isCorrect ? ' correct-answer' : ' wrong-answer';
+}
+
+if (index === currentQuestionIndex) {
+    cls += ' active';
+}
 
                     return `
                         <button class="${cls}" onclick="goToQuestion(${index})">
