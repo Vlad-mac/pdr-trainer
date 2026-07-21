@@ -453,6 +453,7 @@ async function loadUserProfile() {
         greeting.textContent = data.full_name ? `Вітаємо, ${data.full_name}` : 'Вітаємо';
     }
 }
+
 loadUserStats();
 loadQuestions();
 checkCurrentUser();
