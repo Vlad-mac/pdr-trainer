@@ -44,7 +44,7 @@ async function loadUserStatsFromSupabase() {
 
     const { data, error } = await supabaseClient
         .from('user_stats')
-        .select('topic, question_id, correct, created_at')
+        .select('topic, question_id, correct, created_at, time_spent_seconds')
         .eq('user_id', currentUser.id)
         .order('created_at', { ascending: true });
 
