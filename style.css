@@ -74,20 +74,6 @@ body {
     box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
 }
 
-.auth-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-.auth-message {
-    margin-top: 14px;
-    min-height: 20px;
-    text-align: center;
-    color: #fca5a5;
-}
-
 /* App layout */
 #app-content {
     min-height: 100vh;
@@ -112,14 +98,24 @@ body {
     font-weight: 700;
     color: #ffffff;
     white-space: nowrap;
+    flex: 0 0 auto;
 }
 
 .menu {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 10px;
     justify-content: flex-end;
     align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.menu::-webkit-scrollbar {
+    display: none;
 }
 
 .menu a {
@@ -130,6 +126,7 @@ body {
     transition: 0.2s ease;
     white-space: nowrap;
     font-size: 15px;
+    flex: 0 0 auto;
 }
 
 .menu a:hover {
@@ -145,6 +142,7 @@ body {
     background: rgba(96, 165, 250, 0.15);
     border: 1px solid rgba(96, 165, 250, 0.25);
     white-space: nowrap;
+    flex: 0 0 auto;
 }
 
 .page {
@@ -409,7 +407,8 @@ body {
     .topbar {
         flex-direction: column;
         align-items: flex-start;
-        padding: 12px 16px;
+        padding: 10px 14px;
+        gap: 10px;
     }
 
     .menu {
@@ -484,13 +483,4 @@ body {
         font-size: 13px;
         padding: 6px 9px;
     }
-}
-.user-greeting {
-    color: #f8fafc;
-    font-weight: 700;
-    padding: 8px 12px;
-    border-radius: 10px;
-    background: rgba(96, 165, 250, 0.15);
-    border: 1px solid rgba(96, 165, 250, 0.25);
-    white-space: nowrap;
 }
