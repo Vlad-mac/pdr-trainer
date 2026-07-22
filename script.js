@@ -369,17 +369,26 @@ async function renderStats() {
     const wrong = total - correct;
     const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
 
+    const totalTimeSeconds = stats.reduce((sum, item) => {
+        return sum + (Number(item.timeSpentSeconds) || 0);
+    }, 0);
+
+    const averageTimeSeconds = total > 0 ? Math.round(totalTimeSeconds / total) : 0;
+
     const topicStats = {};
     stats.forEach(item => {
         if (!topicStats[item.topic]) {
             topicStats[item.topic] = {
                 total: 0,
                 correct: 0,
-                wrong: 0
+                wrong: 0,
+                time: 0
             };
         }
 
         topicStats[item.topic].total++;
+        topicStats[item.topic].time += Number(item.timeSpentSeconds) || 0;
+
         if (item.correct) {
             topicStats[item.topic].correct++;
         } else {
@@ -394,9 +403,25 @@ async function renderStats() {
                 <p>Всього: ${data.total}</p>
                 <p>Правильних: ${data.correct}</p>
                 <p>Неправильних: ${data.wrong}</p>
+                <p>Час: ${formatTime(data.time)}</p>
             </div>
         `).join('')
         : '<div class="panel"><p>Поки що немає даних для статистики.</p></div>';
+
+    const historyHtml = stats.length
+        ? `
+            <h2 style="margin-top:24px;">Останні відповіді</h2>
+            <div class="panel">
+                ${stats.slice(-10).reverse().map(item => `
+                    <p>
+                        <strong>${item.topic}</strong> — 
+                        ${item.correct ? '✅ правильно' : '❌ неправильно'} — 
+                        час: ${formatTime(Number(item.timeSpentSeconds) || 0)}
+                    </p>
+                `).join('')}
+            </div>
+        `
+        : '';
 
     statsSection.innerHTML = `
         <h2>Статистика</h2>
@@ -405,10 +430,14 @@ async function renderStats() {
             <p>Правильних: ${correct}</p>
             <p>Неправильних: ${wrong}</p>
             <p>Успішність: ${percent}%</p>
+            <p>Загальний час: ${formatTime(totalTimeSeconds)}</p>
+            <p>Середній час на відповідь: ${formatTime(averageTimeSeconds)}</p>
         </div>
 
         <h2 style="margin-top:24px;">Статистика по темах</h2>
         ${topicStatsHtml}
+
+        ${historyHtml}
     `;
 }
 
