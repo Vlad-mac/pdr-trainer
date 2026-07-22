@@ -405,15 +405,12 @@ body {
 /* Responsive */
 @media (max-width: 900px) {
     .topbar {
-        flex-direction: column;
-        align-items: flex-start;
         padding: 10px 14px;
         gap: 10px;
     }
 
-    .menu {
-        justify-content: flex-start;
-        width: 100%;
+    .logo {
+        font-size: 18px;
     }
 
     .menu a,
@@ -461,26 +458,5 @@ body {
 
     .question-grid {
         grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
-    }
-
-    .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        padding: 10px 12px;
-    }
-
-    .logo {
-        font-size: 18px;
-    }
-
-    .menu {
-        gap: 8px;
-    }
-
-    .menu a,
-    .user-greeting {
-        font-size: 13px;
-        padding: 6px 9px;
     }
 }
