@@ -5,6 +5,10 @@ let score = 0;
 let answered = false;
 let currentTopic = "";
 let questionStates = {};
+let currentTopicStarted = false;
+let topicStartTime = null;
+let topicTimerInterval = null;
+let elapsedSeconds = 0;
 
 const SUPABASE_URL = "https://tsqjfphauhphdksstbob.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_hLnSso-oks7c2BNJyneiCA_oNIaGDLU";
@@ -70,12 +74,40 @@ async function addStat(topic, questionId, isCorrect) {
                 topic: topic,
                 question_id: String(questionId),
                 correct: isCorrect,
-                created_at: time
+                created_at: time,
+                time_spent_seconds: elapsedSeconds
             }
         ]);
 
     if (error) {
         console.error('Не вдалося зберегти статистику в Supabase:', error);
+    }
+}
+
+function formatTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function startTopicTimer() {
+    stopTopicTimer();
+    topicStartTime = new Date();
+    elapsedSeconds = 0;
+
+    topicTimerInterval = setInterval(() => {
+        elapsedSeconds++;
+        const timerEl = document.getElementById('topic-timer');
+        if (timerEl) {
+            timerEl.textContent = formatTime(elapsedSeconds);
+        }
+    }, 1000);
+}
+
+function stopTopicTimer() {
+    if (topicTimerInterval) {
+        clearInterval(topicTimerInterval);
+        topicTimerInterval = null;
     }
 }
 
@@ -89,6 +121,9 @@ function openTopic(topic) {
     currentQuestionIndex = 0;
     score = 0;
     answered = false;
+    currentTopicStarted = false;
+    elapsedSeconds = 0;
+    stopTopicTimer();
 
     currentQuestions = allQuestions.filter(q => q.topic === topic);
 
@@ -111,12 +146,24 @@ function openTopic(topic) {
         };
     }
 
-    showQuestion();
-
     const trainingSection = document.querySelector('#training');
     if (trainingSection) {
+        trainingSection.innerHTML = `
+            <h2>Тема: ${currentTopic}</h2>
+            <div class="panel">
+                <p>У цій темі є ${currentQuestions.length} питань.</p>
+                <p>Натисни кнопку нижче, щоб почати тест.</p>
+                <button class="btn btn-primary" onclick="startTopic()">Старт</button>
+            </div>
+        `;
         trainingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+}
+
+function startTopic() {
+    currentTopicStarted = true;
+    startTopicTimer();
+    showQuestion();
 }
 
 function showQuestion() {
@@ -138,6 +185,7 @@ function showQuestion() {
         <div class="panel quiz-box">
             <div class="quiz-header">
                 <p class="question-counter">Питання ${currentQuestionIndex + 1} з ${currentQuestions.length}</p>
+                <p class="question-counter">Час: <span id="topic-timer">${formatTime(elapsedSeconds)}</span></p>
             </div>
 
             <p class="question-text">${question.question}</p>
@@ -275,6 +323,8 @@ function goToQuestion(index) {
 }
 
 function showResult() {
+    stopTopicTimer();
+
     const trainingSection = document.querySelector('#training');
     if (!trainingSection) return;
 
@@ -283,6 +333,7 @@ function showResult() {
         <div class="panel">
             <p>Тест завершено.</p>
             <p>Ваш результат: ${score} з ${currentQuestions.length}</p>
+            <p>Витрачений час: ${formatTime(elapsedSeconds)}</p>
             <button class="nav-btn" onclick="location.href='topics.html'">Повернутися до тем</button>
         </div>
     `;
