@@ -57,6 +57,7 @@ async function loadUserStatsFromSupabase() {
         topic: item.topic,
         questionId: item.question_id,
         correct: item.correct,
+        timeSpentSeconds: item.time_spent_seconds,
         time: item.created_at
     }));
 }
