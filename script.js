@@ -32,16 +32,6 @@ async function loadQuestions() {
                 </div>
             `;
         }
-
-        const topicsSection = document.querySelector('#training');
-        if (topicsSection) {
-            topicsSection.innerHTML = `
-                <h2>Тренування</h2>
-                <div class="panel">
-                    <p>Не вдалося завантажити питання. Перевір файл questions.json.</p>
-                </div>
-            `;
-        }
     }
 }
 
@@ -526,6 +516,8 @@ async function checkCurrentUser() {
     } else {
         showAuth();
     }
+
+    document.body.style.visibility = 'visible';
 }
 
 loadQuestions();
