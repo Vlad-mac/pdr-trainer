@@ -1,1 +1,65 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDR Trainer — Адмінка</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-card">
+            <h1>Реєстрація</h1>
+
+            <div class="auth-form">
+                <input type="text" id="auth-name" placeholder="ПІБ">
+                <input type="email" id="auth-email" placeholder="Email">
+                <input type="password" id="auth-password" placeholder="Пароль">
+
+                <button class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
+                <button class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+            </div>
+
+            <p id="auth-message" class="auth-message"></p>
+        </div>
+    </div>
+
+    <div id="app-content" style="display:none;">
+        <header class="topbar">
+            <div class="logo">🚗 PDR Trainer</div>
+            <nav class="menu">
+                <a href="index.html">Головна</a>
+                <a href="topics.html">Теми</a>
+                <a href="training.html">Тренування</a>
+                <a href="stats.html">Статистика</a>
+                <a href="teacher.html">Викладач</a>
+                <a href="admin.html">Адмінка</a>
+                <span id="user-greeting" class="user-greeting"></span>
+                <a href="#" onclick="logoutUser(); return false;">Вийти</a>
+            </nav>
+        </header>
+
+        <main class="page">
+            <section class="hero">
+                <h1>Панель адміністратора</h1>
+                <p>
+                    Тут буде керування питаннями, темами, оновленнями сайту та іншими адміністративними функціями.
+                </p>
+            </section>
+
+            <section class="card-section">
+                <h2>Адміністративні інструменти</h2>
+                <div class="panel">
+                    <p>Поки що це базова сторінка-заготовка для майбутньої адмін-панелі.</p>
+                    <p>Пізніше сюди можна додати редагування питань, керування темами та статистику всього сайту.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
 
