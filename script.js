@@ -5,7 +5,6 @@ let score = 0;
 let answered = false;
 let currentTopic = "";
 let questionStates = {};
-let userStats = [];
 
 const SUPABASE_URL = "https://tsqjfphauhphdksstbob.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_hLnSso-oks7c2BNJyneiCA_oNIaGDLU";
@@ -23,6 +22,7 @@ async function loadQuestions() {
         allQuestions = await response.json();
     } catch (error) {
         console.error('Помилка завантаження питань:', error);
+
         const trainingSection = document.querySelector('#training');
         if (trainingSection) {
             trainingSection.innerHTML = `
@@ -32,28 +32,21 @@ async function loadQuestions() {
                 </div>
             `;
         }
-    }
-}
 
-function loadUserStatsLocal() {
-    const savedStats = localStorage.getItem('pdrUserStats');
-    if (savedStats) {
-        try {
-            userStats = JSON.parse(savedStats);
-        } catch (e) {
-            userStats = [];
+        const topicsSection = document.querySelector('#training');
+        if (topicsSection) {
+            topicsSection.innerHTML = `
+                <h2>Тренування</h2>
+                <div class="panel">
+                    <p>Не вдалося завантажити питання. Перевір файл questions.json.</p>
+                </div>
+            `;
         }
-    } else {
-        userStats = [];
     }
-}
-
-function saveUserStatsLocal() {
-    localStorage.setItem('pdrUserStats', JSON.stringify(userStats));
 }
 
 async function loadUserStatsFromSupabase() {
-    if (!currentUser) return;
+    if (!currentUser) return [];
 
     const { data, error } = await supabaseClient
         .from('user_stats')
@@ -63,10 +56,10 @@ async function loadUserStatsFromSupabase() {
 
     if (error) {
         console.error('Не вдалося завантажити статистику з Supabase:', error);
-        return;
+        return [];
     }
 
-    userStats = (data || []).map(item => ({
+    return (data || []).map(item => ({
         topic: item.topic,
         questionId: item.question_id,
         correct: item.correct,
@@ -75,33 +68,24 @@ async function loadUserStatsFromSupabase() {
 }
 
 async function addStat(topic, questionId, isCorrect) {
+    if (!currentUser) return;
+
     const time = new Date().toISOString();
 
-    userStats.push({
-        topic: topic,
-        questionId: questionId,
-        correct: isCorrect,
-        time: time
-    });
+    const { error } = await supabaseClient
+        .from('user_stats')
+        .insert([
+            {
+                user_id: currentUser.id,
+                topic: topic,
+                question_id: String(questionId),
+                correct: isCorrect,
+                created_at: time
+            }
+        ]);
 
-    saveUserStatsLocal();
-
-    if (currentUser) {
-        const { error } = await supabaseClient
-            .from('user_stats')
-            .insert([
-                {
-                    user_id: currentUser.id,
-                    topic: topic,
-                    question_id: String(questionId),
-                    correct: isCorrect,
-                    created_at: time
-                }
-            ]);
-
-        if (error) {
-            console.error('Не вдалося зберегти статистику в Supabase:', error);
-        }
+    if (error) {
+        console.error('Не вдалося зберегти статистику в Supabase:', error);
     }
 }
 
@@ -119,13 +103,15 @@ function openTopic(topic) {
     currentQuestions = allQuestions.filter(q => q.topic === topic);
 
     if (currentQuestions.length === 0) {
-        document.querySelector('#training').innerHTML = `
-            <h2>Тренування</h2>
-            <div class="panel">
-                <p>Для теми "${topic}" ще немає питань.</p>
-            </div>
-        `;
-        location.hash = '#training';
+        const trainingSection = document.querySelector('#training');
+        if (trainingSection) {
+            trainingSection.innerHTML = `
+                <h2>Тренування</h2>
+                <div class="panel">
+                    <p>Для теми "${topic}" ще немає питань.</p>
+                </div>
+            `;
+        }
         return;
     }
 
@@ -136,13 +122,20 @@ function openTopic(topic) {
     }
 
     showQuestion();
-    location.hash = '#training';
+
+    const trainingSection = document.querySelector('#training');
+    if (trainingSection) {
+        trainingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 function showQuestion() {
     answered = false;
+
     const question = currentQuestions[currentQuestionIndex];
     const trainingSection = document.querySelector('#training');
+    if (!trainingSection || !question) return;
+
     const state = questionStates[currentTopic];
     const savedAnswer = state.answers[currentQuestionIndex];
 
@@ -167,6 +160,7 @@ function showQuestion() {
                         if (index === question.correctAnswer) extraClass = 'correct';
                         else if (index === savedAnswer.selected && !savedAnswer.isCorrect) extraClass = 'wrong';
                     }
+
                     return `
                         <button class="option-btn ${extraClass}" onclick="checkAnswer(${index})">
                             ${option}
@@ -206,6 +200,7 @@ function showQuestion() {
 
     if (savedAnswer !== undefined) {
         answered = true;
+
         const result = document.getElementById('result');
         const nextBtn = document.getElementById('nextBtn');
         const buttons = document.querySelectorAll('.option-btn');
@@ -232,6 +227,7 @@ async function checkAnswer(selectedIndex) {
     if (answered) return;
 
     answered = true;
+
     const question = currentQuestions[currentQuestionIndex];
     const buttons = document.querySelectorAll('.option-btn');
     const result = document.getElementById('result');
@@ -290,12 +286,14 @@ function goToQuestion(index) {
 
 function showResult() {
     const trainingSection = document.querySelector('#training');
+    if (!trainingSection) return;
+
     trainingSection.innerHTML = `
         <h2>Тема: ${currentTopic}</h2>
         <div class="panel">
             <p>Тест завершено.</p>
             <p>Ваш результат: ${score} з ${currentQuestions.length}</p>
-            <button class="nav-btn" onclick="location.href='#topics'">Повернутися до тем</button>
+            <button class="nav-btn" onclick="location.href='topics.html'">Повернутися до тем</button>
         </div>
     `;
 }
@@ -306,26 +304,32 @@ function openTraining() {
         return;
     }
 
-    alert("Оберіть тему на сторінці 'Теми'.");
+    location.href = 'topics.html';
 }
 
 async function renderStats() {
     const statsSection = document.querySelector('#stats');
     if (!statsSection) return;
 
-    if (currentUser) {
-        await loadUserStatsFromSupabase();
-    } else {
-        loadUserStatsLocal();
+    if (!currentUser) {
+        statsSection.innerHTML = `
+            <h2>Статистика</h2>
+            <div class="panel">
+                <p>Спочатку потрібно увійти або зареєструватися.</p>
+            </div>
+        `;
+        return;
     }
 
-    const total = userStats.length;
-    const correct = userStats.filter(item => item.correct).length;
+    const stats = await loadUserStatsFromSupabase();
+
+    const total = stats.length;
+    const correct = stats.filter(item => item.correct).length;
     const wrong = total - correct;
     const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
 
     const topicStats = {};
-    userStats.forEach(item => {
+    stats.forEach(item => {
         if (!topicStats[item.topic]) {
             topicStats[item.topic] = {
                 total: 0,
@@ -373,8 +377,11 @@ async function openStats() {
         return;
     }
 
-    location.hash = '#stats';
-    await renderStats();
+    if (location.pathname.includes('stats.html')) {
+        await renderStats();
+    } else {
+        location.href = 'stats.html';
+    }
 }
 
 async function registerFromForm() {
@@ -470,13 +477,19 @@ async function logoutUser() {
 }
 
 function showAuth() {
-    document.getElementById('auth-screen').style.display = 'flex';
-    document.getElementById('app-content').style.display = 'none';
+    const auth = document.getElementById('auth-screen');
+    const app = document.getElementById('app-content');
+
+    if (auth) auth.style.display = 'flex';
+    if (app) app.style.display = 'none';
 }
 
 function showApp() {
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app-content').style.display = 'block';
+    const auth = document.getElementById('auth-screen');
+    const app = document.getElementById('app-content');
+
+    if (auth) auth.style.display = 'none';
+    if (app) app.style.display = 'block';
 }
 
 async function loadUserProfile() {
@@ -506,11 +519,14 @@ async function checkCurrentUser() {
     if (currentUser) {
         await loadUserProfile();
         showApp();
+
+        if (location.pathname.includes('stats.html')) {
+            await renderStats();
+        }
     } else {
         showAuth();
     }
 }
 
-loadUserStatsLocal();
 loadQuestions();
 checkCurrentUser();
