@@ -10,12 +10,48 @@ let currentTopicStarted = false;
 let topicStartTime = null;
 let topicTimerInterval = null;
 let elapsedSeconds = 0;
+let teacherRefCode = null;
 
 const SUPABASE_URL = "https://tsqjfphauhphdksstbob.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_hLnSso-oks7c2BNJyneiCA_oNIaGDLU";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
+
+function getReferralCodeFromUrl() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref');
+        return ref ? ref.trim() : null;
+    } catch (error) {
+        console.error('Не вдалося зчитати ref з URL:', error);
+        return null;
+    }
+}
+
+function saveReferralCode(refCode) {
+    if (!refCode) return;
+    localStorage.setItem('teacher_ref_code', refCode);
+}
+
+function loadSavedReferralCode() {
+    return localStorage.getItem('teacher_ref_code');
+}
+
+function initReferralCode() {
+    const refFromUrl = getReferralCodeFromUrl();
+
+    if (refFromUrl) {
+        teacherRefCode = refFromUrl;
+        saveReferralCode(refFromUrl);
+        return;
+    }
+
+    const savedRef = loadSavedReferralCode();
+    if (savedRef) {
+        teacherRefCode = savedRef;
+    }
+}
 
 async function loadQuestions() {
     try {
@@ -574,7 +610,8 @@ async function registerFromForm() {
                 email: email,
                 full_name: name,
                 role: 'student',
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
+                teacher_ref_code: teacherRefCode
             }
         ]);
 
@@ -682,5 +719,6 @@ async function checkCurrentUser() {
     document.body.style.visibility = 'visible';
 }
 
+initReferralCode();
 loadQuestions();
 checkCurrentUser();
