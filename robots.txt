@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vlad-mac.github.io/pdr-trainer/sitemap.xml
