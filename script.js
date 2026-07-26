@@ -1,6 +1,5 @@
 let allQuestions = [];
 let currentQuestions = [];
-let examQuestions = [];
 let currentQuestionIndex = 0;
 let score = 0;
 let answered = false;
@@ -401,11 +400,17 @@ function showExamResult() {
     const trainingSection = document.querySelector('#training');
     if (!trainingSection) return;
 
+    const wrongCount = currentQuestions.length - score;
+    const passed = wrongCount <= 2;
+
     trainingSection.innerHTML = `
         <h2>Іспит завершено</h2>
         <div class="panel">
-            <p>Ваш результат: ${score} з ${currentQuestions.length}</p>
-            <p>Витрачений час: ${formatTime(elapsedSeconds)}</p>
+            <p><strong>Результат:</strong> ${score} правильних із ${currentQuestions.length}</p>
+            <p><strong>Помилок:</strong> ${wrongCount}</p>
+            <p><strong>Статус:</strong> ${passed ? '✅ Успішно' : '❌ Неуспішно'}</p>
+            <p><strong>Умови проходження:</strong> максимум 2 помилки</p>
+            <p><strong>Витрачений час:</strong> ${formatTime(elapsedSeconds)}</p>
             <button class="nav-btn" onclick="location.href='training.html'">Пройти іспит ще раз</button>
             <button class="nav-btn" onclick="location.href='topics.html'">Повернутися до тем</button>
         </div>
@@ -669,11 +674,6 @@ async function checkCurrentUser() {
 
         if (location.pathname.includes('stats.html')) {
             await renderStats();
-        }
-
-        if (location.pathname.includes('training.html')) {
-            // Автостарт іспиту можна ввімкнути тут, якщо треба
-            // startExam();
         }
     } else {
         showAuth();
