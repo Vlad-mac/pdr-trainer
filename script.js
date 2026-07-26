@@ -1,9 +1,11 @@
 let allQuestions = [];
 let currentQuestions = [];
+let examQuestions = [];
 let currentQuestionIndex = 0;
 let score = 0;
 let answered = false;
 let currentTopic = "";
+let currentMode = "topic"; // "topic" або "exam"
 let questionStates = {};
 let currentTopicStarted = false;
 let topicStartTime = null;
@@ -112,12 +114,18 @@ function stopTopicTimer() {
     }
 }
 
+function getRandomQuestions(sourceQuestions, count) {
+    const shuffled = [...sourceQuestions].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
 function openTopic(topic) {
     if (!currentUser) {
         alert("Спочатку потрібно увійти або зареєструватися.");
         return;
     }
 
+    currentMode = "topic";
     currentTopic = topic;
     currentQuestionIndex = 0;
     score = 0;
@@ -162,8 +170,47 @@ function openTopic(topic) {
 }
 
 function startTopic() {
+    currentMode = "topic";
     currentTopicStarted = true;
     startTopicTimer();
+    showQuestion();
+}
+
+function startExam() {
+    if (!currentUser) {
+        alert("Спочатку потрібно увійти або зареєструватися.");
+        return;
+    }
+
+    currentMode = "exam";
+    currentTopic = "Екзамен";
+    currentQuestionIndex = 0;
+    score = 0;
+    answered = false;
+    currentTopicStarted = true;
+    elapsedSeconds = 0;
+    stopTopicTimer();
+    startTopicTimer();
+
+    currentQuestions = getRandomQuestions(allQuestions, 20);
+
+    if (currentQuestions.length === 0) {
+        const trainingSection = document.querySelector('#training');
+        if (trainingSection) {
+            trainingSection.innerHTML = `
+                <h2>Іспит</h2>
+                <div class="panel">
+                    <p>Питання для іспиту не знайдені.</p>
+                </div>
+            `;
+        }
+        return;
+    }
+
+    questionStates[currentTopic] = {
+        answers: {}
+    };
+
     showQuestion();
 }
 
@@ -174,15 +221,19 @@ function showQuestion() {
     const trainingSection = document.querySelector('#training');
     if (!trainingSection || !question) return;
 
-    const state = questionStates[currentTopic];
+    const state = questionStates[currentTopic] || { answers: {} };
     const savedAnswer = state.answers[currentQuestionIndex];
 
     const imageHtml = question.image
         ? `<img src="${question.image}" alt="Зображення до питання" class="question-image">`
         : '';
 
+    const title = currentMode === "exam"
+        ? "Іспит"
+        : `Тема: ${currentTopic}`;
+
     trainingSection.innerHTML = `
-        <h2>Тема: ${currentTopic}</h2>
+        <h2>${title}</h2>
         <div class="panel quiz-box">
             <div class="quiz-header">
                 <p class="question-counter">Питання ${currentQuestionIndex + 1} з ${currentQuestions.length}</p>
@@ -307,7 +358,11 @@ function nextQuestion() {
         currentQuestionIndex++;
         showQuestion();
     } else {
-        showResult();
+        if (currentMode === "exam") {
+            showExamResult();
+        } else {
+            showResult();
+        }
     }
 }
 
@@ -340,13 +395,34 @@ function showResult() {
     `;
 }
 
+function showExamResult() {
+    stopTopicTimer();
+
+    const trainingSection = document.querySelector('#training');
+    if (!trainingSection) return;
+
+    trainingSection.innerHTML = `
+        <h2>Іспит завершено</h2>
+        <div class="panel">
+            <p>Ваш результат: ${score} з ${currentQuestions.length}</p>
+            <p>Витрачений час: ${formatTime(elapsedSeconds)}</p>
+            <button class="nav-btn" onclick="location.href='training.html'">Пройти іспит ще раз</button>
+            <button class="nav-btn" onclick="location.href='topics.html'">Повернутися до тем</button>
+        </div>
+    `;
+}
+
 function openTraining() {
     if (!currentUser) {
         alert("Спочатку потрібно увійти або зареєструватися.");
         return;
     }
 
-    location.href = 'topics.html';
+    if (location.pathname.includes('training.html')) {
+        startExam();
+    } else {
+        location.href = 'training.html';
+    }
 }
 
 async function renderStats() {
@@ -593,6 +669,11 @@ async function checkCurrentUser() {
 
         if (location.pathname.includes('stats.html')) {
             await renderStats();
+        }
+
+        if (location.pathname.includes('training.html')) {
+            // Автостарт іспиту можна ввімкнути тут, якщо треба
+            // startExam();
         }
     } else {
         showAuth();
