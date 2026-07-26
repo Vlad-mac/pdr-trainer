@@ -44,15 +44,25 @@
             <section class="hero">
                 <h1>Тренування</h1>
                 <p>
-                    Тут буде окремий режим для проходження тестів по темах або у форматі іспиту.
+                    Запусти іспит із 20 випадкових запитань. Кожного разу набір буде новий.
+                    Іспит вважається успішним, якщо допущено не більше 2 помилок.
                 </p>
             </section>
 
             <section class="card-section">
-                <h2>Режим тренування</h2>
+                <h2>Іспит</h2>
                 <div class="panel">
-                    <p>Оберіть тему на сторінці “Теми”, щоб почати проходження запитань.</p>
-                    <button class="btn btn-primary" onclick="location.href='topics.html'">Перейти до тем</button>
+                    <p>
+                        Натисни кнопку нижче, щоб почати новий іспит із 20 випадкових питань.
+                    </p>
+                    <button class="btn btn-primary" onclick="openTraining()">Старт</button>
+                </div>
+            </section>
+
+            <section id="training" class="card-section">
+                <h2>Початок іспиту</h2>
+                <div class="panel">
+                    <p>Натисни “Старт”, щоб згенерувати новий іспит.</p>
                 </div>
             </section>
         </main>
@@ -62,4 +72,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
