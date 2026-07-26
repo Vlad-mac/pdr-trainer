@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDR Trainer — Статистика</title>
+    <meta name="description" content="PDR Trainer — сторінка статистики з результатами проходження питань, прогресом по темах, правильними та неправильними відповідями.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body style="visibility:hidden;">
@@ -34,6 +35,33 @@
                 <a href="training.html">Тренування</a>
                 <a href="stats.html">Статистика</a>
                 <a href="teacher.html">Викладач</a>
+                <a href="admin.html">Адмінка</a>
+                <span id="user-greeting" class="user-greeting"></span>
+                <a href="#" onclick="logoutUser(); return false;">Вийти</a>
+            </nav>
+        </header>
+
+        <main class="page">
+            <section class="hero">
+                <h1>Статистика</h1>
+                <p>
+                    Тут зберігається твій прогрес, правильні та неправильні відповіді, а також статистика по темах.
+                </p>
+            </section>
+
+            <section id="stats" class="card-section">
+                <h2>Завантаження статистики...</h2>
+                <div class="panel">
+                    <p>Почекай трохи, дані підтягуються з бази.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
                 <a href="admin.html">Адмінка</a>
                 <span id="user-greeting" class="user-greeting"></span>
                 <a href="#" onclick="logoutUser(); return false;">Вийти</a>
