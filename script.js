@@ -219,30 +219,33 @@ async function startPayment(event) {
         });
 
         const rawText = await response.text();
-        console.log("start-payment raw response:", rawText);
+console.log("start-payment raw response:", rawText);
 
-        let data;
-        try {
-            data = JSON.parse(rawText);
-        } catch (parseError) {
-            console.error("start-payment non-JSON response:", parseError);
-            alert("Сервер повернув некоректну відповідь.");
-            return;
-        }
+let parsed;
+try {
+    parsed = JSON.parse(rawText);
+    if (typeof parsed === "string") {
+        parsed = JSON.parse(parsed);
+    }
+} catch (parseError) {
+    console.error("start-payment parse error:", parseError);
+    alert("Сервер повернув некоректну відповідь.");
+    return;
+}
 
-        if (!response.ok) {
-            console.error("start-payment error:", data);
-            alert(data.message || "Не вдалося підготувати оплату.");
-            return;
-        }
+if (!response.ok) {
+    console.error("start-payment error:", parsed);
+    alert(parsed.message || "Не вдалося підготувати оплату.");
+    return;
+}
 
-        if (!data || data.status !== "ok" || !data.data) {
-            alert("Некоректна відповідь від сервера оплати.");
-            return;
-        }
+if (!parsed || parsed.status !== "ok" || !parsed.data) {
+    alert("Некоректна відповідь від сервера оплати.");
+    return;
+}
 
-        const p = data.data;
-
+const p = parsed.data;
+        
         const requiredFields = [
             "merchantAccount",
             "merchantDomainName",
