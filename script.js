@@ -188,20 +188,7 @@ function showTopicsLockedMessage() {
 }
 
 function startPayment() {
-    if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
-        return;
-    }
-
-    const orderReference = `PDR_${currentUser.id}_${Date.now()}`;
-    const amount = "499.00";
-    const currency = "UAH";
-
-    alert(
-        "Тут буде оплата через WayForPay.\n\n" +
-        "Поки що підготовка завершена.\n" +
-        `Order: ${orderReference}\nAmount: ${amount} ${currency}`
-    );
+    alert("Оплата буде підключена на наступному кроці.");
 }
 
 function openTopic(topic) {
@@ -388,12 +375,8 @@ function showQuestion() {
 
         buttons.forEach((button, index) => {
             button.disabled = true;
-            if (index === question.correctAnswer) {
-                button.classList.add('correct');
-            }
-            if (index === savedAnswer.selected && !savedAnswer.isCorrect) {
-                button.classList.add('wrong');
-            }
+            if (index === question.correctAnswer) button.classList.add('correct');
+            if (index === savedAnswer.selected && !savedAnswer.isCorrect) button.classList.add('wrong');
         });
 
         result.innerHTML = savedAnswer.isCorrect
@@ -426,12 +409,8 @@ async function checkAnswer(selectedIndex) {
 
     buttons.forEach((button, index) => {
         button.disabled = true;
-        if (index === question.correctAnswer) {
-            button.classList.add('correct');
-        }
-        if (index === selectedIndex && !isCorrect) {
-            button.classList.add('wrong');
-        }
+        if (index === question.correctAnswer) button.classList.add('correct');
+        if (index === selectedIndex && !isCorrect) button.classList.add('wrong');
     });
 
     if (isCorrect) {
@@ -449,11 +428,8 @@ function nextQuestion() {
         currentQuestionIndex++;
         showQuestion();
     } else {
-        if (currentMode === "exam") {
-            showExamResult();
-        } else {
-            showResult();
-        }
+        if (currentMode === "exam") showExamResult();
+        else showResult();
     }
 }
 
@@ -543,31 +519,18 @@ async function renderStats() {
     const wrong = total - correct;
     const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
 
-    const totalTimeSeconds = stats.reduce((sum, item) => {
-        return sum + (Number(item.timeSpentSeconds) || 0);
-    }, 0);
-
+    const totalTimeSeconds = stats.reduce((sum, item) => sum + (Number(item.timeSpentSeconds) || 0), 0);
     const averageTimeSeconds = total > 0 ? Math.round(totalTimeSeconds / total) : 0;
 
     const topicStats = {};
     stats.forEach(item => {
         if (!topicStats[item.topic]) {
-            topicStats[item.topic] = {
-                total: 0,
-                correct: 0,
-                wrong: 0,
-                time: 0
-            };
+            topicStats[item.topic] = { total: 0, correct: 0, wrong: 0, time: 0 };
         }
-
         topicStats[item.topic].total++;
         topicStats[item.topic].time += Number(item.timeSpentSeconds) || 0;
-
-        if (item.correct) {
-            topicStats[item.topic].correct++;
-        } else {
-            topicStats[item.topic].wrong++;
-        }
+        if (item.correct) topicStats[item.topic].correct++;
+        else topicStats[item.topic].wrong++;
     });
 
     const topicStatsHtml = Object.keys(topicStats).length
@@ -732,10 +695,8 @@ async function loginFromForm() {
 async function applyAccessRulesAfterLogin() {
     if (!currentProfile) return;
 
-    if (location.pathname.includes('topics.html')) {
-        if (isTopicsLocked()) {
-            showTopicsLockedMessage();
-        }
+    if (location.pathname.includes('topics.html') && isTopicsLocked()) {
+        showTopicsLockedMessage();
     }
 }
 
