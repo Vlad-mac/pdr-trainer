@@ -18,8 +18,8 @@
                 <input type="email" id="auth-email" placeholder="Email">
                 <input type="password" id="auth-password" placeholder="Пароль">
 
-                <button class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
-                <button class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+                <button type="button" class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
+                <button type="button" class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
             </div>
 
             <p id="auth-message" class="auth-message"></p>
@@ -42,9 +42,7 @@
         <main class="page">
             <section class="hero">
                 <h1>Теми ПДР</h1>
-                <p>
-                    Обери потрібну тему для тренування. Натисни на тему, щоб відкрити питання.
-                </p>
+                <p>Обери потрібну тему для тренування. Натисни на тему, щоб відкрити питання.</p>
             </section>
 
             <section class="card-section">
@@ -54,7 +52,7 @@
                     <h3>Доступ до тем закрито</h3>
                     <p>Щоб відкрити розділ «Теми», потрібна активна оплата на 6 місяців.</p>
                     <p>Головна, Тренування і Статистика залишаються доступними.</p>
-                    <button class="btn btn-primary" onclick="startPayment()">Оплатити доступ</button>
+                    <button type="button" class="btn btn-primary" onclick="startPayment()">Оплатити доступ</button>
                 </div>
 
                 <div id="topics-grid" class="grid">
