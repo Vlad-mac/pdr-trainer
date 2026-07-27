@@ -194,18 +194,31 @@ async function startPayment() {
     }
 
     try {
+        console.log("startPayment: sending request to Supabase function");
+
         const response = await fetch(`${SUPABASE_URL}/functions/v1/start-payment`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 userId: currentUser.id
             })
         });
 
-        const data = await response.json();
+        const rawText = await response.text();
+        console.log("start-payment raw response:", rawText);
+
+        let data;
+        try {
+            data = JSON.parse(rawText);
+        } catch (parseError) {
+            console.error("start-payment non-JSON response:", parseError);
+            alert("Сервер повернув некоректну відповідь.");
+            return;
+        }
+
+        console.log("start-payment parsed response:", data);
 
         if (!response.ok) {
             console.error("start-payment error:", data);
