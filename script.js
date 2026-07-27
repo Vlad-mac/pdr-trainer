@@ -188,7 +188,47 @@ function showTopicsLockedMessage() {
 }
 
 function startPayment() {
-    alert("Оплата буде підключена на наступному кроці.");
+    if (!currentUser) {
+        alert("Спочатку потрібно увійти або зареєструватися.");
+        return;
+    }
+
+    const orderReference = `PDR_${currentUser.id}_${Date.now()}`;
+    const orderDate = Math.floor(Date.now() / 1000);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://secure.wayforpay.com/pay';
+    form.acceptCharset = 'utf-8';
+
+    const fields = {
+        merchantAccount: 'vlad_mac_github_io',
+        merchantDomainName: 'vlad-mac.github.io',
+        orderReference: orderReference,
+        orderDate: orderDate,
+        amount: '300.00',
+        currency: 'UAH',
+        productName: 'Доступ до PDR Trainer на 6 місяців',
+        productPrice: '300.00',
+        productCount: '1',
+        clientFirstName: currentProfile?.full_name ? currentProfile.full_name.split(' ')[0] : 'Student',
+        clientLastName: currentProfile?.full_name ? currentProfile.full_name.split(' ').slice(1).join(' ') || 'PDR' : 'PDR',
+        clientEmail: currentProfile?.email || 'student@example.com',
+        language: 'UA',
+        serviceUrl: 'https://tsqjfphauhphdksstbob.supabase.co/functions/v1/wayforpay-webhook',
+        returnUrl: 'https://vlad-mac.github.io/pdr-trainer/topics.html'
+    };
+
+    Object.entries(fields).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
 }
 
 function openTopic(topic) {
