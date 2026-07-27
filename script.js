@@ -219,61 +219,60 @@ async function startPayment(event) {
         });
 
         const rawText = await response.text();
-console.log("start-payment raw response:", rawText);
+        console.log("start-payment raw response:", rawText);
 
-let data;
-try {
-    data = JSON.parse(rawText);
-    if (typeof data === "string") {
-        data = JSON.parse(data);
-    }
-} catch (parseError) {
-    console.error("start-payment parse error:", parseError);
-    alert("Сервер повернув некоректну відповідь.");
-    return;
-}
+        let data;
+        try {
+            data = JSON.parse(rawText);
+            if (typeof data === "string") {
+                data = JSON.parse(data);
+            }
+        } catch (parseError) {
+            console.error("start-payment parse error:", parseError);
+            alert("Сервер повернув некоректну відповідь.");
+            return;
+        }
 
-if (!response.ok) {
-    console.error("start-payment error:", data);
-    alert(data.message || "Не вдалося підготувати оплату.");
-    return;
-}
+        if (!response.ok) {
+            console.error("start-payment error:", data);
+            alert(data.message || "Не вдалося підготувати оплату.");
+            return;
+        }
 
-if (!data || data.status !== "ok" || !data.data) {
-    alert("Некоректна відповідь від сервера оплати.");
-    return;
-}
+        if (!data || data.status !== "ok" || !data.data) {
+            alert("Некоректна відповідь від сервера оплати.");
+            return;
+        }
 
-const p = data.data;
+        const p = data.data;
+        console.log("parsed payment data:", p);
 
-console.log("parsed payment data:", p);
+        const requiredFields = [
+            "merchantAccount",
+            "merchantDomainName",
+            "orderReference",
+            "orderDate",
+            "amount",
+            "currency",
+            "productName",
+            "productPrice",
+            "productCount",
+            "merchantSignature",
+            "clientFirstName",
+            "clientLastName",
+            "clientEmail",
+            "language",
+            "serviceUrl",
+            "returnUrl"
+        ];
 
-const requiredFields = [
-    "merchantAccount",
-    "merchantDomainName",
-    "orderReference",
-    "orderDate",
-    "amount",
-    "currency",
-    "productName",
-    "productPrice",
-    "productCount",
-    "merchantSignature",
-    "clientFirstName",
-    "clientLastName",
-    "clientEmail",
-    "language",
-    "serviceUrl",
-    "returnUrl"
-];
-
-for (const field of requiredFields) {
-    if (p[field] === undefined || p[field] === null) {
-        console.error("Missing payment field:", field, p);
-        alert(`Сервер не повернув поле ${field}.`);
-        return;
-    }
-}
+        for (const field of requiredFields) {
+            if (p[field] === undefined || p[field] === null) {
+                console.error("Missing payment field:", field, p);
+                alert(`Сервер не повернув поле ${field}.`);
+                return;
+            }
+        }
 
         const form = document.createElement("form");
         form.method = "POST";
@@ -283,38 +282,37 @@ for (const field of requiredFields) {
         form.style.display = "none";
 
         const fields = {
-    merchantAccount: p.merchantAccount,
-    merchantDomainName: p.merchantDomainName,
-    orderReference: p.orderReference,
-    orderDate: p.orderDate,
-    amount: p.amount,
-    currency: p.currency,
-    productName: Array.isArray(p.productName) ? p.productName[0] : p.productName,
-    productPrice: Array.isArray(p.productPrice) ? p.productPrice[0] : p.productPrice,
-    productCount: Array.isArray(p.productCount) ? p.productCount[0] : p.productCount,
-    merchantSignature: p.merchantSignature,
-    clientFirstName: p.clientFirstName,
-    clientLastName: p.clientLastName,
-    clientEmail: p.clientEmail,
-    language: p.language,
-    serviceUrl: p.serviceUrl,
-    returnUrl: p.returnUrl
-};
+            merchantAccount: p.merchantAccount,
+            merchantDomainName: p.merchantDomainName,
+            orderReference: p.orderReference,
+            orderDate: p.orderDate,
+            amount: p.amount,
+            currency: p.currency,
+            productName: Array.isArray(p.productName) ? p.productName[0] : p.productName,
+            productPrice: Array.isArray(p.productPrice) ? p.productPrice[0] : p.productPrice,
+            productCount: Array.isArray(p.productCount) ? p.productCount[0] : p.productCount,
+            merchantSignature: p.merchantSignature,
+            clientFirstName: p.clientFirstName,
+            clientLastName: p.clientLastName,
+            clientEmail: p.clientEmail,
+            language: p.language,
+            serviceUrl: p.serviceUrl,
+            returnUrl: p.returnUrl
+        };
 
-Object.entries(fields).forEach(([key, value]) => {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = key;
-    input.value = String(value ?? "");
-    form.appendChild(input);
-});
-
-document.body.appendChild(form);
-
-console.log("Submitting to:", form.action);
-console.log("Form HTML:", form.outerHTML);
-form.submit();
+        Object.entries(fields).forEach(([key, value]) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = String(value ?? "");
+            form.appendChild(input);
         });
+
+        document.body.appendChild(form);
+
+        console.log("Submitting to:", form.action);
+        console.log("Form HTML:", form.outerHTML);
+        form.submit();
     } catch (err) {
         console.error("Payment error:", err);
         alert("Помилка запуску оплати.");
