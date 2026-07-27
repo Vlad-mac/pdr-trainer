@@ -168,18 +168,40 @@ function isTopicsLocked() {
 }
 
 function showTopicsLockedMessage() {
+    const lockedPanel = document.getElementById('topics-locked-panel');
+    const topicsGrid = document.getElementById('topics-grid');
     const trainingSection = document.querySelector('#training');
-    if (!trainingSection) return;
 
-    trainingSection.innerHTML = `
-        <h2>Доступ обмежено</h2>
-        <div class="panel">
-            <p>Для доступу до тем потрібна активна оплата на 6 місяців.</p>
-            <p>Викладачі та адмін мають доступ без оплати.</p>
-            <button class="btn btn-primary" onclick="location.href='index.html'">На головну</button>
-        </div>
-    `;
-    trainingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (lockedPanel) lockedPanel.style.display = 'block';
+    if (topicsGrid) topicsGrid.style.display = 'none';
+
+    if (trainingSection) {
+        trainingSection.innerHTML = `
+            <h2>Доступ обмежено</h2>
+            <div class="panel">
+                <p>Для доступу до тем потрібна активна оплата на 6 місяців.</p>
+                <p>Викладачі та адмін мають доступ без оплати.</p>
+                <button class="btn btn-primary" onclick="location.href='index.html'">На головну</button>
+            </div>
+        `;
+    }
+}
+
+function startPayment() {
+    if (!currentUser) {
+        alert("Спочатку потрібно увійти або зареєструватися.");
+        return;
+    }
+
+    const orderReference = `PDR_${currentUser.id}_${Date.now()}`;
+    const amount = "499.00";
+    const currency = "UAH";
+
+    alert(
+        "Тут буде оплата через WayForPay.\n\n" +
+        "Поки що підготовка завершена.\n" +
+        `Order: ${orderReference}\nAmount: ${amount} ${currency}`
+    );
 }
 
 function openTopic(topic) {
