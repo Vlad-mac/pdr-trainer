@@ -234,17 +234,19 @@ try {
 }
 
 if (!response.ok) {
-    console.error("start-payment error:", parsed);
-    alert(parsed.message || "Не вдалося підготувати оплату.");
+    console.error("start-payment error:", data);
+    alert(data.message || "Не вдалося підготувати оплату.");
     return;
 }
 
-if (!parsed || parsed.status !== "ok" || !parsed.data) {
+if (!data || data.status !== "ok" || !data.data) {
     alert("Некоректна відповідь від сервера оплати.");
     return;
 }
 
-const p = parsed.data;
+const p = data.data;
+
+console.log("parsed payment data:", p);
         
         const requiredFields = [
             "merchantAccount",
