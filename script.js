@@ -270,16 +270,14 @@ async function startPayment(event) {
             }
         }
 
-        console.log("WayForPay target: https://secure.wayforpay.com/pay");
-
         const form = document.createElement("form");
         form.method = "POST";
         form.action = "https://secure.wayforpay.com/pay";
         form.acceptCharset = "utf-8";
-        form.target = "_blank";
+        form.target = "_top";
         form.style.display = "none";
 
-        Object.entries({
+        const fields = {
             merchantAccount: p.merchantAccount,
             merchantDomainName: p.merchantDomainName,
             orderReference: p.orderReference,
@@ -296,21 +294,24 @@ async function startPayment(event) {
             language: p.language,
             serviceUrl: p.serviceUrl,
             returnUrl: p.returnUrl
-        }).forEach(([key, value]) => {
+        };
+
+        Object.entries(fields).forEach(([key, value]) => {
             const input = document.createElement("input");
             input.type = "hidden";
             input.name = key;
-            input.value = String(value);
+            input.value = Array.isArray(value) ? value[0] : String(value);
             form.appendChild(input);
         });
 
         document.body.appendChild(form);
 
-        console.log("Submitting form HTML:", form.outerHTML);
+        console.log("Submitting to:", form.action);
+        console.log("Form HTML:", form.outerHTML);
 
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             form.submit();
-        }, 50);
+        });
     } catch (err) {
         console.error("Payment error:", err);
         alert("Помилка запуску оплати.");
