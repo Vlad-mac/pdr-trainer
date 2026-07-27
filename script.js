@@ -221,11 +221,11 @@ async function startPayment(event) {
         const rawText = await response.text();
 console.log("start-payment raw response:", rawText);
 
-let parsed;
+let data;
 try {
-    parsed = JSON.parse(rawText);
-    if (typeof parsed === "string") {
-        parsed = JSON.parse(parsed);
+    data = JSON.parse(rawText);
+    if (typeof data === "string") {
+        data = JSON.parse(data);
     }
 } catch (parseError) {
     console.error("start-payment parse error:", parseError);
