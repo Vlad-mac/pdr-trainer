@@ -211,14 +211,15 @@ async function startPayment(event) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${accessToken}`,
+                "Authorization": `Bearer ${accessToken}`
             },
             body: JSON.stringify({
-                userId: currentUser.id,
-            }),
+                userId: currentUser.id
+            })
         });
 
         const rawText = await response.text();
+        console.log("start-payment raw response:", rawText);
 
         let data;
         try {
@@ -258,7 +259,7 @@ async function startPayment(event) {
             "clientEmail",
             "language",
             "serviceUrl",
-            "returnUrl",
+            "returnUrl"
         ];
 
         for (const field of requiredFields) {
@@ -269,16 +270,16 @@ async function startPayment(event) {
             }
         }
 
+        console.log("WayForPay target: https://secure.wayforpay.com/pay");
+
         const form = document.createElement("form");
         form.method = "POST";
         form.action = "https://secure.wayforpay.com/pay";
         form.acceptCharset = "utf-8";
-        form.target = "_top";
-        form.style.position = "fixed";
-        form.style.left = "-9999px";
-        form.style.top = "-9999px";
+        form.target = "_blank";
+        form.style.display = "none";
 
-        const fields = {
+        Object.entries({
             merchantAccount: p.merchantAccount,
             merchantDomainName: p.merchantDomainName,
             orderReference: p.orderReference,
@@ -294,25 +295,22 @@ async function startPayment(event) {
             clientEmail: p.clientEmail,
             language: p.language,
             serviceUrl: p.serviceUrl,
-            returnUrl: p.returnUrl,
-        };
-
-        Object.entries(fields).forEach(([key, value]) => {
+            returnUrl: p.returnUrl
+        }).forEach(([key, value]) => {
             const input = document.createElement("input");
             input.type = "hidden";
             input.name = key;
-            input.value = value;
+            input.value = String(value);
             form.appendChild(input);
         });
 
         document.body.appendChild(form);
 
-        console.log("Submitting form to:", form.action);
-        console.log("Form HTML:", form.outerHTML);
+        console.log("Submitting form HTML:", form.outerHTML);
 
         setTimeout(() => {
             form.submit();
-        }, 100);
+        }, 50);
     } catch (err) {
         console.error("Payment error:", err);
         alert("Помилка запуску оплати.");
