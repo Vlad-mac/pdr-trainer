@@ -247,27 +247,27 @@ if (!data || data.status !== "ok" || !data.data) {
 const p = data.data;
 
 console.log("parsed payment data:", p);
-        
-        const requiredFields = [
-            "merchantAccount",
-            "merchantDomainName",
-            "orderReference",
-            "orderDate",
-            "amount",
-            "currency",
-            "productName",
-            "productPrice",
-            "productCount",
-            "merchantSignature",
-            "clientFirstName",
-            "clientLastName",
-            "clientEmail",
-            "language",
-            "serviceUrl",
-            "returnUrl"
-        ];
 
-       for (const field of requiredFields) {
+const requiredFields = [
+    "merchantAccount",
+    "merchantDomainName",
+    "orderReference",
+    "orderDate",
+    "amount",
+    "currency",
+    "productName",
+    "productPrice",
+    "productCount",
+    "merchantSignature",
+    "clientFirstName",
+    "clientLastName",
+    "clientEmail",
+    "language",
+    "serviceUrl",
+    "returnUrl"
+];
+
+for (const field of requiredFields) {
     if (p[field] === undefined || p[field] === null) {
         console.error("Missing payment field:", field, p);
         alert(`Сервер не повернув поле ${field}.`);
