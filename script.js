@@ -206,6 +206,8 @@ async function startPayment() {
             })
         });
 
+        console.log("startPayment: response received", response.status, response.statusText);
+
         const rawText = await response.text();
         console.log("start-payment raw response:", rawText);
 
@@ -218,16 +220,9 @@ async function startPayment() {
             return;
         }
 
-        console.log("start-payment parsed response:", data);
-
         if (!response.ok) {
             console.error("start-payment error:", data);
             alert(data.message || "Не вдалося підготувати оплату.");
-            return;
-        }
-
-        if (!data || data.status !== "ok" || !data.data) {
-            alert("Некоректна відповідь від сервера оплати.");
             return;
         }
 
