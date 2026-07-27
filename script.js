@@ -17,6 +17,7 @@ const SUPABASE_ANON_KEY = "sb_publishable_hLnSso-oks7c2BNJyneiCA_oNIaGDLU";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
+let currentProfile = null;
 
 function getReferralCodeFromUrl() {
     try {
@@ -154,9 +155,42 @@ function getRandomQuestions(sourceQuestions, count) {
     return shuffled.slice(0, Math.min(count, shuffled.length));
 }
 
+function hasPaidAccess(profile) {
+    if (!profile) return false;
+    if (profile.role === 'teacher' || profile.role === 'admin') return true;
+    if (!profile.paid_until) return false;
+    return new Date(profile.paid_until) > new Date();
+}
+
+function isTopicsLocked() {
+    if (!currentProfile) return true;
+    return !hasPaidAccess(currentProfile);
+}
+
+function showTopicsLockedMessage() {
+    const trainingSection = document.querySelector('#training');
+    if (!trainingSection) return;
+
+    trainingSection.innerHTML = `
+        <h2>Доступ обмежено</h2>
+        <div class="panel">
+            <p>Для доступу до тем потрібна активна оплата на 6 місяців.</p>
+            <p>Викладачі та адмін мають доступ без оплати.</p>
+            <button class="btn btn-primary" onclick="location.href='index.html'">На головну</button>
+        </div>
+    `;
+    trainingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function openTopic(topic) {
     if (!currentUser) {
         alert("Спочатку потрібно увійти або зареєструватися.");
+        return;
+    }
+
+    if (isTopicsLocked()) {
+        alert("Доступ до тем закритий. Потрібна активна оплата на 6 місяців.");
+        showTopicsLockedMessage();
         return;
     }
 
@@ -572,6 +606,24 @@ async function openStats() {
     }
 }
 
+async function refreshProfile() {
+    if (!currentUser) return;
+
+    const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .single();
+
+    if (error) {
+        console.error('Не вдалося завантажити профіль:', error);
+        currentProfile = null;
+        return;
+    }
+
+    currentProfile = data;
+}
+
 async function registerFromForm() {
     const name = document.getElementById('auth-name').value.trim();
     const email = document.getElementById('auth-email').value.trim();
@@ -611,7 +663,8 @@ async function registerFromForm() {
                 full_name: name,
                 role: 'student',
                 created_at: new Date().toISOString(),
-                teacher_ref_code: teacherRefCode
+                teacher_ref_code: teacherRefCode,
+                paid_until: null
             }
         ]);
 
@@ -648,8 +701,20 @@ async function loginFromForm() {
     }
 
     currentUser = data.user;
+    await refreshProfile();
     await loadUserProfile();
     showApp();
+    await applyAccessRulesAfterLogin();
+}
+
+async function applyAccessRulesAfterLogin() {
+    if (!currentProfile) return;
+
+    if (location.pathname.includes('topics.html')) {
+        if (isTopicsLocked()) {
+            showTopicsLockedMessage();
+        }
+    }
 }
 
 async function logoutUser() {
@@ -660,6 +725,7 @@ async function logoutUser() {
     }
 
     currentUser = null;
+    currentProfile = null;
     const greeting = document.getElementById('user-greeting');
     if (greeting) greeting.textContent = '';
     showAuth();
@@ -684,20 +750,15 @@ function showApp() {
 async function loadUserProfile() {
     if (!currentUser) return;
 
-    const { data, error } = await supabaseClient
-        .from('profiles')
-        .select('full_name')
-        .eq('user_id', currentUser.id)
-        .single();
-
-    if (error) {
-        console.error('Не вдалося завантажити профіль:', error);
-        return;
+    if (!currentProfile) {
+        await refreshProfile();
     }
+
+    if (!currentProfile) return;
 
     const greeting = document.getElementById('user-greeting');
     if (greeting) {
-        greeting.textContent = data.full_name ? `Вітаємо, ${data.full_name}` : 'Вітаємо';
+        greeting.textContent = currentProfile.full_name ? `Вітаємо, ${currentProfile.full_name}` : 'Вітаємо';
     }
 }
 
@@ -706,11 +767,16 @@ async function checkCurrentUser() {
     currentUser = data.user;
 
     if (currentUser) {
+        await refreshProfile();
         await loadUserProfile();
         showApp();
 
         if (location.pathname.includes('stats.html')) {
             await renderStats();
+        }
+
+        if (location.pathname.includes('topics.html') && isTopicsLocked()) {
+            showTopicsLockedMessage();
         }
     } else {
         showAuth();
