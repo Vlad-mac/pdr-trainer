@@ -185,7 +185,14 @@ function showTopicsLockedMessage() {
     }
 }
 
-async function startPayment() {
+async function startPayment(event) {
+    if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+    }
+    if (event && typeof event.stopPropagation === "function") {
+        event.stopPropagation();
+    }
+
     if (!currentUser) {
         alert("Спочатку потрібно увійти або зареєструватися.");
         return;
@@ -266,17 +273,46 @@ async function startPayment() {
         form.method = "POST";
         form.action = "https://secure.wayforpay.com/pay";
         form.acceptCharset = "utf-8";
+        form.target = "_top";
+        form.style.position = "fixed";
+        form.style.left = "-9999px";
+        form.style.top = "-9999px";
 
-        requiredFields.forEach((key) => {
+        const fields = {
+            merchantAccount: p.merchantAccount,
+            merchantDomainName: p.merchantDomainName,
+            orderReference: p.orderReference,
+            orderDate: p.orderDate,
+            amount: p.amount,
+            currency: p.currency,
+            productName: p.productName,
+            productPrice: p.productPrice,
+            productCount: p.productCount,
+            merchantSignature: p.merchantSignature,
+            clientFirstName: p.clientFirstName,
+            clientLastName: p.clientLastName,
+            clientEmail: p.clientEmail,
+            language: p.language,
+            serviceUrl: p.serviceUrl,
+            returnUrl: p.returnUrl,
+        };
+
+        Object.entries(fields).forEach(([key, value]) => {
             const input = document.createElement("input");
             input.type = "hidden";
             input.name = key;
-            input.value = p[key];
+            input.value = value;
             form.appendChild(input);
         });
 
         document.body.appendChild(form);
-        form.submit();
+
+        console.log("Submitting form to:", form.action);
+        console.log("Form HTML:", form.outerHTML);
+
+        setTimeout(() => {
+            form.submit();
+        }, 100);
     } catch (err) {
         console.error("Payment error:", err);
         alert("Помилка запуску оплати.");
