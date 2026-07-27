@@ -268,12 +268,12 @@ console.log("parsed payment data:", p);
         ];
 
         for (const field of requiredFields) {
-            if (!p[field]) {
-                console.error("Missing payment field:", field, p);
-                alert(`Сервер не повернув поле ${field}.`);
-                return;
-            }
-        }
+    if (p[field] === undefined || p[field] === null) {
+        console.error("Missing payment field:", field, p);
+        alert(`Сервер не повернув поле ${field}.`);
+        return;
+    }
+}
 
         const form = document.createElement("form");
         form.method = "POST";
