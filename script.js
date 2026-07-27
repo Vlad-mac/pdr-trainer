@@ -187,48 +187,99 @@ function showTopicsLockedMessage() {
     }
 }
 
-function startPayment() {
+async function startPayment() {
     if (!currentUser) {
         alert("Спочатку потрібно увійти або зареєструватися.");
         return;
     }
 
-    const orderReference = `PDR_${currentUser.id}_${Date.now()}`;
-    const orderDate = Math.floor(Date.now() / 1000);
+    try {
+        console.log("startPayment: sending request to Supabase function");
 
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://secure.wayforpay.com/pay';
-    form.acceptCharset = 'utf-8';
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const accessToken = sessionData?.session?.access_token;
 
-    const fields = {
-        merchantAccount: 'vlad_mac_github_io',
-        merchantDomainName: 'vlad-mac.github.io',
-        orderReference: orderReference,
-        orderDate: orderDate,
-        amount: '300.00',
-        currency: 'UAH',
-        productName: 'Доступ до PDR Trainer на 6 місяців',
-        productPrice: '300.00',
-        productCount: '1',
-        clientFirstName: currentProfile?.full_name ? currentProfile.full_name.split(' ')[0] : 'Student',
-        clientLastName: currentProfile?.full_name ? currentProfile.full_name.split(' ').slice(1).join(' ') || 'PDR' : 'PDR',
-        clientEmail: currentProfile?.email || 'student@example.com',
-        language: 'UA',
-        serviceUrl: 'https://tsqjfphauhphdksstbob.supabase.co/functions/v1/wayforpay-webhook',
-        returnUrl: 'https://vlad-mac.github.io/pdr-trainer/topics.html'
-    };
+        if (!accessToken) {
+            alert("Не вдалося отримати токен користувача.");
+            return;
+        }
 
-    Object.entries(fields).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-    });
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/start-payment`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+                userId: currentUser.id
+            })
+        });
 
-    document.body.appendChild(form);
-    form.submit();
+        console.log("startPayment: response received", response.status, response.statusText);
+
+        const rawText = await response.text();
+        console.log("start-payment raw response:", rawText);
+
+        let data;
+        try {
+            data = JSON.parse(rawText);
+        } catch (parseError) {
+            console.error("start-payment non-JSON response:", parseError);
+            alert("Сервер повернув некоректну відповідь.");
+            return;
+        }
+
+        if (!response.ok) {
+            console.error("start-payment error:", data);
+            alert(data.message || "Не вдалося підготувати оплату.");
+            return;
+        }
+
+        if (!data || data.status !== "ok" || !data.data) {
+            alert("Некоректна відповідь від сервера оплати.");
+            return;
+        }
+
+        const p = data.data;
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "https://secure.wayforpay.com/pay";
+        form.acceptCharset = "utf-8";
+
+        const fields = {
+            merchantAccount: p.merchantAccount,
+            merchantDomainName: p.merchantDomainName,
+            orderReference: p.orderReference,
+            orderDate: p.orderDate,
+            amount: p.amount,
+            currency: p.currency,
+            productName: p.productName,
+            productPrice: p.productPrice,
+            productCount: p.productCount,
+            merchantSignature: p.merchantSignature,
+            clientFirstName: p.clientFirstName,
+            clientLastName: p.clientLastName,
+            clientEmail: p.clientEmail,
+            language: p.language,
+            serviceUrl: p.serviceUrl,
+            returnUrl: p.returnUrl
+        };
+
+        Object.entries(fields).forEach(([key, value]) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    } catch (err) {
+        console.error("Payment error:", err);
+        alert("Помилка запуску оплати.");
+    }
 }
 
 function openTopic(topic) {
