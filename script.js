@@ -283,39 +283,37 @@ for (const field of requiredFields) {
         form.style.display = "none";
 
         const fields = {
-            merchantAccount: p.merchantAccount,
-            merchantDomainName: p.merchantDomainName,
-            orderReference: p.orderReference,
-            orderDate: p.orderDate,
-            amount: p.amount,
-            currency: p.currency,
-            productName: p.productName,
-            productPrice: p.productPrice,
-            productCount: p.productCount,
-            merchantSignature: p.merchantSignature,
-            clientFirstName: p.clientFirstName,
-            clientLastName: p.clientLastName,
-            clientEmail: p.clientEmail,
-            language: p.language,
-            serviceUrl: p.serviceUrl,
-            returnUrl: p.returnUrl
-        };
+    merchantAccount: p.merchantAccount,
+    merchantDomainName: p.merchantDomainName,
+    orderReference: p.orderReference,
+    orderDate: p.orderDate,
+    amount: p.amount,
+    currency: p.currency,
+    productName: Array.isArray(p.productName) ? p.productName[0] : p.productName,
+    productPrice: Array.isArray(p.productPrice) ? p.productPrice[0] : p.productPrice,
+    productCount: Array.isArray(p.productCount) ? p.productCount[0] : p.productCount,
+    merchantSignature: p.merchantSignature,
+    clientFirstName: p.clientFirstName,
+    clientLastName: p.clientLastName,
+    clientEmail: p.clientEmail,
+    language: p.language,
+    serviceUrl: p.serviceUrl,
+    returnUrl: p.returnUrl
+};
 
-        Object.entries(fields).forEach(([key, value]) => {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = key;
-            input.value = Array.isArray(value) ? value[0] : String(value);
-            form.appendChild(input);
-        });
+Object.entries(fields).forEach(([key, value]) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = String(value ?? "");
+    form.appendChild(input);
+});
 
-        document.body.appendChild(form);
+document.body.appendChild(form);
 
-        console.log("Submitting to:", form.action);
-        console.log("Form HTML:", form.outerHTML);
-
-        requestAnimationFrame(() => {
-            form.submit();
+console.log("Submitting to:", form.action);
+console.log("Form HTML:", form.outerHTML);
+form.submit();
         });
     } catch (err) {
         console.error("Payment error:", err);
