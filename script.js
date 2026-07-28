@@ -879,14 +879,47 @@ async function loadUserProfile() {
     }
 }
 
+function showAuth() {
+    const auth = document.getElementById("auth-screen");
+    const app = document.getElementById("app-content");
+
+    if (auth) auth.style.display = "flex";
+    if (app) app.style.display = "none";
+}
+
+function showApp() {
+    const auth = document.getElementById("auth-screen");
+    const app = document.getElementById("app-content");
+
+    if (auth) auth.style.display = "none";
+    if (app) app.style.display = "block";
+}
+
+async function loadUserProfile() {
+    if (!currentUser) return;
+
+    if (!currentProfile) {
+        await refreshProfile();
+    }
+
+    if (!currentProfile) return;
+
+    const greeting = document.getElementById("user-greeting");
+    if (greeting) {
+        greeting.textContent = currentProfile.full_name ? `Вітаємо, ${currentProfile.full_name}` : "Вітаємо";
+    }
+}
+
 async function checkCurrentUser() {
     const { data } = await supabaseClient.auth.getUser();
     currentUser = data.user;
 
+    // На звичайних сторінках сайт показуємо одразу
+    showApp();
+
     if (currentUser) {
         await refreshProfile();
         await loadUserProfile();
-        showApp();
 
         if (location.pathname.includes("stats.html")) {
             await renderStats();
@@ -895,8 +928,6 @@ async function checkCurrentUser() {
         if (location.pathname.includes("topics.html") && isTopicsLocked()) {
             showTopicsLockedMessage();
         }
-    } else {
-        showAuth();
     }
 
     document.body.style.visibility = "visible";
