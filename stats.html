@@ -7,26 +7,27 @@
     <meta name="description" content="PDR Trainer — сторінка статистики з результатами проходження питань, прогресом по темах, правильними та неправильними відповідями.">
     <link rel="stylesheet" href="style.css">
 </head>
-<body style="visibility:hidden;">
+<body>
 
-    <div id="auth-screen" class="auth-screen">
+    <div id="auth-screen" class="auth-screen" style="display:none;">
         <div class="auth-card">
-            <h1>Реєстрація</h1>
+            <h1 id="auth-title">Реєстрація</h1>
 
             <div class="auth-form">
                 <input type="text" id="auth-name" placeholder="ПІБ">
                 <input type="email" id="auth-email" placeholder="Email">
                 <input type="password" id="auth-password" placeholder="Пароль">
 
-                <button class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
-                <button class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+                <button type="button" class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
+                <button type="button" class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+                <button type="button" class="btn btn-secondary" onclick="closeAuthScreen()">Закрити</button>
             </div>
 
             <p id="auth-message" class="auth-message"></p>
         </div>
     </div>
 
-    <div id="app-content" style="display:none;">
+    <div id="app-content">
         <header class="topbar">
             <div class="logo">🚗 PDR Trainer</div>
             <nav class="menu">
@@ -34,6 +35,38 @@
                 <a href="topics.html">Теми</a>
                 <a href="training.html">Тренування</a>
                 <a href="stats.html">Статистика</a>
+                <a href="pronas.html">Про нас</a>
+
+                <span id="user-greeting" class="user-greeting"></span>
+
+                <button type="button" id="register-btn" class="btn btn-secondary" onclick="openRegisterForm()">Реєстрація</button>
+                <button type="button" id="login-btn" class="btn btn-primary" onclick="openLoginForm()">Вхід</button>
+                <button type="button" id="cabinet-btn" class="btn btn-secondary" onclick="openCabinet()" style="display:none;">Кабінет</button>
+                <button type="button" id="logout-btn" class="btn btn-secondary" onclick="logoutUser()" style="display:none;">Вийти</button>
+            </nav>
+        </header>
+
+        <main class="page">
+            <section class="hero">
+                <h1>Статистика</h1>
+                <p>
+                    Тут зберігається твій прогрес, правильні та неправильні відповіді, а також статистика по темах.
+                </p>
+            </section>
+
+            <section id="stats" class="card-section">
+                <h2>Завантаження статистики...</h2>
+                <div class="panel">
+                    <p>Почекай трохи, дані підтягуються з бази.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
                 <a href="pronas.html">Про нас</a>
                 <span id="user-greeting" class="user-greeting"></span>
                 <a href="#" onclick="logoutUser(); return false;">Вийти</a>
