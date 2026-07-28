@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDRTrainer — Про нас</title>
+    <meta name="description" content="PDRTrainer — онлайн-сервіс для підготовки до теоретичного іспиту з ПДР категорій B1, B, A1, A.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="visibility:hidden;">
+
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-card">
+            <h1>Реєстрація</h1>
+
+            <div class="auth-form">
+                <input type="text" id="auth-name" placeholder="ПІБ">
+                <input type="email" id="auth-email" placeholder="Email">
+                <input type="password" id="auth-password" placeholder="Пароль">
+
+                <button type="button" class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
+                <button type="button" class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+            </div>
+
+            <p id="auth-message" class="auth-message"></p>
+        </div>
+    </div>
+
+    <div id="app-content" style="display:none;">
+        <header class="topbar">
+            <div class="logo">🚗 PDRTrainer</div>
+            <nav class="menu">
+                <a href="index.html">Головна</a>
+                <a href="topics.html">Теми</a>
+                <a href="training.html">Тренування</a>
+                <a href="stats.html">Статистика</a>
+                <a href="pronas.html">Про нас</a>
+                <span id="user-greeting" class="user-greeting"></span>
+                <a href="#" onclick="logoutUser(); return false;">Вийти</a>
+            </nav>
+        </header>
+
+        <main class="page">
+            <section class="hero">
+                <h1>Про нас</h1>
+                <p>Інформація про сервіс, продавця та умови надання доступу до навчальних матеріалів.</p>
+            </section>
+
+            <section class="card-section">
+                <h2>Сервіс PDRTrainer</h2>
+                <div class="panel">
+                    <p><strong>PDRTrainer</strong> — це онлайн-сервіс для підготовки до теоретичного іспиту з правил дорожнього руху України.</p>
+                    <p>Сервіс надає доступ до навчальних тестів і тренувань для підготовки до іспитів за категоріями <strong>В1, В, А1, А</strong>.</p>
+                    <p>Доступ до функціоналу надається за <strong>підпискою на 6 тижнів</strong>, після оформлення якої користувач отримує можливість проходити тести та тренування в межах доступного періоду.</p>
+                    <p>Оплата здійснюється через платіжну систему <strong>WayForPay</strong> із подальшим переходом на сторінку оплати.</p>
+                </div>
+            </section>
+
+            <section class="card-section">
+                <h2>Інформація про продавця</h2>
+                <div class="panel">
+                    <p><strong>Продавець:</strong> ФОП Бобилков Владислав В'ячеславович</p>
+                    <p><strong>ІПН:</strong> 3733908250</p>
+                    <p><strong>Email:</strong> <a href="mailto:pdrtrainer2026@gmail.com">pdrtrainer2026@gmail.com</a></p>
+                    <p><strong>Форма діяльності:</strong> надання доступу до онлайн-сервісу з підготовки до теоретичного іспиту ПДР.</p>
+                </div>
+            </section>
+
+            <section class="card-section">
+                <h2>Контакти</h2>
+                <div class="panel">
+                    <p>З питань доступу до сервісу, оплати або технічної підтримки звертайтесь на email:</p>
+                    <p><a href="mailto:pdrtrainer2026@gmail.com">pdrtrainer2026@gmail.com</a></p>
+                </div>
+            </section>
+
+            <section class="card-section">
+                <h2>Умови доступу</h2>
+                <div class="panel">
+                    <p>Доступ до сервісу надається після успішної оплати підписки на 6 тижнів.</p>
+                    <p>Користувач отримує доступ до матеріалів у межах оплаченного періоду відповідно до обраного тарифу.</p>
+                    <p>Наразі окрема політика повернення коштів не опублікована.</p>
+                </div>
+            </section>
+
+            <section class="card-section">
+                <h2>Безпека</h2>
+                <div class="panel">
+                    <p>Сайт може використовувати захищене з'єднання HTTPS після налаштування домену та хостингу.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
