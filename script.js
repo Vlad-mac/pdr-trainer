@@ -57,10 +57,7 @@ function initReferralCode() {
 async function loadQuestions() {
     try {
         const response = await fetch("questions.json");
-        if (!response.ok) {
-            throw new Error("Не вдалося завантажити questions.json");
-        }
-
+        if (!response.ok) throw new Error("Не вдалося завантажити questions.json");
         allQuestions = await response.json();
     } catch (error) {
         console.error("Помилка завантаження питань:", error);
@@ -135,9 +132,7 @@ function startTopicTimer() {
     topicTimerInterval = setInterval(() => {
         elapsedSeconds++;
         const timerEl = document.getElementById("topic-timer");
-        if (timerEl) {
-            timerEl.textContent = formatTime(elapsedSeconds);
-        }
+        if (timerEl) timerEl.textContent = formatTime(elapsedSeconds);
     }, 1000);
 }
 
@@ -165,33 +160,40 @@ function isTopicsLocked() {
     return !hasPaidAccess(currentProfile);
 }
 
-function showTopicsLockedMessage() {
+function renderTopicsLockedUI() {
     const lockedPanel = document.getElementById("topics-locked-panel");
     const topicsGrid = document.getElementById("topics-grid");
-    const trainingSection = document.querySelector("#training");
 
     if (lockedPanel) lockedPanel.style.display = "block";
     if (topicsGrid) topicsGrid.style.display = "none";
+}
 
+function renderTopicsUnlockedUI() {
+    const lockedPanel = document.getElementById("topics-locked-panel");
+    const topicsGrid = document.getElementById("topics-grid");
+
+    if (lockedPanel) lockedPanel.style.display = "none";
+    if (topicsGrid) topicsGrid.style.display = "grid";
+}
+
+function showTopicsLockedMessage() {
+    const trainingSection = document.querySelector("#training");
     if (trainingSection) {
         trainingSection.innerHTML = `
-            <h2>Доступ обмежено</h2>
+            <h2>Доступ до тем обмежено</h2>
             <div class="panel">
-                <p>Для доступу до тем потрібна активна оплата на 6 місяців.</p>
+                <p>Для доступу до тем потрібна активна оплата на 6 тижнів.</p>
                 <p>Викладачі та адмін мають доступ без оплати.</p>
-                <button class="btn btn-primary" onclick="location.href='index.html'">На головну</button>
+                <button class="btn btn-primary" onclick="startPayment(event)">Оплатити 300 грн</button>
             </div>
         `;
     }
+    renderTopicsLockedUI();
 }
 
 async function startPayment(event) {
-    if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-    }
-    if (event && typeof event.stopPropagation === "function") {
-        event.stopPropagation();
-    }
+    if (event && typeof event.preventDefault === "function") event.preventDefault();
+    if (event && typeof event.stopPropagation === "function") event.stopPropagation();
 
     if (!currentUser) {
         alert("Спочатку потрібно увійти або зареєструватися.");
@@ -219,14 +221,11 @@ async function startPayment(event) {
         });
 
         const rawText = await response.text();
-        console.log("start-payment raw response:", rawText);
 
         let data;
         try {
             data = JSON.parse(rawText);
-            if (typeof data === "string") {
-                data = JSON.parse(data);
-            }
+            if (typeof data === "string") data = JSON.parse(data);
         } catch (parseError) {
             console.error("start-payment parse error:", parseError);
             alert("Сервер повернув некоректну відповідь.");
@@ -245,7 +244,6 @@ async function startPayment(event) {
         }
 
         const p = data.data;
-        console.log("parsed payment data:", p);
 
         const requiredFields = [
             "merchantAccount",
@@ -268,13 +266,12 @@ async function startPayment(event) {
 
         for (const field of requiredFields) {
             if (p[field] === undefined || p[field] === null) {
-                console.error("Missing payment field:", field, p);
                 alert(`Сервер не повернув поле ${field}.`);
                 return;
             }
         }
 
-               const form = document.createElement("form");
+        const form = document.createElement("form");
         form.method = "POST";
         form.action = "https://secure.wayforpay.com/pay";
         form.acceptCharset = "utf-8";
@@ -309,10 +306,6 @@ async function startPayment(event) {
         });
 
         document.body.appendChild(form);
-
-        console.log("Submitting to:", form.action);
-        console.log("Form HTML:", form.outerHTML);
-
         form.submit();
     } catch (err) {
         console.error("Payment error:", err);
@@ -321,13 +314,8 @@ async function startPayment(event) {
 }
 
 function openTopic(topic) {
-    if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
-        return;
-    }
-
     if (isTopicsLocked()) {
-        alert("Доступ до тем закритий. Потрібна активна оплата на 6 місяців.");
+        alert("Доступ до тем закритий. Потрібна активна оплата на 6 тижнів.");
         showTopicsLockedMessage();
         return;
     }
@@ -357,9 +345,7 @@ function openTopic(topic) {
     }
 
     if (!questionStates[currentTopic]) {
-        questionStates[currentTopic] = {
-            answers: {},
-        };
+        questionStates[currentTopic] = { answers: {} };
     }
 
     const trainingSection = document.querySelector("#training");
@@ -384,11 +370,6 @@ function startTopic() {
 }
 
 function startExam() {
-    if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
-        return;
-    }
-
     currentMode = "exam";
     currentTopic = "Екзамен";
     currentQuestionIndex = 0;
@@ -414,10 +395,7 @@ function startExam() {
         return;
     }
 
-    questionStates[currentTopic] = {
-        answers: {},
-    };
-
+    questionStates[currentTopic] = { answers: {} };
     showQuestion();
 }
 
@@ -432,7 +410,6 @@ function showQuestion() {
     const savedAnswer = state.answers[currentQuestionIndex];
 
     const imageHtml = question.image ? `<img src="${question.image}" alt="Зображення до питання" class="question-image">` : "";
-
     const title = currentMode === "exam" ? "Іспит" : `Тема: ${currentTopic}`;
 
     trainingSection.innerHTML = `
@@ -447,21 +424,19 @@ function showQuestion() {
             ${imageHtml}
 
             <div class="options">
-                ${question.options
-                    .map((option, index) => {
-                        let extraClass = "";
-                        if (savedAnswer !== undefined) {
-                            if (index === question.correctAnswer) extraClass = "correct";
-                            else if (index === savedAnswer.selected && !savedAnswer.isCorrect) extraClass = "wrong";
-                        }
+                ${question.options.map((option, index) => {
+                    let extraClass = "";
+                    if (savedAnswer !== undefined) {
+                        if (index === question.correctAnswer) extraClass = "correct";
+                        else if (index === savedAnswer.selected && !savedAnswer.isCorrect) extraClass = "wrong";
+                    }
 
-                        return `
-                            <button class="option-btn ${extraClass}" onclick="checkAnswer(${index})">
-                                ${option}
-                            </button>
-                        `;
-                    })
-                    .join("")}
+                    return `
+                        <button class="option-btn ${extraClass}" onclick="checkAnswer(${index})">
+                            ${option}
+                        </button>
+                    `;
+                }).join("")}
             </div>
 
             <div id="result"></div>
@@ -472,32 +447,20 @@ function showQuestion() {
             </div>
 
             <div class="question-grid">
-                ${currentQuestions
-                    .map((_, index) => {
-                        let cls = "question-square";
-
-                        if (index === currentQuestionIndex) {
-                            cls += " active";
-                        }
-
-                        if (state.answers[index] !== undefined) {
-                            cls += state.answers[index].isCorrect ? " correct-answer" : " wrong-answer";
-                        }
-
-                        return `
-                            <button class="${cls}" onclick="goToQuestion(${index})">
-                                ${index + 1}
-                            </button>
-                        `;
-                    })
-                    .join("")}
+                ${currentQuestions.map((_, index) => {
+                    let cls = "question-square";
+                    if (index === currentQuestionIndex) cls += " active";
+                    if (state.answers[index] !== undefined) {
+                        cls += state.answers[index].isCorrect ? " correct-answer" : " wrong-answer";
+                    }
+                    return `<button class="${cls}" onclick="goToQuestion(${index})">${index + 1}</button>`;
+                }).join("")}
             </div>
         </div>
     `;
 
     if (savedAnswer !== undefined) {
         answered = true;
-
         const result = document.getElementById("result");
         const nextBtn = document.getElementById("nextBtn");
         const buttons = document.querySelectorAll(".option-btn");
@@ -542,13 +505,11 @@ async function checkAnswer(selectedIndex) {
         if (index === selectedIndex && !isCorrect) button.classList.add("wrong");
     });
 
-    if (isCorrect) {
-        score++;
-        result.innerHTML = '<p style="color:#4ade80; font-size:20px;">✅ Правильно!</p>';
-    } else {
-        result.innerHTML = '<p style="color:#f87171; font-size:20px;">❌ Неправильно.</p>';
-    }
+    result.innerHTML = isCorrect
+        ? '<p style="color:#4ade80; font-size:20px;">✅ Правильно!</p>'
+        : '<p style="color:#f87171; font-size:20px;">❌ Неправильно.</p>';
 
+    if (isCorrect) score++;
     nextBtn.style.display = "inline-block";
 }
 
@@ -615,11 +576,6 @@ function showExamResult() {
 }
 
 function openTraining() {
-    if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
-        return;
-    }
-
     if (location.pathname.includes("training.html")) {
         startExam();
     } else {
@@ -635,7 +591,7 @@ async function renderStats() {
         statsSection.innerHTML = `
             <h2>Статистика</h2>
             <div class="panel">
-                <p>Спочатку потрібно увійти або зареєструватися.</p>
+                <p>Щоб бачити персональну статистику, увійди в кабінет.</p>
             </div>
         `;
         return;
@@ -647,7 +603,6 @@ async function renderStats() {
     const correct = stats.filter((item) => item.correct).length;
     const wrong = total - correct;
     const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
-
     const totalTimeSeconds = stats.reduce((sum, item) => sum + (Number(item.timeSpentSeconds) || 0), 0);
     const averageTimeSeconds = total > 0 ? Math.round(totalTimeSeconds / total) : 0;
 
@@ -664,17 +619,15 @@ async function renderStats() {
 
     const topicStatsHtml = Object.keys(topicStats).length
         ? Object.entries(topicStats)
-              .map(
-                  ([topic, data]) => `
-            <div class="panel" style="margin-top:16px;">
-                <h3 style="margin-bottom:10px;">${topic}</h3>
-                <p>Всього: ${data.total}</p>
-                <p>Правильних: ${data.correct}</p>
-                <p>Неправильних: ${data.wrong}</p>
-                <p>Час: ${formatTime(data.time)}</p>
-            </div>
-        `
-              )
+              .map(([topic, data]) => `
+                <div class="panel" style="margin-top:16px;">
+                    <h3 style="margin-bottom:10px;">${topic}</h3>
+                    <p>Всього: ${data.total}</p>
+                    <p>Правильних: ${data.correct}</p>
+                    <p>Неправильних: ${data.wrong}</p>
+                    <p>Час: ${formatTime(data.time)}</p>
+                </div>
+            `)
               .join("")
         : '<div class="panel"><p>Поки що немає даних для статистики.</p></div>';
 
@@ -687,12 +640,12 @@ async function renderStats() {
                     .reverse()
                     .map(
                         (item) => `
-                    <p>
-                        <strong>${item.topic}</strong> — 
-                        ${item.correct ? "✅ правильно" : "❌ неправильно"} — 
-                        час: ${formatTime(Number(item.timeSpentSeconds) || 0)}
-                    </p>
-                `
+                        <p>
+                            <strong>${item.topic}</strong> —
+                            ${item.correct ? "✅ правильно" : "❌ неправильно"} —
+                            час: ${formatTime(Number(item.timeSpentSeconds) || 0)}
+                        </p>
+                    `
                     )
                     .join("")}
             </div>
@@ -718,11 +671,6 @@ async function renderStats() {
 }
 
 async function openStats() {
-    if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
-        return;
-    }
-
     if (location.pathname.includes("stats.html")) {
         await renderStats();
     } else {
@@ -733,7 +681,11 @@ async function openStats() {
 async function refreshProfile() {
     if (!currentUser) return;
 
-    const { data, error } = await supabaseClient.from("profiles").select("*").eq("user_id", currentUser.id).single();
+    const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .single();
 
     if (error) {
         console.error("Не вдалося завантажити профіль:", error);
@@ -821,16 +773,7 @@ async function loginFromForm() {
     currentUser = data.user;
     await refreshProfile();
     await loadUserProfile();
-    showApp();
-    await applyAccessRulesAfterLogin();
-}
-
-async function applyAccessRulesAfterLogin() {
-    if (!currentProfile) return;
-
-    if (location.pathname.includes("topics.html") && isTopicsLocked()) {
-        showTopicsLockedMessage();
-    }
+    updateAuthButtons();
 }
 
 async function logoutUser() {
@@ -844,23 +787,26 @@ async function logoutUser() {
     currentProfile = null;
     const greeting = document.getElementById("user-greeting");
     if (greeting) greeting.textContent = "";
-    showAuth();
+    updateAuthButtons();
 }
 
-function showAuth() {
-    const auth = document.getElementById("auth-screen");
-    const app = document.getElementById("app-content");
+function updateAuthButtons() {
+    const loginBtn = document.getElementById("login-btn");
+    const registerBtn = document.getElementById("register-btn");
+    const logoutBtn = document.getElementById("logout-btn");
+    const cabinetBtn = document.getElementById("cabinet-btn");
 
-    if (auth) auth.style.display = "flex";
-    if (app) app.style.display = "none";
-}
-
-function showApp() {
-    const auth = document.getElementById("auth-screen");
-    const app = document.getElementById("app-content");
-
-    if (auth) auth.style.display = "none";
-    if (app) app.style.display = "block";
+    if (currentUser) {
+        if (loginBtn) loginBtn.style.display = "none";
+        if (registerBtn) registerBtn.style.display = "none";
+        if (logoutBtn) logoutBtn.style.display = "inline-block";
+        if (cabinetBtn) cabinetBtn.style.display = "inline-block";
+    } else {
+        if (loginBtn) loginBtn.style.display = "inline-block";
+        if (registerBtn) registerBtn.style.display = "inline-block";
+        if (logoutBtn) logoutBtn.style.display = "none";
+        if (cabinetBtn) cabinetBtn.style.display = "none";
+    }
 }
 
 async function loadUserProfile() {
@@ -885,19 +831,22 @@ async function checkCurrentUser() {
     if (currentUser) {
         await refreshProfile();
         await loadUserProfile();
-        showApp();
-
-        if (location.pathname.includes("stats.html")) {
-            await renderStats();
-        }
-
-        if (location.pathname.includes("topics.html") && isTopicsLocked()) {
-            showTopicsLockedMessage();
-        }
-    } else {
-        showAuth();
     }
 
+    if (location.pathname.includes("stats.html")) {
+        await renderStats();
+    }
+
+    if (location.pathname.includes("topics.html")) {
+        if (currentProfile && !isTopicsLocked()) {
+            renderTopicsUnlockedUI();
+        } else {
+            renderTopicsLockedUI();
+            if (currentProfile) showTopicsLockedMessage();
+        }
+    }
+
+    updateAuthButtons();
     document.body.style.visibility = "visible";
 }
 
