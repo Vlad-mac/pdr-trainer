@@ -849,7 +849,48 @@ async function checkCurrentUser() {
     updateAuthButtons();
     document.body.style.visibility = "visible";
 }
+function openRegisterForm() {
+    const authScreen = document.getElementById("auth-screen");
+    const authTitle = document.getElementById("auth-title");
+    const nameInput = document.getElementById("auth-name");
+    const message = document.getElementById("auth-message");
 
+    if (authScreen) authScreen.style.display = "flex";
+    if (authTitle) authTitle.textContent = "Реєстрація";
+    if (nameInput) nameInput.style.display = "block";
+    if (message) {
+        message.textContent = "";
+        message.style.color = "";
+    }
+}
+
+function openLoginForm() {
+    const authScreen = document.getElementById("auth-screen");
+    const authTitle = document.getElementById("auth-title");
+    const nameInput = document.getElementById("auth-name");
+    const message = document.getElementById("auth-message");
+
+    if (authScreen) authScreen.style.display = "flex";
+    if (authTitle) authTitle.textContent = "Вхід";
+    if (nameInput) nameInput.style.display = "none";
+    if (message) {
+        message.textContent = "";
+        message.style.color = "";
+    }
+}
+
+function closeAuthScreen() {
+    const authScreen = document.getElementById("auth-screen");
+    if (authScreen) authScreen.style.display = "none";
+}
+
+function openCabinet() {
+    if (currentProfile) {
+        alert(`Кабінет: ${currentProfile.full_name || currentProfile.email}`);
+    } else {
+        openLoginForm();
+    }
+}
 initReferralCode();
 loadQuestions();
 checkCurrentUser();
