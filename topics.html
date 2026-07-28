@@ -28,17 +28,19 @@
 
     <div id="app-content" style="display:none;">
         <header class="topbar">
-            <div class="logo">🚗 PDR Trainer</div>
-            <nav class="menu">
-                <a href="index.html">Головна</a>
-                <a href="topics.html">Теми</a>
-                <a href="training.html">Тренування</a>
-                <a href="stats.html">Статистика</a>
-                <a href="pronas.html">Про нас</a>
-                <span id="user-greeting" class="user-greeting"></span>
-                <a href="#" onclick="logoutUser(); return false;">Вийти</a>
-            </nav>
-        </header>
+    <div class="logo">🚗 PDR Trainer</div>
+    <nav class="menu">
+        <a href="index.html">Головна</a>
+        <a href="topics.html">Теми</a>
+        <a href="training.html">Тренування</a>
+        <a href="stats.html">Статистика</a>
+        <a href="pronas.html">Про нас</a>
+
+        <span id="user-greeting" class="user-greeting"></span>
+        <button type="button" id="login-btn" class="btn btn-primary" onclick="openLoginForm()">Вхід</button>
+        <button type="button" id="logout-btn" class="btn btn-secondary" onclick="logoutUser()" style="display:none;">Вийти</button>
+    </nav>
+</header>
 
         <main class="page">
             <section class="hero">
