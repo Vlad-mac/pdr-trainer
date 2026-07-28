@@ -743,6 +743,50 @@ async function refreshProfile() {
     currentProfile = data;
 }
 
+function updateAuthButtons() {
+    const loginBtn = document.getElementById("login-btn");
+    const logoutBtn = document.getElementById("logout-btn");
+    const greeting = document.getElementById("user-greeting");
+
+    if (currentUser) {
+        if (loginBtn) loginBtn.style.display = "none";
+        if (logoutBtn) logoutBtn.style.display = "inline-block";
+        if (greeting) {
+            greeting.textContent = currentProfile?.full_name
+                ? `Вітаємо, ${currentProfile.full_name}`
+                : "Вітаємо";
+        }
+    } else {
+        if (loginBtn) loginBtn.style.display = "inline-block";
+        if (logoutBtn) logoutBtn.style.display = "none";
+        if (greeting) greeting.textContent = "";
+    }
+}
+
+function openLoginForm() {
+    const authScreen = document.getElementById("auth-screen");
+    const authTitle = document.getElementById("auth-title");
+    const authName = document.getElementById("auth-name");
+    const message = document.getElementById("auth-message");
+
+    if (authScreen) authScreen.style.display = "flex";
+    if (authTitle) authTitle.textContent = "Вхід";
+    if (authName) authName.style.display = "none";
+    if (message) message.textContent = "";
+}
+
+function openRegisterForm() {
+    const authScreen = document.getElementById("auth-screen");
+    const authTitle = document.getElementById("auth-title");
+    const authName = document.getElementById("auth-name");
+    const message = document.getElementById("auth-message");
+
+    if (authScreen) authScreen.style.display = "flex";
+    if (authTitle) authTitle.textContent = "Реєстрація";
+    if (authName) authName.style.display = "block";
+    if (message) message.textContent = "";
+}
+
 async function registerFromForm() {
     const name = document.getElementById("auth-name").value.trim();
     const email = document.getElementById("auth-email").value.trim();
@@ -819,8 +863,9 @@ async function loginFromForm() {
 
     currentUser = data.user;
     await refreshProfile();
-    await loadUserProfile();
     showApp();
+    updateAuthButtons();
+    await loadUserProfile();
     await applyAccessRulesAfterLogin();
 }
 
@@ -843,6 +888,7 @@ async function logoutUser() {
     currentProfile = null;
     const greeting = document.getElementById("user-greeting");
     if (greeting) greeting.textContent = "";
+    updateAuthButtons();
     showAuth();
 }
 
@@ -875,6 +921,8 @@ async function loadUserProfile() {
     if (greeting) {
         greeting.textContent = currentProfile.full_name ? `Вітаємо, ${currentProfile.full_name}` : "Вітаємо";
     }
+
+    updateAuthButtons();
 }
 
 async function checkCurrentUser() {
@@ -885,6 +933,7 @@ async function checkCurrentUser() {
         await refreshProfile();
         await loadUserProfile();
         showApp();
+        updateAuthButtons();
 
         if (location.pathname.includes("stats.html")) {
             await renderStats();
@@ -895,6 +944,7 @@ async function checkCurrentUser() {
         }
     } else {
         showAuth();
+        updateAuthButtons();
     }
 
     document.body.style.visibility = "visible";
