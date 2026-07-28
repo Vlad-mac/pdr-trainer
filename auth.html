@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDR Trainer — Вхід / Реєстрація</title>
+    <meta name="description" content="Вхід або реєстрація в PDR Trainer.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="auth-screen">
+        <div class="auth-card">
+            <h1>Вхід / Реєстрація</h1>
+
+            <p class="auth-subtitle">
+                Увійдіть до свого облікового запису або зареєструйтеся, щоб отримати доступ до сервісу.
+            </p>
+
+            <div class="auth-form">
+                <input type="text" id="auth-name" placeholder="ПІБ">
+                <input type="email" id="auth-email" placeholder="Email">
+                <input type="password" id="auth-password" placeholder="Пароль">
+
+                <button type="button" class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
+                <button type="button" class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='index.html'">Повернутися на сайт</button>
+            </div>
+
+            <p id="auth-message" class="auth-message"></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
