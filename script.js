@@ -843,9 +843,8 @@ async function logoutUser() {
 
     currentUser = null;
     currentProfile = null;
-    const greeting = document.getElementById("user-greeting");
-    if (greeting) greeting.textContent = "";
-    showAuth();
+
+    window.location.href = "index.html";
 }
 
 function showAuth() {
