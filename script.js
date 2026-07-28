@@ -821,8 +821,9 @@ async function loginFromForm() {
     currentUser = data.user;
     await refreshProfile();
     await loadUserProfile();
-    showApp();
     await applyAccessRulesAfterLogin();
+
+    window.location.href = "index.html";
 }
 
 async function applyAccessRulesAfterLogin() {
