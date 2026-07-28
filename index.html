@@ -7,26 +7,27 @@
     <meta name="description" content="PDR Trainer — онлайн-тренажер для підготовки до теоретичного іспиту з ПДР України. Тренування за темами, іспит, статистика та прогрес.">
     <link rel="stylesheet" href="style.css">
 </head>
-<body style="visibility:hidden;">
+<body>
 
-    <div id="auth-screen" class="auth-screen">
+    <div id="auth-screen" class="auth-screen" style="display:none;">
         <div class="auth-card">
-            <h1>Реєстрація</h1>
+            <h1 id="auth-title">Реєстрація</h1>
 
             <div class="auth-form">
                 <input type="text" id="auth-name" placeholder="ПІБ">
                 <input type="email" id="auth-email" placeholder="Email">
                 <input type="password" id="auth-password" placeholder="Пароль">
 
-                <button class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
-                <button class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+                <button type="button" class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
+                <button type="button" class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+                <button type="button" class="btn btn-secondary" onclick="closeAuthScreen()">Закрити</button>
             </div>
 
             <p id="auth-message" class="auth-message"></p>
         </div>
     </div>
 
-    <div id="app-content" style="display:none;">
+    <div id="app-content">
         <header class="topbar">
             <div class="logo">🚗 PDR Trainer</div>
             <nav class="menu">
@@ -34,6 +35,58 @@
                 <a href="topics.html">Теми</a>
                 <a href="training.html">Тренування</a>
                 <a href="stats.html">Статистика</a>
+                <a href="pronas.html">Про нас</a>
+
+                <button type="button" id="register-btn" class="btn btn-secondary" onclick="openRegisterForm()">Реєстрація</button>
+                <button type="button" id="login-btn" class="btn btn-primary" onclick="openLoginForm()">Вхід</button>
+                <button type="button" id="cabinet-btn" class="btn btn-secondary" onclick="openCabinet()">Кабінет</button>
+                <button type="button" id="logout-btn" class="btn btn-secondary" onclick="logoutUser()">Вийти</button>
+
+                <span id="user-greeting" class="user-greeting"></span>
+            </nav>
+        </header>
+
+        <main class="page">
+            <section class="hero">
+                <h1>Підготовка до ПДР онлайн</h1>
+                <p>
+                    Тренуйся за темами, проходь іспити, відстежуй прогрес
+                    та готуйся до теоретичного іспиту зручніше.
+                </p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="topics.html">Обрати тему</a>
+                    <a class="btn btn-secondary" href="training.html">Почати тренування</a>
+                </div>
+            </section>
+
+            <section class="card-section">
+                <h2>Ласкаво просимо</h2>
+                <div class="panel">
+                    <p>
+                        Це головна сторінка сайту підготовки до ПДР.
+                        Тут ти можеш перейти до тем, тренування та статистики.
+                    </p>
+                </div>
+            </section>
+
+            <section class="card-section">
+                <h2>Умови використання</h2>
+                <div class="panel">
+                    <p>1. Сайт призначений для навчання та підготовки до теоретичного іспиту з ПДР України.</p>
+                    <p>2. Усі матеріали подані виключно в навчальних цілях.</p>
+                    <p>3. Користувач зобов’язується не порушувати роботу сайту та використовувати його добросовісно.</p>
+                    <p>4. Адміністрація сайту може змінювати зміст, структуру та функції без попереднього повідомлення.</p>
+                    <p>5. Використовуючи сайт, ви погоджуєтесь із цими умовами.</p>
+                    <p>6. З питань технічної підтримки пишіть на: <a href="mailto:pdrtrainer2026@gmail.com">pdrtrainer2026@gmail.com</a></p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
                 <a href="pronas.html">Про нас</a>
                 <span id="user-greeting" class="user-greeting"></span>
                 <a href="#" onclick="logoutUser(); return false;">Вийти</a>
