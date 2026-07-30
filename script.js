@@ -132,6 +132,11 @@ function startTopicTimer() {
     topicStartTime = new Date();
     elapsedSeconds = 0;
 
+    const timerEl = document.getElementById("topic-timer");
+    if (timerEl) {
+        timerEl.textContent = formatTime(elapsedSeconds);
+    }
+
     topicTimerInterval = setInterval(() => {
         elapsedSeconds++;
         const timerEl = document.getElementById("topic-timer");
@@ -249,6 +254,7 @@ async function startPayment(event) {
 
         const requiredFields = [
             "merchantAccount",
+            "merchantAuthType",
             "merchantDomainName",
             "orderReference",
             "orderDate",
@@ -274,7 +280,7 @@ async function startPayment(event) {
             }
         }
 
-               const form = document.createElement("form");
+        const form = document.createElement("form");
         form.method = "POST";
         form.action = "https://secure.wayforpay.com/pay";
         form.acceptCharset = "utf-8";
@@ -283,6 +289,7 @@ async function startPayment(event) {
 
         const fields = {
             merchantAccount: String(p.merchantAccount || ""),
+            merchantAuthType: String(p.merchantAuthType || "SimpleSignature"),
             merchantDomainName: String(p.merchantDomainName || ""),
             orderReference: String(p.orderReference || ""),
             orderDate: String(p.orderDate || ""),
@@ -878,42 +885,10 @@ async function loadUserProfile() {
     }
 }
 
-function showAuth() {
-    const auth = document.getElementById("auth-screen");
-    const app = document.getElementById("app-content");
-
-    if (auth) auth.style.display = "flex";
-    if (app) app.style.display = "none";
-}
-
-function showApp() {
-    const auth = document.getElementById("auth-screen");
-    const app = document.getElementById("app-content");
-
-    if (auth) auth.style.display = "none";
-    if (app) app.style.display = "block";
-}
-
-async function loadUserProfile() {
-    if (!currentUser) return;
-
-    if (!currentProfile) {
-        await refreshProfile();
-    }
-
-    if (!currentProfile) return;
-
-    const greeting = document.getElementById("user-greeting");
-    if (greeting) {
-        greeting.textContent = currentProfile.full_name ? `Вітаємо, ${currentProfile.full_name}` : "Вітаємо";
-    }
-}
-
 async function checkCurrentUser() {
     const { data } = await supabaseClient.auth.getUser();
     currentUser = data.user;
 
-    // На звичайних сторінках сайт показуємо одразу
     showApp();
 
     if (currentUser) {
