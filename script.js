@@ -207,7 +207,7 @@ async function startPayment(event) {
             return;
         }
 
-        const response = await fetch(`${https://tsqjfphauhphdksstbob.supabase.co}/functions/v1/start-payment`, {
+        const response = await fetch("https://tsqjfphauhphdksstbob.supabase.co/functions/v1/start-payment", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
