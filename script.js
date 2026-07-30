@@ -177,7 +177,7 @@ function showTopicsLockedMessage() {
         trainingSection.innerHTML = `
             <h2>Доступ обмежено</h2>
             <div class="panel">
-                <p>Для доступу до тем потрібна активна оплата на 6 тижнів.</p>
+                <p>Для доступу до тем потрібна активна оплата на 6 місяців.</p>
                 <p>Викладачі та адмін мають доступ без оплати.</p>
                 <button class="btn btn-primary" onclick="location.href='index.html'">На головну</button>
             </div>
@@ -207,7 +207,7 @@ async function startPayment(event) {
             return;
         }
 
-        const response = await fetch("https://tsqjfphauhphdksstbob.supabase.co/functions/v1/start-payment", {
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/start-payment`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -327,7 +327,7 @@ function openTopic(topic) {
     }
 
     if (isTopicsLocked()) {
-        alert("Доступ до тем закритий. Потрібна активна оплата на 6 тижнів.");
+        alert("Доступ до тем закритий. Потрібна активна оплата на 6 місяців.");
         showTopicsLockedMessage();
         return;
     }
