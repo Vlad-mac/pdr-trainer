@@ -21296,7 +21296,8 @@
     "4) 90 км/год.",
     "5) 50 км/год."
   ],
-  "correctAnswer": 4
+  "correctAnswer": 4,
+  "image": "images/topic46/zz1.jpg"
 },
 {
   "id": 1806,
@@ -21307,7 +21308,8 @@
     "2) До категорії А.",
     "3) До категорії В1."
   ],
-  "correctAnswer": 1
+  "correctAnswer": 1,
+  "image": "images/topic46/zz2.jpg"
 },
 {
   "id": 1807,
@@ -21318,7 +21320,8 @@
     "2) З 18 років.",
     "3) З 16 років."
   ],
-  "correctAnswer": 2
+  "correctAnswer": 2,
+  "image": "images/topic46/zz3.jpg"
 },
 {
   "id": 1808,
@@ -21331,7 +21334,8 @@
     "4) 90 км/год.",
     "5) 50 км/год."
   ],
-  "correctAnswer": 2
+  "correctAnswer": 2,
+  "image": "images/topic46/zz4.jpg"
 },
 {
   "id": 1809,
