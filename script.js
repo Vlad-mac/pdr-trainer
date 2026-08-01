@@ -771,6 +771,11 @@ function openWrongQuestion(questionId) {
 async function startWrongTestsTraining() {
     if (!currentUser) return;
 
+    if (!allQuestions || allQuestions.length === 0) {
+        alert("Питання ще завантажуються. Спробуй ще раз за кілька секунд.");
+        return;
+    }
+
     const { data, error } = await supabaseClient
         .from("user_stats")
         .select("question_id")
