@@ -605,7 +605,7 @@ function showResult() {
     if (!trainingSection) return;
 
     trainingSection.innerHTML = `
-        <h2>Тема: ${currentTopic}</h2>
+        <h2>${currentMode === "wrong" ? "Мої помилкові тести" : `Тема: ${currentTopic}`}</h2>
         <div class="panel">
             <p>Тест завершено.</p>
             <p>Ваш результат: ${score} з ${currentQuestions.length}</p>
