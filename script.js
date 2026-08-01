@@ -105,11 +105,6 @@ async function addStat(topic, questionId, isCorrect) {
 
     const time = new Date().toISOString();
 
-    async function addStat(topic, questionId, isCorrect) {
-    if (!currentUser) return;
-
-    const time = new Date().toISOString();
-
     const { data: existing, error: findError } = await supabaseClient
         .from("user_stats")
         .select("id")
