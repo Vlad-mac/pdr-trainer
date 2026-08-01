@@ -103,9 +103,15 @@ async function loadUserStatsFromSupabase() {
 async function addStat(topic, questionId, isCorrect) {
     if (!currentUser) return;
 
-    const time = new Date().toISOString();
+    console.log("ADD STAT CALL:", {
+        user_id: currentUser.id,
+        topic,
+        questionId,
+        questionIdString: String(questionId),
+        isCorrect,
+    });
 
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from("user_stats")
         .upsert([
             {
@@ -113,12 +119,14 @@ async function addStat(topic, questionId, isCorrect) {
                 topic: topic,
                 question_id: String(questionId),
                 correct: isCorrect,
-                created_at: time,
+                created_at: new Date().toISOString(),
                 time_spent_seconds: elapsedSeconds,
             },
         ], {
             onConflict: "user_id,question_id"
         });
+
+    console.log("UPSERT RESULT:", { data, error });
 
     if (error) {
         console.error("Не вдалося зберегти статистику в Supabase:", error);
