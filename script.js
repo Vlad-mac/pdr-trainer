@@ -1096,17 +1096,21 @@ async function checkCurrentUser() {
     showApp();
 
     if (currentUser) {
-        await refreshProfile();
-        await loadUserProfile();
+    await refreshProfile();
+    await loadUserProfile();
 
-        if (location.pathname.includes("stats.html")) {
-            await renderStats();
-        }
-
-        if (location.pathname.includes("topics.html") && isTopicsLocked()) {
-            showTopicsLockedMessage();
-        }
+    if (location.pathname.includes("profile.html")) {
+        await loadProfilePage();
     }
+
+    if (location.pathname.includes("stats.html")) {
+        await renderStats();
+    }
+
+    if (location.pathname.includes("topics.html") && isTopicsLocked()) {
+        showTopicsLockedMessage();
+    }
+}
 
     document.body.style.visibility = "visible";
 }
