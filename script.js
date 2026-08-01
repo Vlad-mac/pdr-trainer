@@ -794,7 +794,9 @@ async function startWrongTestsTraining() {
     }
 
     const wrongIds = [...new Set(data.map(item => String(item.question_id)))];
-    const wrongQuestions = allQuestions.filter(q => wrongIds.includes(String(q.id)));
+    const wrongQuestions = allQuestions
+        .filter(q => wrongIds.includes(String(q.id)))
+        .sort((a, b) => Number(a.id) - Number(b.id));
 
     if (wrongQuestions.length === 0) {
         alert("Не вдалося знайти питання для повторення.");
