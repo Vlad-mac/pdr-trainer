@@ -452,11 +452,12 @@ function showQuestion() {
 
     const imageHtml = question.image ? `<img src="${question.image}" alt="Зображення до питання" class="question-image">` : "";
 
-    const title = currentMode === "exam"
-    ? "Іспит"
-    : currentMode === "wrong"
-        ? "Мої помилкові тести"
-        : `Тема: ${currentTopic}`;
+    const title =
+    currentMode === "exam"
+        ? "Іспит"
+        : currentMode === "wrong"
+            ? "Мої помилкові тести"
+            : `Тема: ${currentTopic}`;
 
     trainingSection.innerHTML = `
         <h2>${title}</h2>
@@ -803,7 +804,7 @@ function openWrongQuestion(questionId) {
     }
 
     currentMode = "wrong";
-    currentTopic = `wrong-${questionId}`;
+    currentTopic = "wrong-tests";
     currentQuestions = [question];
     currentQuestionIndex = 0;
     score = 0;
@@ -815,6 +816,8 @@ function openWrongQuestion(questionId) {
 
     if (!questionStates[currentTopic]) {
         questionStates[currentTopic] = { answers: {} };
+    } else {
+        questionStates[currentTopic].answers = {};
     }
 
     showQuestion();
