@@ -741,61 +741,6 @@ async function renderStats() {
     `;
 }
 
-async function loadWrongTests() {
-    if (!currentUser) return;
-
-    const container = document.getElementById("wrong-tests");
-    if (!container) return;
-
-    container.innerHTML = `
-        <div class="panel">
-            <p>Завантаження помилкових тестів...</p>
-        </div>
-    `;
-
-    const { data, error } = await supabaseClient
-        .from("user_stats")
-        .select("topic, question_id, correct, created_at, time_spent_seconds")
-        .eq("user_id", currentUser.id)
-        .eq("correct", false)
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        console.error("Не вдалося завантажити помилкові тести:", error);
-        container.innerHTML = `
-            <div class="panel">
-                <p>Помилка завантаження помилкових тестів.</p>
-            </div>
-        `;
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        container.innerHTML = `
-            <div class="panel">
-                <p>У тебе ще немає неправильних відповідей. Молодець!</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = `
-    <div class="panel">
-        ${data.map(item => {
-            const question = allQuestions.find((q) => String(q.id) === String(item.question_id));
-            const title = question ? question.question : `Питання ID ${item.question_id}`;
-
-            return `
-                <button class="btn btn-primary" style="display:block; width:100%; margin-bottom:10px;"
-                        onclick="openWrongQuestion('${item.question_id}')">
-                    ${title}
-                </button>
-            `;
-        }).join("")}
-    </div>
-`;
-}
-
 function openWrongQuestion(questionId) {
     const question = allQuestions.find((q) => String(q.id) === String(questionId));
     if (!question) {
@@ -819,6 +764,50 @@ function openWrongQuestion(questionId) {
     } else {
         questionStates[currentTopic].answers = {};
     }
+
+    showQuestion();
+}
+
+async function startWrongTestsTraining() {
+    if (!currentUser) return;
+
+    const { data, error } = await supabaseClient
+        .from("user_stats")
+        .select("question_id")
+        .eq("user_id", currentUser.id)
+        .eq("correct", false);
+
+    if (error) {
+        console.error("Не вдалося завантажити помилкові тести:", error);
+        alert("Помилка завантаження помилкових тестів.");
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        alert("У тебе немає помилкових тестів. Молодець!");
+        return;
+    }
+
+    const wrongIds = [...new Set(data.map(item => String(item.question_id)))];
+    const wrongQuestions = allQuestions.filter(q => wrongIds.includes(String(q.id)));
+
+    if (wrongQuestions.length === 0) {
+        alert("Не вдалося знайти питання для повторення.");
+        return;
+    }
+
+    currentMode = "wrong";
+    currentTopic = "wrong-tests";
+    currentQuestions = wrongQuestions;
+    currentQuestionIndex = 0;
+    score = 0;
+    answered = false;
+    currentTopicStarted = true;
+    elapsedSeconds = 0;
+    stopTopicTimer();
+    startTopicTimer();
+
+    questionStates[currentTopic] = { answers: {} };
 
     showQuestion();
 }
