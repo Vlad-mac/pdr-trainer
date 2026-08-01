@@ -105,7 +105,7 @@ async function addStat(topic, questionId, isCorrect) {
 
     const time = new Date().toISOString();
 
-    const { error } = await supabaseClient.from("user_stats").insert([
+    const { error } = await supabaseClient.from("user_stats").upsert([
         {
             user_id: currentUser.id,
             topic: topic,
@@ -114,7 +114,9 @@ async function addStat(topic, questionId, isCorrect) {
             created_at: time,
             time_spent_seconds: elapsedSeconds,
         },
-    ]);
+    ], {
+        onConflict: "user_id,question_id"
+    });
 
     if (error) {
         console.error("Не вдалося зберегти статистику в Supabase:", error);
