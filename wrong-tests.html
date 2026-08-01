@@ -45,14 +45,22 @@
             <section class="hero">
                 <h1>Мої помилкові тести</h1>
                 <p>
-                    Тут будуть показані питання, на які ти відповідав неправильно.
+                    Тут відображаються питання, на які ти відповідав неправильно.
                 </p>
             </section>
 
-            <section id="wrong-tests" class="card-section">
-                <h2>Завантаження...</h2>
+            <section class="card-section">
                 <div class="panel">
-                    <p>Почекай трохи, помилки підтягуються з бази.</p>
+                    <button class="btn btn-primary" onclick="loadWrongTests()">
+                        Завантажити помилкові тести
+                    </button>
+                </div>
+            </section>
+
+            <section id="wrong-tests" class="card-section">
+                <h2>Питання</h2>
+                <div class="panel">
+                    <p>Натисни кнопку вище, щоб завантажити помилки.</p>
                 </div>
             </section>
         </main>
