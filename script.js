@@ -980,6 +980,115 @@ async function loadUserProfile() {
     }
 }
 
+function formatSubscriptionStatus(paidUntil) {
+    if (!paidUntil) {
+        return "Підписка ще не оформлена";
+    }
+
+    const now = new Date();
+    const end = new Date(paidUntil);
+
+    if (isNaN(end.getTime())) {
+        return "Підписка ще не оформлена";
+    }
+
+    if (end <= now) {
+        return `Підписка завершилась ${end.toLocaleDateString("uk-UA")}`;
+    }
+
+    const diffMs = end - now;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+    return `Активна до ${end.toLocaleDateString("uk-UA")} — залишилось ${diffDays} дн. ${diffHours} год.`;
+}
+
+async function loadProfilePage() {
+    const profileInfo = document.getElementById("profile-info");
+    const profileMessage = document.getElementById("profile-message");
+
+    if (!profileInfo) return;
+
+    if (!currentUser) {
+        profileInfo.innerHTML = `
+            <p>Спочатку потрібно увійти або зареєструватися.</p>
+        `;
+        return;
+    }
+
+    if (!currentProfile) {
+        await refreshProfile();
+    }
+
+    if (!currentProfile) {
+        profileInfo.innerHTML = `
+            <p>Не вдалося завантажити профіль.</p>
+        `;
+        return;
+    }
+
+    profileInfo.innerHTML = `
+        <h2>Дані профілю</h2>
+        <p><strong>ПІБ:</strong> ${currentProfile.full_name || "Не вказано"}</p>
+        <p><strong>Email:</strong> ${currentProfile.email || "Не вказано"}</p>
+        <p><strong>Роль:</strong> ${currentProfile.role || "student"}</p>
+        <p><strong>Підписка:</strong> ${formatSubscriptionStatus(currentProfile.paid_until)}</p>
+    `;
+
+    if (profileMessage) {
+        profileMessage.textContent = "";
+    }
+}
+
+async function changePasswordFromForm() {
+    const newPassword = document.getElementById("new-password")?.value.trim();
+    const confirmPassword = document.getElementById("confirm-password")?.value.trim();
+    const message = document.getElementById("profile-message");
+
+    if (!message) return;
+
+    if (!currentUser) {
+        message.textContent = "Спочатку потрібно увійти.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    if (!newPassword || !confirmPassword) {
+        message.textContent = "Заповни обидва поля.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        message.textContent = "Паролі не збігаються.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        message.textContent = "Пароль має містити щонайменше 6 символів.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    const { error } = await supabaseClient.auth.updateUser({
+        password: newPassword
+    });
+
+    if (error) {
+        console.error("Не вдалося змінити пароль:", error);
+        message.textContent = "Не вдалося змінити пароль: " + error.message;
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    message.textContent = "Пароль успішно змінено.";
+    message.style.color = "#86efac";
+
+    document.getElementById("new-password").value = "";
+    document.getElementById("confirm-password").value = "";
+}
+
 async function checkCurrentUser() {
     const { data } = await supabaseClient.auth.getUser();
     currentUser = data.user;
