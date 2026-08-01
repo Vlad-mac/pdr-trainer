@@ -45,22 +45,15 @@
             <section class="hero">
                 <h1>Мої помилкові тести</h1>
                 <p>
-                    Тут відображаються питання, на які ти відповідав неправильно.
+                    Тут ти можеш повторно пройти всі питання, на які раніше відповідав неправильно.
                 </p>
             </section>
 
             <section class="card-section">
                 <div class="panel">
-                    <button class="btn btn-primary" onclick="loadWrongTests()">
-                        Завантажити помилкові тести
+                    <button class="btn btn-primary" onclick="startWrongTestsTraining()">
+                        Почати тренування помилок
                     </button>
-                </div>
-            </section>
-
-            <section id="wrong-tests" class="card-section">
-                <h2>Питання</h2>
-                <div class="panel">
-                    <p>Натисни кнопку вище, щоб завантажити помилки.</p>
                 </div>
             </section>
         </main>
@@ -68,10 +61,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            loadWrongTests();
-        });
-    </script>
 </body>
 </html>
