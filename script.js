@@ -452,7 +452,11 @@ function showQuestion() {
 
     const imageHtml = question.image ? `<img src="${question.image}" alt="Зображення до питання" class="question-image">` : "";
 
-    const title = currentMode === "exam" ? "Іспит" : `Тема: ${currentTopic}`;
+    const title = currentMode === "exam"
+    ? "Іспит"
+    : currentMode === "wrong"
+        ? "Мої помилкові тести"
+        : `Тема: ${currentTopic}`;
 
     trainingSection.innerHTML = `
         <h2>${title}</h2>
@@ -775,18 +779,45 @@ async function loadWrongTests() {
     }
 
     container.innerHTML = `
-        <div class="panel">
-            <ul class="wrong-tests-list">
-                ${data.map(item => `
-                    <li>
-                        <strong>Питання ID:</strong> ${item.question_id}<br>
-                        <strong>Тема:</strong> ${item.topic}<br>
-                        <strong>Час:</strong> ${formatTime(Number(item.time_spent_seconds) || 0)}
-                    </li>
-                `).join("")}
-            </ul>
-        </div>
-    `;
+    <div class="panel">
+        ${data.map(item => {
+            const question = allQuestions.find((q) => String(q.id) === String(item.question_id));
+            const title = question ? question.question : `Питання ID ${item.question_id}`;
+
+            return `
+                <button class="btn btn-primary" style="display:block; width:100%; margin-bottom:10px;"
+                        onclick="openWrongQuestion('${item.question_id}')">
+                    ${title}
+                </button>
+            `;
+        }).join("")}
+    </div>
+`;
+}
+
+function openWrongQuestion(questionId) {
+    const question = allQuestions.find((q) => String(q.id) === String(questionId));
+    if (!question) {
+        alert("Питання не знайдено.");
+        return;
+    }
+
+    currentMode = "wrong";
+    currentTopic = `wrong-${questionId}`;
+    currentQuestions = [question];
+    currentQuestionIndex = 0;
+    score = 0;
+    answered = false;
+    currentTopicStarted = true;
+    elapsedSeconds = 0;
+    stopTopicTimer();
+    startTopicTimer();
+
+    if (!questionStates[currentTopic]) {
+        questionStates[currentTopic] = { answers: {} };
+    }
+
+    showQuestion();
 }
 
 async function openStats() {
