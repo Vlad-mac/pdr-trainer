@@ -736,6 +736,59 @@ async function renderStats() {
     `;
 }
 
+async function loadWrongTests() {
+    if (!currentUser) return;
+
+    const container = document.getElementById("wrong-tests");
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="panel">
+            <p>Завантаження помилкових тестів...</p>
+        </div>
+    `;
+
+    const { data, error } = await supabaseClient
+        .from("user_stats")
+        .select("topic, question_id, correct, created_at, time_spent_seconds")
+        .eq("user_id", currentUser.id)
+        .eq("correct", false)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Не вдалося завантажити помилкові тести:", error);
+        container.innerHTML = `
+            <div class="panel">
+                <p>Помилка завантаження помилкових тестів.</p>
+            </div>
+        `;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        container.innerHTML = `
+            <div class="panel">
+                <p>У тебе ще немає неправильних відповідей. Молодець!</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="panel">
+            <ul class="wrong-tests-list">
+                ${data.map(item => `
+                    <li>
+                        <strong>Питання ID:</strong> ${item.question_id}<br>
+                        <strong>Тема:</strong> ${item.topic}<br>
+                        <strong>Час:</strong> ${formatTime(Number(item.time_spent_seconds) || 0)}
+                    </li>
+                `).join("")}
+            </ul>
+        </div>
+    `;
+}
+
 async function openStats() {
     if (!currentUser) {
         alert("Спочатку потрібно увійти або зареєструватися.");
