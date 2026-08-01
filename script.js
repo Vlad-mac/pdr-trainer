@@ -105,22 +105,46 @@ async function addStat(topic, questionId, isCorrect) {
 
     const time = new Date().toISOString();
 
-    const { error } = await supabaseClient
+    const { data: existing, error: findError } = await supabaseClient
         .from("user_stats")
-        .upsert(
-            [{
+        .select("id")
+        .eq("user_id", currentUser.id)
+        .eq("question_id", String(questionId))
+        .maybeSingle();
+
+    if (findError) {
+        console.error("Помилка пошуку статистики:", findError);
+        return;
+    }
+
+    if (existing) {
+        const { error: updateError } = await supabaseClient
+            .from("user_stats")
+            .update({
+                topic: topic,
+                correct: isCorrect,
+                time_spent_seconds: elapsedSeconds,
+            })
+            .eq("id", existing.id);
+
+        if (updateError) {
+            console.error("Не вдалося оновити статистику:", updateError);
+        }
+    } else {
+        const { error: insertError } = await supabaseClient
+            .from("user_stats")
+            .insert([{
                 user_id: currentUser.id,
                 topic: topic,
                 question_id: String(questionId),
                 correct: isCorrect,
                 created_at: time,
                 time_spent_seconds: elapsedSeconds,
-            }],
-            { onConflict: "user_id,question_id" }
-        );
+            }]);
 
-    if (error) {
-        console.error("Не вдалося зберегти статистику в Supabase:", error);
+        if (insertError) {
+            console.error("Не вдалося зберегти статистику:", insertError);
+        }
     }
 }
 
