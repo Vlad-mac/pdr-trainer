@@ -10,11 +10,15 @@ let currentTopicStarted = false;
 let topicStartTime = null;
 let topicTimerInterval = null;
 let elapsedSeconds = 0;
+let questionStartTime = null;
 let teacherRefCode = null;
 
 const SUPABASE_URL = "https://tsqjfphauhphdksstbob.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_hLnSso-oks7c2BNJyneiCA_oNIaGDLU";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY = "sb_publishable_hLnSso-oks7c2BNJyneiCA_oNIaGD6U";
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
 let currentUser = null;
 let currentProfile = null;
@@ -49,6 +53,7 @@ function initReferralCode() {
     }
 
     const savedRef = loadSavedReferralCode();
+
     if (savedRef) {
         teacherRefCode = savedRef;
     }
@@ -57,6 +62,7 @@ function initReferralCode() {
 async function loadQuestions() {
     try {
         const response = await fetch("questions.json");
+
         if (!response.ok) {
             throw new Error("Не вдалося завантажити questions.json");
         }
@@ -66,6 +72,7 @@ async function loadQuestions() {
         console.error("Помилка завантаження питань:", error);
 
         const trainingSection = document.querySelector("#training");
+
         if (trainingSection) {
             trainingSection.innerHTML = `
                 <h2>Тренування</h2>
@@ -82,12 +89,18 @@ async function loadUserStatsFromSupabase() {
 
     const { data, error } = await supabaseClient
         .from("user_stats")
-        .select("topic, question_id, correct, created_at, time_spent_seconds")
+        .select(
+            "topic, question_id, correct, created_at, time_spent_seconds"
+        )
         .eq("user_id", currentUser.id)
         .order("created_at", { ascending: true });
 
     if (error) {
-        console.error("Не вдалося завантажити статистику з Supabase:", error);
+        console.error(
+            "Не вдалося завантажити статистику з Supabase:",
+            error
+        );
+
         return [];
     }
 
@@ -95,13 +108,30 @@ async function loadUserStatsFromSupabase() {
         topic: item.topic,
         questionId: item.question_id,
         correct: item.correct,
-        timeSpentSeconds: item.time_spent_seconds,
+        timeSpentSeconds: Number(item.time_spent_seconds) || 0,
         time: item.created_at,
     }));
 }
 
-async function addStat(topic, questionId, isCorrect) {
+/*
+ * Зберігаємо саме час, витрачений на поточне питання.
+ * Наприклад:
+ * 38 секунд → 38
+ * 95 секунд → 95
+ * 320 секунд → 320
+ */
+async function addStat(
+    topic,
+    questionId,
+    isCorrect,
+    questionTimeSeconds
+) {
     if (!currentUser) return;
+
+    const safeQuestionTimeSeconds = Math.max(
+        0,
+        Number(questionTimeSeconds) || 0
+    );
 
     console.log("ADD STAT CALL:", {
         user_id: currentUser.id,
@@ -109,49 +139,97 @@ async function addStat(topic, questionId, isCorrect) {
         questionId,
         questionIdString: String(questionId),
         isCorrect,
+        questionTimeSeconds: safeQuestionTimeSeconds,
     });
 
     const { data, error } = await supabaseClient
         .from("user_stats")
-        .upsert([
+        .upsert(
+            [
+                {
+                    user_id: currentUser.id,
+                    topic: topic,
+                    question_id: String(questionId),
+                    correct: isCorrect,
+                    created_at: new Date().toISOString(),
+                    time_spent_seconds: safeQuestionTimeSeconds,
+                },
+            ],
             {
-                user_id: currentUser.id,
-                topic: topic,
-                question_id: String(questionId),
-                correct: isCorrect,
-                created_at: new Date().toISOString(),
-                time_spent_seconds: elapsedSeconds,
-            },
-        ], {
-            onConflict: "user_id,question_id"
-        });
+                onConflict: "user_id,question_id",
+            }
+        );
 
     console.log("UPSERT RESULT:", { data, error });
 
     if (error) {
-        console.error("Не вдалося зберегти статистику в Supabase:", error);
+        console.error(
+            "Не вдалося зберегти статистику в Supabase:",
+            error
+        );
     }
 }
 
+/*
+ * Перетворює секунди у зрозумілий формат.
+ *
+ * 38 → 38 с
+ * 95 → 1 хв 35 с
+ * 320 → 5 хв 20 с
+ * 867 → 14 хв 27 с
+ */
 function formatTime(totalSeconds) {
+    totalSeconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
+
+    if (minutes === 0) {
+        return `${seconds} с`;
+    }
+
     return `${minutes} хв ${seconds} с`;
+}
+
+/*
+ * Формат для дуже великого загального часу.
+ *
+ * Наприклад:
+ * 3793 хв 58 с
+ * стане:
+ * 63 год 13 хв 58 с
+ */
+function formatLongTime(totalSeconds) {
+    totalSeconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+        return `${hours} год ${minutes} хв ${seconds} с`;
+    }
+
+    return formatTime(totalSeconds);
 }
 
 function startTopicTimer() {
     stopTopicTimer();
+
     topicStartTime = new Date();
     elapsedSeconds = 0;
 
     const timerEl = document.getElementById("topic-timer");
+
     if (timerEl) {
         timerEl.textContent = formatTime(elapsedSeconds);
     }
 
     topicTimerInterval = setInterval(() => {
         elapsedSeconds++;
+
         const timerEl = document.getElementById("topic-timer");
+
         if (timerEl) {
             timerEl.textContent = formatTime(elapsedSeconds);
         }
@@ -166,29 +244,54 @@ function stopTopicTimer() {
 }
 
 function getRandomQuestions(sourceQuestions, count) {
-    const shuffled = [...sourceQuestions].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(count, shuffled.length));
+    const shuffled = [...sourceQuestions].sort(
+        () => Math.random() - 0.5
+    );
+
+    return shuffled.slice(
+        0,
+        Math.min(count, shuffled.length)
+    );
 }
 
 function hasPaidAccess(profile) {
     if (!profile) return false;
-    if (profile.role === "teacher" || profile.role === "admin") return true;
+
+    if (
+        profile.role === "teacher" ||
+        profile.role === "admin"
+    ) {
+        return true;
+    }
+
     if (!profile.paid_until) return false;
+
     return new Date(profile.paid_until) > new Date();
 }
 
 function isTopicsLocked() {
     if (!currentProfile) return true;
+
     return !hasPaidAccess(currentProfile);
 }
 
 function showTopicsLockedMessage() {
-    const lockedPanel = document.getElementById("topics-locked-panel");
-    const topicsGrid = document.getElementById("topics-grid");
-    const trainingSection = document.querySelector("#training");
+    const lockedPanel = document.getElementById(
+        "topics-locked-panel"
+    );
 
-    if (lockedPanel) lockedPanel.style.display = "block";
-    if (topicsGrid) topicsGrid.style.display = "none";
+    const topicsGrid = document.getElementById("topics-grid");
+
+    const trainingSection =
+        document.querySelector("#training");
+
+    if (lockedPanel) {
+        lockedPanel.style.display = "block";
+    }
+
+    if (topicsGrid) {
+        topicsGrid.style.display = "none";
+    }
 
     if (trainingSection) {
         trainingSection.innerHTML = `
@@ -196,17 +299,29 @@ function showTopicsLockedMessage() {
             <div class="panel">
                 <p>Для доступу до тем потрібна активна оплата на 6 тижнів.</p>
                 <p>Викладачі та адмін мають доступ без оплати.</p>
-                <button class="btn btn-primary" onclick="location.href='index.html'">На головну</button>
+                <button
+                    class="btn btn-primary"
+                    onclick="location.href='index.html'"
+                >
+                    На головну
+                </button>
             </div>
         `;
     }
 }
 
 async function startPayment(event) {
-    if (event && typeof event.preventDefault === "function") {
+    if (
+        event &&
+        typeof event.preventDefault === "function"
+    ) {
         event.preventDefault();
     }
-    if (event && typeof event.stopPropagation === "function") {
+
+    if (
+        event &&
+        typeof event.stopPropagation === "function"
+    ) {
         event.stopPropagation();
     }
 
@@ -216,53 +331,91 @@ async function startPayment(event) {
     }
 
     try {
-        const { data: sessionData } = await supabaseClient.auth.getSession();
-        const accessToken = sessionData?.session?.access_token;
+        const { data: sessionData } =
+            await supabaseClient.auth.getSession();
+
+        const accessToken =
+            sessionData?.session?.access_token;
 
         if (!accessToken) {
             alert("Не вдалося отримати токен користувача.");
             return;
         }
 
-        const response = await fetch(`${SUPABASE_URL}/functions/v1/start-payment-ts`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${accessToken}`
-            },
-            body: JSON.stringify({
-                userId: currentUser.id
-            })
-        });
+        const response = await fetch(
+            `${SUPABASE_URL}/functions/v1/start-payment-ts`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    userId: currentUser.id,
+                }),
+            }
+        );
 
         const rawText = await response.text();
-        console.log("start-payment raw response:", rawText);
+
+        console.log(
+            "start-payment raw response:",
+            rawText
+        );
 
         let data;
+
         try {
             data = JSON.parse(rawText);
+
             if (typeof data === "string") {
                 data = JSON.parse(data);
             }
         } catch (parseError) {
-            console.error("start-payment parse error:", parseError);
-            alert("Сервер повернув некоректну відповідь.");
+            console.error(
+                "start-payment parse error:",
+                parseError
+            );
+
+            alert(
+                "Сервер повернув некоректну відповідь."
+            );
+
             return;
         }
 
         if (!response.ok) {
-            console.error("start-payment error:", data);
-            alert(data.message || "Не вдалося підготувати оплату.");
+            console.error(
+                "start-payment error:",
+                data
+            );
+
+            alert(
+                data.message ||
+                "Не вдалося підготувати оплату."
+            );
+
             return;
         }
 
-        if (!data || data.status !== "ok" || !data.data) {
-            alert("Некоректна відповідь від сервера оплати.");
+        if (
+            !data ||
+            data.status !== "ok" ||
+            !data.data
+        ) {
+            alert(
+                "Некоректна відповідь від сервера оплати."
+            );
+
             return;
         }
 
         const p = data.data;
-        console.log("parsed payment data:", p);
+
+        console.log(
+            "parsed payment data:",
+            p
+        );
 
         const requiredFields = [
             "merchantAccount",
@@ -281,73 +434,181 @@ async function startPayment(event) {
             "clientEmail",
             "language",
             "serviceUrl",
-            "returnUrl"
+            "returnUrl",
         ];
 
         for (const field of requiredFields) {
-            if (p[field] === undefined || p[field] === null) {
-                console.error("Missing payment field:", field, p);
-                alert(`Сервер не повернув поле ${field}.`);
+            if (
+                p[field] === undefined ||
+                p[field] === null
+            ) {
+                console.error(
+                    "Missing payment field:",
+                    field,
+                    p
+                );
+
+                alert(
+                    `Сервер не повернув поле ${field}.`
+                );
+
                 return;
             }
         }
 
         const form = document.createElement("form");
+
         form.method = "POST";
-        form.action = "https://secure.wayforpay.com/pay";
+        form.action =
+            "https://secure.wayforpay.com/pay";
         form.acceptCharset = "utf-8";
         form.target = "_blank";
         form.style.display = "none";
 
         const fields = {
-            merchantAccount: String(p.merchantAccount || ""),
-            merchantAuthType: String(p.merchantAuthType || "SimpleSignature"),
-            merchantDomainName: String(p.merchantDomainName || ""),
-            orderReference: String(p.orderReference || ""),
-            orderDate: String(p.orderDate || ""),
-            amount: String(p.amount || ""),
-            currency: String(p.currency || ""),
-            productName: Array.isArray(p.productName) ? String(p.productName[0] || "") : String(p.productName || ""),
-            productPrice: Array.isArray(p.productPrice) ? String(p.productPrice[0] || "") : String(p.productPrice || ""),
-            productCount: Array.isArray(p.productCount) ? String(p.productCount[0] || "") : String(p.productCount || ""),
-            merchantSignature: String(p.merchantSignature || ""),
-            clientFirstName: String(p.clientFirstName || ""),
-            clientLastName: String(p.clientLastName || ""),
-            clientEmail: String(p.clientEmail || ""),
-            language: String(p.language || "UA"),
-            serviceUrl: String(p.serviceUrl || ""),
-            returnUrl: String(p.returnUrl || "")
+            merchantAccount:
+                String(p.merchantAccount || ""),
+
+            merchantAuthType:
+                String(
+                    p.merchantAuthType ||
+                    "SimpleSignature"
+                ),
+
+            merchantDomainName:
+                String(
+                    p.merchantDomainName || ""
+                ),
+
+            orderReference:
+                String(
+                    p.orderReference || ""
+                ),
+
+            orderDate:
+                String(p.orderDate || ""),
+
+            amount:
+                String(p.amount || ""),
+
+            currency:
+                String(p.currency || ""),
+
+            productName:
+                Array.isArray(p.productName)
+                    ? String(
+                          p.productName[0] || ""
+                      )
+                    : String(
+                          p.productName || ""
+                      ),
+
+            productPrice:
+                Array.isArray(p.productPrice)
+                    ? String(
+                          p.productPrice[0] || ""
+                      )
+                    : String(
+                          p.productPrice || ""
+                      ),
+
+            productCount:
+                Array.isArray(p.productCount)
+                    ? String(
+                          p.productCount[0] || ""
+                      )
+                    : String(
+                          p.productCount || ""
+                      ),
+
+            merchantSignature:
+                String(
+                    p.merchantSignature || ""
+                ),
+
+            clientFirstName:
+                String(
+                    p.clientFirstName || ""
+                ),
+
+            clientLastName:
+                String(
+                    p.clientLastName || ""
+                ),
+
+            clientEmail:
+                String(
+                    p.clientEmail || ""
+                ),
+
+            language:
+                String(
+                    p.language || "UA"
+                ),
+
+            serviceUrl:
+                String(
+                    p.serviceUrl || ""
+                ),
+
+            returnUrl:
+                String(
+                    p.returnUrl || ""
+                ),
         };
 
-        Object.entries(fields).forEach(([key, value]) => {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = key;
-            input.value = value;
-            form.appendChild(input);
-        });
+        Object.entries(fields).forEach(
+            ([key, value]) => {
+                const input =
+                    document.createElement("input");
+
+                input.type = "hidden";
+                input.name = key;
+                input.value = value;
+
+                form.appendChild(input);
+            }
+        );
 
         document.body.appendChild(form);
 
-        console.log("Submitting to:", form.action);
-        console.log("Form HTML:", form.outerHTML);
+        console.log(
+            "Submitting to:",
+            form.action
+        );
+
+        console.log(
+            "Form HTML:",
+            form.outerHTML
+        );
 
         form.submit();
     } catch (err) {
-        console.error("Payment error:", err);
+        console.error(
+            "Payment error:",
+            err
+        );
+
         alert("Помилка запуску оплати.");
     }
 }
 
 function openTopic(topic) {
     if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
+        alert(
+            "Спочатку потрібно увійти або зареєструватися."
+        );
+
         return;
     }
 
     if (isTopicsLocked()) {
-        alert("Доступ до тем закритий. Потрібна активна оплата на 6 тижнів.");
+        alert(
+            "Доступ до тем закритий. Потрібна активна оплата на 6 тижнів."
+        );
+
         showTopicsLockedMessage();
+
         return;
     }
 
@@ -358,12 +619,19 @@ function openTopic(topic) {
     answered = false;
     currentTopicStarted = false;
     elapsedSeconds = 0;
+    questionStartTime = null;
+
     stopTopicTimer();
 
-    currentQuestions = allQuestions.filter((q) => q.topic === topic);
+    currentQuestions =
+        allQuestions.filter(
+            (q) => q.topic === topic
+        );
 
     if (currentQuestions.length === 0) {
-        const trainingSection = document.querySelector("#training");
+        const trainingSection =
+            document.querySelector("#training");
+
         if (trainingSection) {
             trainingSection.innerHTML = `
                 <h2>Тренування</h2>
@@ -372,6 +640,7 @@ function openTopic(topic) {
                 </div>
             `;
         }
+
         return;
     }
 
@@ -381,30 +650,55 @@ function openTopic(topic) {
         };
     }
 
-    const trainingSection = document.querySelector("#training");
+    const trainingSection =
+        document.querySelector("#training");
+
     if (trainingSection) {
         trainingSection.innerHTML = `
             <h2>Тема: ${currentTopic}</h2>
+
             <div class="panel">
-                <p>У цій темі є ${currentQuestions.length} питань.</p>
-                <p>Натисни кнопку нижче, щоб почати тест.</p>
-                <button class="btn btn-primary" onclick="startTopic()">Старт</button>
+                <p>
+                    У цій темі є
+                    ${currentQuestions.length}
+                    питань.
+                </p>
+
+                <p>
+                    Натисни кнопку нижче,
+                    щоб почати тест.
+                </p>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="startTopic()"
+                >
+                    Старт
+                </button>
             </div>
         `;
-        trainingSection.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        trainingSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
     }
 }
 
 function startTopic() {
     currentMode = "topic";
     currentTopicStarted = true;
+
     startTopicTimer();
     showQuestion();
 }
 
 function startExam() {
     if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
+        alert(
+            "Спочатку потрібно увійти або зареєструватися."
+        );
+
         return;
     }
 
@@ -415,21 +709,33 @@ function startExam() {
     answered = false;
     currentTopicStarted = true;
     elapsedSeconds = 0;
+    questionStartTime = null;
+
     stopTopicTimer();
     startTopicTimer();
 
-    currentQuestions = getRandomQuestions(allQuestions, 20);
+    currentQuestions =
+        getRandomQuestions(
+            allQuestions,
+            20
+        );
 
     if (currentQuestions.length === 0) {
-        const trainingSection = document.querySelector("#training");
+        const trainingSection =
+            document.querySelector("#training");
+
         if (trainingSection) {
             trainingSection.innerHTML = `
                 <h2>Іспит</h2>
+
                 <div class="panel">
-                    <p>Питання для іспиту не знайдені.</p>
+                    <p>
+                        Питання для іспиту не знайдені.
+                    </p>
                 </div>
             `;
         }
+
         return;
     }
 
@@ -443,100 +749,251 @@ function startExam() {
 function showQuestion() {
     answered = false;
 
-    const question = currentQuestions[currentQuestionIndex];
-    const trainingSection = document.querySelector("#training");
-    if (!trainingSection || !question) return;
+    /*
+     * ВАЖЛИВО:
+     * запускаємо окремий лічильник саме
+     * для поточного питання.
+     */
+    questionStartTime = Date.now();
 
-    const state = questionStates[currentTopic] || { answers: {} };
-    const savedAnswer = state.answers[currentQuestionIndex];
+    const question =
+        currentQuestions[currentQuestionIndex];
 
-    const imageHtml = question.image ? `<img src="${question.image}" alt="Зображення до питання" class="question-image">` : "";
+    const trainingSection =
+        document.querySelector("#training");
+
+    if (!trainingSection || !question) {
+        return;
+    }
+
+    const state =
+        questionStates[currentTopic] ||
+        {
+            answers: {},
+        };
+
+    const savedAnswer =
+        state.answers[currentQuestionIndex];
+
+    const imageHtml = question.image
+        ? `
+            <img
+                src="${question.image}"
+                alt="Зображення до питання"
+                class="question-image"
+            >
+        `
+        : "";
 
     const title =
-    currentMode === "exam"
-        ? "Іспит"
-        : currentMode === "wrong"
-            ? "Мої помилкові тести"
-            : `Тема: ${currentTopic}`;
+        currentMode === "exam"
+            ? "Іспит"
+            : currentMode === "wrong"
+                ? "Мої помилкові тести"
+                : `Тема: ${currentTopic}`;
 
     trainingSection.innerHTML = `
         <h2>${title}</h2>
+
         <div class="panel quiz-box">
+
             <div class="quiz-header">
-                <p class="question-counter">Питання ${currentQuestionIndex + 1} з ${currentQuestions.length}</p>
-                <p class="question-counter">Час: <span id="topic-timer">${formatTime(elapsedSeconds)}</span></p>
+
+                <p class="question-counter">
+                    Питання
+                    ${currentQuestionIndex + 1}
+                    з
+                    ${currentQuestions.length}
+                </p>
+
+                <p class="question-counter">
+                    Час:
+                    <span id="topic-timer">
+                        ${formatTime(elapsedSeconds)}
+                    </span>
+                </p>
+
             </div>
 
-            <p class="question-text">${question.question}</p>
+            <p class="question-text">
+                ${question.question}
+            </p>
+
             ${imageHtml}
 
             <div class="options">
-                ${question.options
-                    .map((option, index) => {
-                        let extraClass = "";
-                        if (savedAnswer !== undefined) {
-                            if (index === question.correctAnswer) extraClass = "correct";
-                            else if (index === savedAnswer.selected && !savedAnswer.isCorrect) extraClass = "wrong";
-                        }
 
-                        return `
-                            <button class="option-btn ${extraClass}" onclick="checkAnswer(${index})">
-                                ${option}
-                            </button>
-                        `;
-                    })
+                ${question.options
+                    .map(
+                        (option, index) => {
+                            let extraClass = "";
+
+                            if (
+                                savedAnswer !==
+                                undefined
+                            ) {
+                                if (
+                                    index ===
+                                    question.correctAnswer
+                                ) {
+                                    extraClass =
+                                        "correct";
+                                } else if (
+                                    index ===
+                                        savedAnswer.selected &&
+                                    !savedAnswer.isCorrect
+                                ) {
+                                    extraClass =
+                                        "wrong";
+                                }
+                            }
+
+                            return `
+                                <button
+                                    class="option-btn ${extraClass}"
+                                    onclick="checkAnswer(${index})"
+                                >
+                                    ${option}
+                                </button>
+                            `;
+                        }
+                    )
                     .join("")}
+
             </div>
 
             <div id="result"></div>
 
             <div class="nav-buttons">
-                <button class="nav-btn" onclick="prevQuestion()" ${currentQuestionIndex === 0 ? "disabled" : ""}>Назад</button>
-                <button id="nextBtn" class="nav-btn" style="display:none;" onclick="nextQuestion()">Далі</button>
+
+                <button
+                    class="nav-btn"
+                    onclick="prevQuestion()"
+                    ${
+                        currentQuestionIndex === 0
+                            ? "disabled"
+                            : ""
+                    }
+                >
+                    Назад
+                </button>
+
+                <button
+                    id="nextBtn"
+                    class="nav-btn"
+                    style="display:none;"
+                    onclick="nextQuestion()"
+                >
+                    Далі
+                </button>
+
             </div>
 
             <div class="question-grid">
+
                 ${currentQuestions
                     .map((_, index) => {
-                        let cls = "question-square";
+                        let cls =
+                            "question-square";
 
-                        if (index === currentQuestionIndex) {
+                        if (
+                            index ===
+                            currentQuestionIndex
+                        ) {
                             cls += " active";
                         }
 
-                        if (state.answers[index] !== undefined) {
-                            cls += state.answers[index].isCorrect ? " correct-answer" : " wrong-answer";
+                        if (
+                            state.answers[index] !==
+                            undefined
+                        ) {
+                            cls += state
+                                .answers[index]
+                                .isCorrect
+                                ? " correct-answer"
+                                : " wrong-answer";
                         }
 
                         return `
-                            <button class="${cls}" onclick="goToQuestion(${index})">
+                            <button
+                                class="${cls}"
+                                onclick="goToQuestion(${index})"
+                            >
                                 ${index + 1}
                             </button>
                         `;
                     })
                     .join("")}
+
             </div>
+
         </div>
     `;
 
     if (savedAnswer !== undefined) {
         answered = true;
 
-        const result = document.getElementById("result");
-        const nextBtn = document.getElementById("nextBtn");
-        const buttons = document.querySelectorAll(".option-btn");
+        const result =
+            document.getElementById("result");
 
-        buttons.forEach((button, index) => {
-            button.disabled = true;
-            if (index === question.correctAnswer) button.classList.add("correct");
-            if (index === savedAnswer.selected && !savedAnswer.isCorrect) button.classList.add("wrong");
-        });
+        const nextBtn =
+            document.getElementById("nextBtn");
 
-        result.innerHTML = savedAnswer.isCorrect
-            ? '<p style="color:#4ade80; font-size:20px;">✅ Правильно!</p>'
-            : '<p style="color:#f87171; font-size:20px;">❌ Неправильно.</p>';
+        const buttons =
+            document.querySelectorAll(
+                ".option-btn"
+            );
 
-        nextBtn.style.display = "inline-block";
+        buttons.forEach(
+            (button, index) => {
+                button.disabled = true;
+
+                if (
+                    index ===
+                    question.correctAnswer
+                ) {
+                    button.classList.add(
+                        "correct"
+                    );
+                }
+
+                if (
+                    index ===
+                        savedAnswer.selected &&
+                    !savedAnswer.isCorrect
+                ) {
+                    button.classList.add(
+                        "wrong"
+                    );
+                }
+            }
+        );
+
+        result.innerHTML =
+            savedAnswer.isCorrect
+                ? `
+                    <p
+                        style="
+                            color:#4ade80;
+                            font-size:20px;
+                        "
+                    >
+                        ✅ Правильно!
+                    </p>
+                `
+                : `
+                    <p
+                        style="
+                            color:#f87171;
+                            font-size:20px;
+                        "
+                    >
+                        ❌ Неправильно.
+                    </p>
+                `;
+
+        nextBtn.style.display =
+            "inline-block";
     }
 }
 
@@ -545,72 +1002,180 @@ async function checkAnswer(selectedIndex) {
 
     answered = true;
 
-    const question = currentQuestions[currentQuestionIndex];
-    const buttons = document.querySelectorAll(".option-btn");
-    const result = document.getElementById("result");
-    const nextBtn = document.getElementById("nextBtn");
-    const state = questionStates[currentTopic];
+    const question =
+        currentQuestions[currentQuestionIndex];
 
-    const isCorrect = selectedIndex === question.correctAnswer;
+    const buttons =
+        document.querySelectorAll(
+            ".option-btn"
+        );
+
+    const result =
+        document.getElementById("result");
+
+    const nextBtn =
+        document.getElementById("nextBtn");
+
+    const state =
+        questionStates[currentTopic];
+
+    const isCorrect =
+        selectedIndex ===
+        question.correctAnswer;
+
+    /*
+     * Рахуємо час ТІЛЬКИ для поточного питання.
+     */
+    let questionTimeSeconds = 0;
+
+    if (questionStartTime) {
+        questionTimeSeconds = Math.floor(
+            (Date.now() - questionStartTime) /
+                1000
+        );
+    }
 
     state.answers[currentQuestionIndex] = {
         selected: selectedIndex,
         isCorrect: isCorrect,
     };
 
-    await addStat(currentTopic, question.id, isCorrect);
+    await addStat(
+        currentTopic,
+        question.id,
+        isCorrect,
+        questionTimeSeconds
+    );
 
-    buttons.forEach((button, index) => {
-        button.disabled = true;
-        if (index === question.correctAnswer) button.classList.add("correct");
-        if (index === selectedIndex && !isCorrect) button.classList.add("wrong");
-    });
+    buttons.forEach(
+        (button, index) => {
+            button.disabled = true;
+
+            if (
+                index ===
+                question.correctAnswer
+            ) {
+                button.classList.add(
+                    "correct"
+                );
+            }
+
+            if (
+                index === selectedIndex &&
+                !isCorrect
+            ) {
+                button.classList.add(
+                    "wrong"
+                );
+            }
+        }
+    );
 
     if (isCorrect) {
         score++;
-        result.innerHTML = '<p style="color:#4ade80; font-size:20px;">✅ Правильно!</p>';
+
+        result.innerHTML = `
+            <p
+                style="
+                    color:#4ade80;
+                    font-size:20px;
+                "
+            >
+                ✅ Правильно!
+            </p>
+        `;
     } else {
-        result.innerHTML = '<p style="color:#f87171; font-size:20px;">❌ Неправильно.</p>';
+        result.innerHTML = `
+            <p
+                style="
+                    color:#f87171;
+                    font-size:20px;
+                "
+            >
+                ❌ Неправильно.
+            </p>
+        `;
     }
 
-    nextBtn.style.display = "inline-block";
+    nextBtn.style.display =
+        "inline-block";
 }
 
 function nextQuestion() {
-    if (currentQuestionIndex < currentQuestions.length - 1) {
+    if (
+        currentQuestionIndex <
+        currentQuestions.length - 1
+    ) {
         currentQuestionIndex++;
+
         showQuestion();
     } else {
-        if (currentMode === "exam") showExamResult();
-        else showResult();
+        if (
+            currentMode === "exam"
+        ) {
+            showExamResult();
+        } else {
+            showResult();
+        }
     }
 }
 
 function prevQuestion() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
+
         showQuestion();
     }
 }
 
 function goToQuestion(index) {
     currentQuestionIndex = index;
+
     showQuestion();
 }
 
 function showResult() {
     stopTopicTimer();
 
-    const trainingSection = document.querySelector("#training");
+    const trainingSection =
+        document.querySelector("#training");
+
     if (!trainingSection) return;
 
     trainingSection.innerHTML = `
-        <h2>${currentMode === "wrong" ? "Мої помилкові тести" : `Тема: ${currentTopic}`}</h2>
+        <h2>
+            ${
+                currentMode === "wrong"
+                    ? "Мої помилкові тести"
+                    : `Тема: ${currentTopic}`
+            }
+        </h2>
+
         <div class="panel">
-            <p>Тест завершено.</p>
-            <p>Ваш результат: ${score} з ${currentQuestions.length}</p>
-            <p>Витрачений час: ${formatTime(elapsedSeconds)}</p>
-            <button class="nav-btn" onclick="location.href='topics.html'">Повернутися до тем</button>
+
+            <p>
+                Тест завершено.
+            </p>
+
+            <p>
+                Ваш результат:
+                ${score}
+                з
+                ${currentQuestions.length}
+            </p>
+
+            <p>
+                Витрачений час:
+                ${formatTime(elapsedSeconds)}
+            </p>
+
+            <button
+                class="nav-btn"
+                onclick="location.href='topics.html'"
+            >
+                Повернутися до тем
+            </button>
+
         </div>
     `;
 }
@@ -618,33 +1183,89 @@ function showResult() {
 function showExamResult() {
     stopTopicTimer();
 
-    const trainingSection = document.querySelector("#training");
+    const trainingSection =
+        document.querySelector("#training");
+
     if (!trainingSection) return;
 
-    const wrongCount = currentQuestions.length - score;
-    const passed = wrongCount <= 2;
+    const wrongCount =
+        currentQuestions.length - score;
+
+    const passed =
+        wrongCount <= 2;
 
     trainingSection.innerHTML = `
         <h2>Іспит завершено</h2>
+
         <div class="panel">
-            <p><strong>Результат:</strong> ${score} правильних із ${currentQuestions.length}</p>
-            <p><strong>Помилок:</strong> ${wrongCount}</p>
-            <p><strong>Статус:</strong> ${passed ? "✅ Успішно" : "❌ Неуспішно"}</p>
-            <p><strong>Умови проходження:</strong> максимум 2 помилки</p>
-            <p><strong>Витрачений час:</strong> ${formatTime(elapsedSeconds)}</p>
-            <button class="nav-btn" onclick="location.href='training.html'">Пройти іспит ще раз</button>
-            <button class="nav-btn" onclick="location.href='topics.html'">Повернутися до тем</button>
+
+            <p>
+                <strong>Результат:</strong>
+                ${score}
+                правильних із
+                ${currentQuestions.length}
+            </p>
+
+            <p>
+                <strong>Помилок:</strong>
+                ${wrongCount}
+            </p>
+
+            <p>
+                <strong>Статус:</strong>
+                ${
+                    passed
+                        ? "✅ Успішно"
+                        : "❌ Неуспішно"
+                }
+            </p>
+
+            <p>
+                <strong>
+                    Умови проходження:
+                </strong>
+                максимум 2 помилки
+            </p>
+
+            <p>
+                <strong>
+                    Витрачений час:
+                </strong>
+                ${formatTime(elapsedSeconds)}
+            </p>
+
+            <button
+                class="nav-btn"
+                onclick="location.href='training.html'"
+            >
+                Пройти іспит ще раз
+            </button>
+
+            <button
+                class="nav-btn"
+                onclick="location.href='topics.html'"
+            >
+                Повернутися до тем
+            </button>
+
         </div>
     `;
 }
 
 function openTraining() {
     if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
+        alert(
+            "Спочатку потрібно увійти або зареєструватися."
+        );
+
         return;
     }
 
-    if (location.pathname.includes("training.html")) {
+    if (
+        location.pathname.includes(
+            "training.html"
+        )
+    ) {
         startExam();
     } else {
         location.href = "training.html";
@@ -652,89 +1273,245 @@ function openTraining() {
 }
 
 async function renderStats() {
-    const statsSection = document.querySelector("#stats");
+    const statsSection =
+        document.querySelector("#stats");
+
     if (!statsSection) return;
 
     if (!currentUser) {
         statsSection.innerHTML = `
             <h2>Статистика</h2>
+
             <div class="panel">
-                <p>Спочатку потрібно увійти або зареєструватися.</p>
+                <p>
+                    Спочатку потрібно увійти
+                    або зареєструватися.
+                </p>
             </div>
         `;
+
         return;
     }
 
-    const stats = await loadUserStatsFromSupabase();
+    const stats =
+        await loadUserStatsFromSupabase();
 
     const total = stats.length;
-    const correct = stats.filter((item) => item.correct).length;
-    const wrong = total - correct;
-    const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
 
-    const totalTimeSeconds = stats.reduce((sum, item) => sum + (Number(item.timeSpentSeconds) || 0), 0);
-    const averageTimeSeconds = total > 0 ? Math.round(totalTimeSeconds / total) : 0;
+    const correct =
+        stats.filter(
+            (item) => item.correct
+        ).length;
+
+    const wrong =
+        total - correct;
+
+    const percent =
+        total > 0
+            ? Math.round(
+                  (correct / total) * 100
+              )
+            : 0;
+
+    /*
+     * Тепер time_spent_seconds
+     * містить час КОЖНОГО питання,
+     * тому сумування дає справжній
+     * загальний час відповідей.
+     */
+    const totalTimeSeconds =
+        stats.reduce(
+            (sum, item) =>
+                sum +
+                (Number(
+                    item.timeSpentSeconds
+                ) || 0),
+            0
+        );
+
+    const averageTimeSeconds =
+        total > 0
+            ? Math.round(
+                  totalTimeSeconds /
+                      total
+              )
+            : 0;
 
     const topicStats = {};
+
     stats.forEach((item) => {
         if (!topicStats[item.topic]) {
-            topicStats[item.topic] = { total: 0, correct: 0, wrong: 0, time: 0 };
+            topicStats[item.topic] = {
+                total: 0,
+                correct: 0,
+                wrong: 0,
+                time: 0,
+            };
         }
+
         topicStats[item.topic].total++;
-        topicStats[item.topic].time += Number(item.timeSpentSeconds) || 0;
-        if (item.correct) topicStats[item.topic].correct++;
-        else topicStats[item.topic].wrong++;
+
+        topicStats[item.topic].time +=
+            Number(
+                item.timeSpentSeconds
+            ) || 0;
+
+        if (item.correct) {
+            topicStats[item.topic]
+                .correct++;
+        } else {
+            topicStats[item.topic]
+                .wrong++;
+        }
     });
 
-    const topicStatsHtml = Object.keys(topicStats).length
-        ? Object.entries(topicStats)
-              .map(
-                  ([topic, data]) => `
-            <div class="panel" style="margin-top:16px;">
-                <h3 style="margin-bottom:10px;">${topic}</h3>
-                <p>Всього: ${data.total}</p>
-                <p>Правильних: ${data.correct}</p>
-                <p>Неправильних: ${data.wrong}</p>
-                <p>Час: ${formatTime(data.time)}</p>
-            </div>
-        `
-              )
-              .join("")
-        : '<div class="panel"><p>Поки що немає даних для статистики.</p></div>';
+    const topicStatsHtml =
+        Object.keys(topicStats).length
+            ? Object.entries(topicStats)
+                  .map(
+                      ([topic, data]) => `
+                        <div
+                            class="panel"
+                            style="margin-top:16px;"
+                        >
 
-    const historyHtml = stats.length
-        ? `
-            <h2 style="margin-top:24px;">Останні відповіді</h2>
-            <div class="panel">
-                ${stats
-                    .slice(-10)
-                    .reverse()
-                    .map(
-                        (item) => `
+                            <h3
+                                style="
+                                    margin-bottom:10px;
+                                "
+                            >
+                                ${topic}
+                            </h3>
+
+                            <p>
+                                Всього:
+                                ${data.total}
+                            </p>
+
+                            <p>
+                                Правильних:
+                                ${data.correct}
+                            </p>
+
+                            <p>
+                                Неправильних:
+                                ${data.wrong}
+                            </p>
+
+                            <p>
+                                Час:
+                                ${formatTime(
+                                    data.time
+                                )}
+                            </p>
+
+                        </div>
+                    `
+                  )
+                  .join("")
+            : `
+                <div class="panel">
                     <p>
-                        <strong>${item.topic}</strong> — 
-                        ${item.correct ? "✅ правильно" : "❌ неправильно"} — 
-                        час: ${formatTime(Number(item.timeSpentSeconds) || 0)}
+                        Поки що немає даних
+                        для статистики.
                     </p>
-                `
-                    )
-                    .join("")}
-            </div>
-        `
-        : "";
+                </div>
+            `;
+
+    const historyHtml =
+        stats.length
+            ? `
+                <h2
+                    style="margin-top:24px;"
+                >
+                    Останні відповіді
+                </h2>
+
+                <div class="panel">
+
+                    ${stats
+                        .slice(-10)
+                        .reverse()
+                        .map(
+                            (item) => `
+                                <p>
+
+                                    <strong>
+                                        ${item.topic}
+                                    </strong>
+
+                                    —
+                                    ${
+                                        item.correct
+                                            ? "✅ правильно"
+                                            : "❌ неправильно"
+                                    }
+
+                                    —
+                                    час:
+
+                                    ${formatTime(
+                                        Number(
+                                            item.timeSpentSeconds
+                                        ) || 0
+                                    )}
+
+                                </p>
+                            `
+                        )
+                        .join("")}
+
+                </div>
+            `
+            : "";
 
     statsSection.innerHTML = `
         <h2>Статистика</h2>
+
         <div class="panel">
-            <p>Всього відповідей: ${total}</p>
-            <p>Правильних: ${correct}</p>
-            <p>Неправильних: ${wrong}</p>
-            <p>Успішність: ${percent}%</p>
-            <p>Загальний час: ${formatTime(totalTimeSeconds)}</p>
-            <p>Середній час на відповідь: ${formatTime(averageTimeSeconds)}</p>
+
+            <p>
+                Всього відповідей:
+                ${total}
+            </p>
+
+            <p>
+                Правильних:
+                ${correct}
+            </p>
+
+            <p>
+                Неправильних:
+                ${wrong}
+            </p>
+
+            <p>
+                Успішність:
+                ${percent}%
+            </p>
+
+            <p>
+                Загальний час:
+                ${formatLongTime(
+                    totalTimeSeconds
+                )}
+            </p>
+
+            <p>
+                Середній час на відповідь:
+                ${formatTime(
+                    averageTimeSeconds
+                )}
+            </p>
+
         </div>
 
-        <h2 style="margin-top:24px;">Статистика по темах</h2>
+        <h2
+            style="margin-top:24px;"
+        >
+            Статистика по темах
+        </h2>
+
         ${topicStatsHtml}
 
         ${historyHtml}
@@ -742,7 +1519,13 @@ async function renderStats() {
 }
 
 function openWrongQuestion(questionId) {
-    const question = allQuestions.find((q) => String(q.id) === String(questionId));
+    const question =
+        allQuestions.find(
+            (q) =>
+                String(q.id) ===
+                String(questionId)
+        );
+
     if (!question) {
         alert("Питання не знайдено.");
         return;
@@ -756,13 +1539,19 @@ function openWrongQuestion(questionId) {
     answered = false;
     currentTopicStarted = true;
     elapsedSeconds = 0;
+    questionStartTime = null;
+
     stopTopicTimer();
     startTopicTimer();
 
     if (!questionStates[currentTopic]) {
-        questionStates[currentTopic] = { answers: {} };
+        questionStates[currentTopic] = {
+            answers: {},
+        };
     } else {
-        questionStates[currentTopic].answers = {};
+        questionStates[
+            currentTopic
+        ].answers = {};
     }
 
     showQuestion();
@@ -771,61 +1560,121 @@ function openWrongQuestion(questionId) {
 async function startWrongTestsTraining() {
     if (!currentUser) return;
 
-    if (!allQuestions || allQuestions.length === 0) {
-        alert("Питання ще завантажуються. Спробуй ще раз за кілька секунд.");
+    if (
+        !allQuestions ||
+        allQuestions.length === 0
+    ) {
+        alert(
+            "Питання ще завантажуються. Спробуй ще раз за кілька секунд."
+        );
+
         return;
     }
 
-    const { data, error } = await supabaseClient
-        .from("user_stats")
-        .select("question_id")
-        .eq("user_id", currentUser.id)
-        .eq("correct", false);
+    const { data, error } =
+        await supabaseClient
+            .from("user_stats")
+            .select("question_id")
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .eq("correct", false);
 
     if (error) {
-        console.error("Не вдалося завантажити помилкові тести:", error);
-        alert("Помилка завантаження помилкових тестів.");
+        console.error(
+            "Не вдалося завантажити помилкові тести:",
+            error
+        );
+
+        alert(
+            "Помилка завантаження помилкових тестів."
+        );
+
         return;
     }
 
-    if (!data || data.length === 0) {
-        alert("У тебе немає помилкових тестів. Молодець!");
+    if (
+        !data ||
+        data.length === 0
+    ) {
+        alert(
+            "У тебе немає помилкових тестів. Молодець!"
+        );
+
         return;
     }
 
-    const wrongIds = [...new Set(data.map(item => String(item.question_id)))];
-    const wrongQuestions = allQuestions
-        .filter(q => wrongIds.includes(String(q.id)))
-        .sort((a, b) => Number(a.id) - Number(b.id));
+    const wrongIds = [
+        ...new Set(
+            data.map(
+                (item) =>
+                    String(
+                        item.question_id
+                    )
+            )
+        ),
+    ];
 
-    if (wrongQuestions.length === 0) {
-        alert("Не вдалося знайти питання для повторення.");
+    const wrongQuestions =
+        allQuestions
+            .filter((q) =>
+                wrongIds.includes(
+                    String(q.id)
+                )
+            )
+            .sort(
+                (a, b) =>
+                    Number(a.id) -
+                    Number(b.id)
+            );
+
+    if (
+        wrongQuestions.length === 0
+    ) {
+        alert(
+            "Не вдалося знайти питання для повторення."
+        );
+
         return;
     }
 
     currentMode = "wrong";
     currentTopic = "wrong-tests";
-    currentQuestions = wrongQuestions;
+    currentQuestions =
+        wrongQuestions;
+
     currentQuestionIndex = 0;
     score = 0;
     answered = false;
     currentTopicStarted = true;
     elapsedSeconds = 0;
+    questionStartTime = null;
+
     stopTopicTimer();
     startTopicTimer();
 
-    questionStates[currentTopic] = { answers: {} };
+    questionStates[currentTopic] = {
+        answers: {},
+    };
 
     showQuestion();
 }
 
 async function openStats() {
     if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
+        alert(
+            "Спочатку потрібно увійти або зареєструватися."
+        );
+
         return;
     }
 
-    if (location.pathname.includes("stats.html")) {
+    if (
+        location.pathname.includes(
+            "stats.html"
+        )
+    ) {
         await renderStats();
     } else {
         location.href = "stats.html";
@@ -835,11 +1684,24 @@ async function openStats() {
 async function refreshProfile() {
     if (!currentUser) return;
 
-    const { data, error } = await supabaseClient.from("profiles").select("*").eq("user_id", currentUser.id).single();
+    const { data, error } =
+        await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .single();
 
     if (error) {
-        console.error("Не вдалося завантажити профіль:", error);
+        console.error(
+            "Не вдалося завантажити профіль:",
+            error
+        );
+
         currentProfile = null;
+
         return;
     }
 
@@ -847,122 +1709,237 @@ async function refreshProfile() {
 }
 
 async function registerFromForm() {
-    const name = document.getElementById("auth-name").value.trim();
-    const email = document.getElementById("auth-email").value.trim();
-    const password = document.getElementById("auth-password").value.trim();
-    const message = document.getElementById("auth-message");
+    const name =
+        document
+            .getElementById("auth-name")
+            .value.trim();
 
-    if (!name || !email || !password) {
-        message.textContent = "Заповни всі поля.";
-        message.style.color = "#fca5a5";
+    const email =
+        document
+            .getElementById("auth-email")
+            .value.trim();
+
+    const password =
+        document
+            .getElementById(
+                "auth-password"
+            )
+            .value.trim();
+
+    const message =
+        document.getElementById(
+            "auth-message"
+        );
+
+    if (
+        !name ||
+        !email ||
+        !password
+    ) {
+        message.textContent =
+            "Заповни всі поля.";
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
-    const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-    });
+    const { data, error } =
+        await supabaseClient.auth.signUp(
+            {
+                email: email,
+                password: password,
+            }
+        );
 
     if (error) {
-        message.textContent = "Помилка реєстрації: " + error.message;
-        message.style.color = "#fca5a5";
+        message.textContent =
+            "Помилка реєстрації: " +
+            error.message;
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
     const user = data.user;
+
     if (!user) {
-        message.textContent = "Реєстрація виконана, але користувача не створено.";
-        message.style.color = "#fca5a5";
+        message.textContent =
+            "Реєстрація виконана, але користувача не створено.";
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
-    const { error: profileError } = await supabaseClient.from("profiles").insert([
-        {
-            user_id: user.id,
-            email: email,
-            full_name: name,
-            role: "student",
-            created_at: new Date().toISOString(),
-            teacher_ref_code: teacherRefCode,
-            paid_until: null,
-        },
-    ]);
+    const {
+        error: profileError,
+    } = await supabaseClient
+        .from("profiles")
+        .insert([
+            {
+                user_id: user.id,
+                email: email,
+                full_name: name,
+                role: "student",
+                created_at:
+                    new Date().toISOString(),
+                teacher_ref_code:
+                    teacherRefCode,
+                paid_until: null,
+            },
+        ]);
 
     if (profileError) {
-        message.textContent = "Профіль створено з помилкою: " + profileError.message;
-        message.style.color = "#fca5a5";
+        message.textContent =
+            "Профіль створено з помилкою: " +
+            profileError.message;
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
-    message.style.color = "#86efac";
-    message.textContent = "Реєстрація успішна. Тепер увійди.";
+    message.style.color =
+        "#86efac";
+
+    message.textContent =
+        "Реєстрація успішна. Тепер увійди.";
 }
 
 async function loginFromForm() {
-    const email = document.getElementById("auth-email").value.trim();
-    const password = document.getElementById("auth-password").value.trim();
-    const message = document.getElementById("auth-message");
+    const email =
+        document
+            .getElementById("auth-email")
+            .value.trim();
+
+    const password =
+        document
+            .getElementById(
+                "auth-password"
+            )
+            .value.trim();
+
+    const message =
+        document.getElementById(
+            "auth-message"
+        );
 
     if (!email || !password) {
-        message.textContent = "Введи email і пароль.";
-        message.style.color = "#fca5a5";
+        message.textContent =
+            "Введи email і пароль.";
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password,
-    });
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword(
+            {
+                email: email,
+                password: password,
+            }
+        );
 
     if (error) {
-        message.textContent = "Помилка входу: " + error.message;
-        message.style.color = "#fca5a5";
+        message.textContent =
+            "Помилка входу: " +
+            error.message;
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
     currentUser = data.user;
+
     await refreshProfile();
     await loadUserProfile();
     await applyAccessRulesAfterLogin();
 
-    window.location.href = "index.html";
+    window.location.href =
+        "index.html";
 }
 
 async function applyAccessRulesAfterLogin() {
     if (!currentProfile) return;
 
-    if (location.pathname.includes("topics.html") && isTopicsLocked()) {
+    if (
+        location.pathname.includes(
+            "topics.html"
+        ) &&
+        isTopicsLocked()
+    ) {
         showTopicsLockedMessage();
     }
 }
 
 async function logoutUser() {
-    const { error } = await supabaseClient.auth.signOut();
+    const { error } =
+        await supabaseClient.auth.signOut();
+
     if (error) {
-        alert("Помилка виходу: " + error.message);
+        alert(
+            "Помилка виходу: " +
+            error.message
+        );
+
         return;
     }
 
     currentUser = null;
     currentProfile = null;
 
-    window.location.href = "index.html";
+    window.location.href =
+        "index.html";
 }
 
 function showAuth() {
-    const auth = document.getElementById("auth-screen");
-    const app = document.getElementById("app-content");
+    const auth =
+        document.getElementById(
+            "auth-screen"
+        );
 
-    if (auth) auth.style.display = "flex";
-    if (app) app.style.display = "none";
+    const app =
+        document.getElementById(
+            "app-content"
+        );
+
+    if (auth) {
+        auth.style.display = "flex";
+    }
+
+    if (app) {
+        app.style.display = "none";
+    }
 }
 
 function showApp() {
-    const auth = document.getElementById("auth-screen");
-    const app = document.getElementById("app-content");
+    const auth =
+        document.getElementById(
+            "auth-screen"
+        );
 
-    if (auth) auth.style.display = "none";
-    if (app) app.style.display = "block";
+    const app =
+        document.getElementById(
+            "app-content"
+        );
+
+    if (auth) {
+        auth.style.display = "none";
+    }
+
+    if (app) {
+        app.style.display = "block";
+    }
 }
 
 async function loadUserProfile() {
@@ -974,45 +1951,92 @@ async function loadUserProfile() {
 
     if (!currentProfile) return;
 
-    const greeting = document.getElementById("user-greeting");
+    const greeting =
+        document.getElementById(
+            "user-greeting"
+        );
+
     if (greeting) {
-        greeting.textContent = currentProfile.full_name ? `Вітаємо, ${currentProfile.full_name}` : "Вітаємо";
+        greeting.textContent =
+            currentProfile.full_name
+                ? `Вітаємо, ${currentProfile.full_name}`
+                : "Вітаємо";
     }
 }
 
-function formatSubscriptionStatus(paidUntil) {
+function formatSubscriptionStatus(
+    paidUntil
+) {
     if (!paidUntil) {
         return "Підписка ще не оформлена";
     }
 
     const now = new Date();
-    const end = new Date(paidUntil);
+    const end = new Date(
+        paidUntil
+    );
 
     if (isNaN(end.getTime())) {
         return "Підписка ще не оформлена";
     }
 
     if (end <= now) {
-        return `Підписка завершилась ${end.toLocaleDateString("uk-UA")}`;
+        return `
+            Підписка завершилась
+            ${end.toLocaleDateString(
+                "uk-UA"
+            )}
+        `;
     }
 
     const diffMs = end - now;
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
-    return `Активна до ${end.toLocaleDateString("uk-UA")} — залишилось ${diffDays} дн. ${diffHours} год.`;
+    const diffDays = Math.floor(
+        diffMs /
+            (1000 * 60 * 60 * 24)
+    );
+
+    const diffHours = Math.floor(
+        (diffMs %
+            (1000 * 60 * 60 * 24)) /
+            (1000 * 60 * 60)
+    );
+
+    return `
+        Активна до
+        ${end.toLocaleDateString(
+            "uk-UA"
+        )}
+        —
+        залишилось
+        ${diffDays}
+        дн.
+        ${diffHours}
+        год.
+    `;
 }
 
 async function loadProfilePage() {
-    const profileInfo = document.getElementById("profile-info");
-    const profileMessage = document.getElementById("profile-message");
+    const profileInfo =
+        document.getElementById(
+            "profile-info"
+        );
+
+    const profileMessage =
+        document.getElementById(
+            "profile-message"
+        );
 
     if (!profileInfo) return;
 
     if (!currentUser) {
         profileInfo.innerHTML = `
-            <p>Спочатку потрібно увійти або зареєструватися.</p>
+            <p>
+                Спочатку потрібно увійти
+                або зареєструватися.
+            </p>
         `;
+
         return;
     }
 
@@ -1022,17 +2046,38 @@ async function loadProfilePage() {
 
     if (!currentProfile) {
         profileInfo.innerHTML = `
-            <p>Не вдалося завантажити профіль.</p>
+            <p>
+                Не вдалося завантажити профіль.
+            </p>
         `;
+
         return;
     }
 
     profileInfo.innerHTML = `
         <h2>Дані профілю</h2>
-        <p><strong>ПІБ:</strong> ${currentProfile.full_name || "Не вказано"}</p>
-        <p><strong>Email:</strong> ${currentProfile.email || "Не вказано"}</p>
-        <p><strong>Роль:</strong> ${currentProfile.role || "student"}</p>
-        <p><strong>Підписка:</strong> ${formatSubscriptionStatus(currentProfile.paid_until)}</p>
+
+        <p>
+            <strong>ПІБ:</strong>
+            ${currentProfile.full_name || "Не вказано"}
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            ${currentProfile.email || "Не вказано"}
+        </p>
+
+        <p>
+            <strong>Роль:</strong>
+            ${currentProfile.role || "student"}
+        </p>
+
+        <p>
+            <strong>Підписка:</strong>
+            ${formatSubscriptionStatus(
+                currentProfile.paid_until
+            )}
+        </p>
     `;
 
     if (profileMessage) {
@@ -1041,78 +2086,151 @@ async function loadProfilePage() {
 }
 
 async function changePasswordFromForm() {
-    const newPassword = document.getElementById("new-password")?.value.trim();
-    const confirmPassword = document.getElementById("confirm-password")?.value.trim();
-    const message = document.getElementById("profile-message");
+    const newPassword =
+        document
+            .getElementById(
+                "new-password"
+            )
+            ?.value.trim();
+
+    const confirmPassword =
+        document
+            .getElementById(
+                "confirm-password"
+            )
+            ?.value.trim();
+
+    const message =
+        document.getElementById(
+            "profile-message"
+        );
 
     if (!message) return;
 
     if (!currentUser) {
-        message.textContent = "Спочатку потрібно увійти.";
-        message.style.color = "#fca5a5";
+        message.textContent =
+            "Спочатку потрібно увійти.";
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
-    if (!newPassword || !confirmPassword) {
-        message.textContent = "Заповни обидва поля.";
-        message.style.color = "#fca5a5";
+    if (
+        !newPassword ||
+        !confirmPassword
+    ) {
+        message.textContent =
+            "Заповни обидва поля.";
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
-    if (newPassword !== confirmPassword) {
-        message.textContent = "Паролі не збігаються.";
-        message.style.color = "#fca5a5";
+    if (
+        newPassword !==
+        confirmPassword
+    ) {
+        message.textContent =
+            "Паролі не збігаються.";
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
     if (newPassword.length < 6) {
-        message.textContent = "Пароль має містити щонайменше 6 символів.";
-        message.style.color = "#fca5a5";
+        message.textContent =
+            "Пароль має містити щонайменше 6 символів.";
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
-    const { error } = await supabaseClient.auth.updateUser({
-        password: newPassword
-    });
+    const { error } =
+        await supabaseClient.auth.updateUser(
+            {
+                password: newPassword,
+            }
+        );
 
     if (error) {
-        console.error("Не вдалося змінити пароль:", error);
-        message.textContent = "Не вдалося змінити пароль: " + error.message;
-        message.style.color = "#fca5a5";
+        console.error(
+            "Не вдалося змінити пароль:",
+            error
+        );
+
+        message.textContent =
+            "Не вдалося змінити пароль: " +
+            error.message;
+
+        message.style.color =
+            "#fca5a5";
+
         return;
     }
 
-    message.textContent = "Пароль успішно змінено.";
-    message.style.color = "#86efac";
+    message.textContent =
+        "Пароль успішно змінено.";
 
-    document.getElementById("new-password").value = "";
-    document.getElementById("confirm-password").value = "";
+    message.style.color =
+        "#86efac";
+
+    document.getElementById(
+        "new-password"
+    ).value = "";
+
+    document.getElementById(
+        "confirm-password"
+    ).value = "";
 }
 
 async function checkCurrentUser() {
-    const { data } = await supabaseClient.auth.getUser();
+    const { data } =
+        await supabaseClient.auth.getUser();
+
     currentUser = data.user;
 
     showApp();
 
     if (currentUser) {
-    await refreshProfile();
-    await loadUserProfile();
+        await refreshProfile();
+        await loadUserProfile();
 
-    if (location.pathname.includes("profile.html")) {
-        await loadProfilePage();
+        if (
+            location.pathname.includes(
+                "profile.html"
+            )
+        ) {
+            await loadProfilePage();
+        }
+
+        if (
+            location.pathname.includes(
+                "stats.html"
+            )
+        ) {
+            await renderStats();
+        }
+
+        if (
+            location.pathname.includes(
+                "topics.html"
+            ) &&
+            isTopicsLocked()
+        ) {
+            showTopicsLockedMessage();
+        }
     }
 
-    if (location.pathname.includes("stats.html")) {
-        await renderStats();
-    }
-
-    if (location.pathname.includes("topics.html") && isTopicsLocked()) {
-        showTopicsLockedMessage();
-    }
-}
-
-    document.body.style.visibility = "visible";
+    document.body.style.visibility =
+        "visible";
 }
 
 initReferralCode();
