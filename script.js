@@ -4,17 +4,22 @@ let currentQuestionIndex = 0;
 let score = 0;
 let answered = false;
 let currentTopic = "";
-let currentMode = "topic"; // "topic" або "exam"
+let currentMode = "topic"; // "topic", "exam", "wrong"
 let questionStates = {};
 let currentTopicStarted = false;
+
 let topicStartTime = null;
 let topicTimerInterval = null;
 let elapsedSeconds = 0;
+
+// Час початку КОНКРЕТНОГО питання
 let questionStartTime = null;
+
 let teacherRefCode = null;
 
 const SUPABASE_URL = "https://tsqjfphauhphdksstbob.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_hLnSso-oks7c2BNJyneiCA_oNIaGD6U";
+const SUPABASE_ANON_KEY = "sb_publishable_hLnSso-oks7c2BNJyneiCA_oNIaGDLU";
+
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
@@ -22,6 +27,11 @@ const supabaseClient = window.supabase.createClient(
 
 let currentUser = null;
 let currentProfile = null;
+
+
+/* =========================================================
+   REFERRAL
+========================================================= */
 
 function getReferralCodeFromUrl() {
     try {
@@ -59,6 +69,11 @@ function initReferralCode() {
     }
 }
 
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
 async function loadQuestions() {
     try {
         const response = await fetch("questions.json");
@@ -68,6 +83,7 @@ async function loadQuestions() {
         }
 
         allQuestions = await response.json();
+
     } catch (error) {
         console.error("Помилка завантаження питань:", error);
 
@@ -77,23 +93,37 @@ async function loadQuestions() {
             trainingSection.innerHTML = `
                 <h2>Тренування</h2>
                 <div class="panel">
-                    <p>Не вдалося завантажити питання. Перевір файл questions.json.</p>
+                    <p>
+                        Не вдалося завантажити питання.
+                        Перевір файл questions.json.
+                    </p>
                 </div>
             `;
         }
     }
 }
 
+
+/* =========================================================
+   SUPABASE — LOAD STATISTICS
+========================================================= */
+
 async function loadUserStatsFromSupabase() {
     if (!currentUser) return [];
 
     const { data, error } = await supabaseClient
         .from("user_stats")
-        .select(
-            "topic, question_id, correct, created_at, time_spent_seconds"
-        )
+        .select(`
+            topic,
+            question_id,
+            correct,
+            created_at,
+            time_spent_seconds
+        `)
         .eq("user_id", currentUser.id)
-        .order("created_at", { ascending: true });
+        .order("created_at", {
+            ascending: true
+        });
 
     if (error) {
         console.error(
@@ -109,37 +139,34 @@ async function loadUserStatsFromSupabase() {
         questionId: item.question_id,
         correct: item.correct,
         timeSpentSeconds: Number(item.time_spent_seconds) || 0,
-        time: item.created_at,
+        time: item.created_at
     }));
 }
 
-/*
- * Зберігаємо саме час, витрачений на поточне питання.
- * Наприклад:
- * 38 секунд → 38
- * 95 секунд → 95
- * 320 секунд → 320
- */
+
+/* =========================================================
+   SUPABASE — SAVE STATISTIC
+========================================================= */
+
 async function addStat(
     topic,
     questionId,
     isCorrect,
-    questionTimeSeconds
+    timeSpentSeconds
 ) {
     if (!currentUser) return;
 
-    const safeQuestionTimeSeconds = Math.max(
+    const cleanTime = Math.max(
         0,
-        Number(questionTimeSeconds) || 0
+        Math.round(Number(timeSpentSeconds) || 0)
     );
 
-    console.log("ADD STAT CALL:", {
+    console.log("ADD STAT:", {
         user_id: currentUser.id,
         topic,
         questionId,
-        questionIdString: String(questionId),
         isCorrect,
-        questionTimeSeconds: safeQuestionTimeSeconds,
+        timeSpentSeconds: cleanTime
     });
 
     const { data, error } = await supabaseClient
@@ -152,15 +179,21 @@ async function addStat(
                     question_id: String(questionId),
                     correct: isCorrect,
                     created_at: new Date().toISOString(),
-                    time_spent_seconds: safeQuestionTimeSeconds,
-                },
+
+                    // ВАЖЛИВО:
+                    // тут тепер записується час ЛИШЕ ЦЬОГО питання
+                    time_spent_seconds: cleanTime
+                }
             ],
             {
-                onConflict: "user_id,question_id",
+                onConflict: "user_id,question_id"
             }
         );
 
-    console.log("UPSERT RESULT:", { data, error });
+    console.log("UPSERT RESULT:", {
+        data,
+        error
+    });
 
     if (error) {
         console.error(
@@ -170,16 +203,16 @@ async function addStat(
     }
 }
 
-/*
- * Перетворює секунди у зрозумілий формат.
- *
- * 38 → 38 с
- * 95 → 1 хв 35 с
- * 320 → 5 хв 20 с
- * 867 → 14 хв 27 с
- */
+
+/* =========================================================
+   TIME FORMAT
+========================================================= */
+
 function formatTime(totalSeconds) {
-    totalSeconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+    totalSeconds = Math.max(
+        0,
+        Math.round(Number(totalSeconds) || 0)
+    );
 
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -191,32 +224,15 @@ function formatTime(totalSeconds) {
     return `${minutes} хв ${seconds} с`;
 }
 
-/*
- * Формат для дуже великого загального часу.
- *
- * Наприклад:
- * 3793 хв 58 с
- * стане:
- * 63 год 13 хв 58 с
- */
-function formatLongTime(totalSeconds) {
-    totalSeconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
 
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    if (hours > 0) {
-        return `${hours} год ${minutes} хв ${seconds} с`;
-    }
-
-    return formatTime(totalSeconds);
-}
+/* =========================================================
+   TOPIC TIMER
+========================================================= */
 
 function startTopicTimer() {
     stopTopicTimer();
 
-    topicStartTime = new Date();
+    topicStartTime = Date.now();
     elapsedSeconds = 0;
 
     const timerEl = document.getElementById("topic-timer");
@@ -228,10 +244,10 @@ function startTopicTimer() {
     topicTimerInterval = setInterval(() => {
         elapsedSeconds++;
 
-        const timerEl = document.getElementById("topic-timer");
+        const timer = document.getElementById("topic-timer");
 
-        if (timerEl) {
-            timerEl.textContent = formatTime(elapsedSeconds);
+        if (timer) {
+            timer.textContent = formatTime(elapsedSeconds);
         }
     }, 1000);
 }
@@ -243,16 +259,47 @@ function stopTopicTimer() {
     }
 }
 
-function getRandomQuestions(sourceQuestions, count) {
-    const shuffled = [...sourceQuestions].sort(
-        () => Math.random() - 0.5
+
+/* =========================================================
+   QUESTION TIMER
+========================================================= */
+
+function startQuestionTimer() {
+    questionStartTime = Date.now();
+}
+
+function getCurrentQuestionTime() {
+    if (!questionStartTime) {
+        return 0;
+    }
+
+    const diffMs = Date.now() - questionStartTime;
+
+    return Math.max(
+        1,
+        Math.round(diffMs / 1000)
     );
+}
+
+
+/* =========================================================
+   RANDOM QUESTIONS
+========================================================= */
+
+function getRandomQuestions(sourceQuestions, count) {
+    const shuffled = [...sourceQuestions]
+        .sort(() => Math.random() - 0.5);
 
     return shuffled.slice(
         0,
         Math.min(count, shuffled.length)
     );
 }
+
+
+/* =========================================================
+   ACCESS
+========================================================= */
 
 function hasPaidAccess(profile) {
     if (!profile) return false;
@@ -276,11 +323,11 @@ function isTopicsLocked() {
 }
 
 function showTopicsLockedMessage() {
-    const lockedPanel = document.getElementById(
-        "topics-locked-panel"
-    );
+    const lockedPanel =
+        document.getElementById("topics-locked-panel");
 
-    const topicsGrid = document.getElementById("topics-grid");
+    const topicsGrid =
+        document.getElementById("topics-grid");
 
     const trainingSection =
         document.querySelector("#training");
@@ -296,9 +343,17 @@ function showTopicsLockedMessage() {
     if (trainingSection) {
         trainingSection.innerHTML = `
             <h2>Доступ обмежено</h2>
+
             <div class="panel">
-                <p>Для доступу до тем потрібна активна оплата на 6 тижнів.</p>
-                <p>Викладачі та адмін мають доступ без оплати.</p>
+                <p>
+                    Для доступу до тем потрібна
+                    активна оплата на 6 тижнів.
+                </p>
+
+                <p>
+                    Викладачі та адмін мають доступ без оплати.
+                </p>
+
                 <button
                     class="btn btn-primary"
                     onclick="location.href='index.html'"
@@ -309,6 +364,11 @@ function showTopicsLockedMessage() {
         `;
     }
 }
+
+
+/* =========================================================
+   PAYMENT
+========================================================= */
 
 async function startPayment(event) {
     if (
@@ -326,7 +386,9 @@ async function startPayment(event) {
     }
 
     if (!currentUser) {
-        alert("Спочатку потрібно увійти або зареєструватися.");
+        alert(
+            "Спочатку потрібно увійти або зареєструватися."
+        );
         return;
     }
 
@@ -338,7 +400,9 @@ async function startPayment(event) {
             sessionData?.session?.access_token;
 
         if (!accessToken) {
-            alert("Не вдалося отримати токен користувача.");
+            alert(
+                "Не вдалося отримати токен користувача."
+            );
             return;
         }
 
@@ -346,13 +410,16 @@ async function startPayment(event) {
             `${SUPABASE_URL}/functions/v1/start-payment-ts`,
             {
                 method: "POST",
+
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${accessToken}`,
+                    "Authorization":
+                        `Bearer ${accessToken}`
                 },
+
                 body: JSON.stringify({
-                    userId: currentUser.id,
-                }),
+                    userId: currentUser.id
+                })
             }
         );
 
@@ -371,6 +438,7 @@ async function startPayment(event) {
             if (typeof data === "string") {
                 data = JSON.parse(data);
             }
+
         } catch (parseError) {
             console.error(
                 "start-payment parse error:",
@@ -412,11 +480,6 @@ async function startPayment(event) {
 
         const p = data.data;
 
-        console.log(
-            "parsed payment data:",
-            p
-        );
-
         const requiredFields = [
             "merchantAccount",
             "merchantAuthType",
@@ -434,7 +497,7 @@ async function startPayment(event) {
             "clientEmail",
             "language",
             "serviceUrl",
-            "returnUrl",
+            "returnUrl"
         ];
 
         for (const field of requiredFields) {
@@ -461,6 +524,7 @@ async function startPayment(event) {
         form.method = "POST";
         form.action =
             "https://secure.wayforpay.com/pay";
+
         form.acceptCharset = "utf-8";
         form.target = "_blank";
         form.style.display = "none";
@@ -486,40 +550,46 @@ async function startPayment(event) {
                 ),
 
             orderDate:
-                String(p.orderDate || ""),
+                String(
+                    p.orderDate || ""
+                ),
 
             amount:
-                String(p.amount || ""),
+                String(
+                    p.amount || ""
+                ),
 
             currency:
-                String(p.currency || ""),
+                String(
+                    p.currency || ""
+                ),
 
             productName:
                 Array.isArray(p.productName)
                     ? String(
-                          p.productName[0] || ""
-                      )
+                        p.productName[0] || ""
+                    )
                     : String(
-                          p.productName || ""
-                      ),
+                        p.productName || ""
+                    ),
 
             productPrice:
                 Array.isArray(p.productPrice)
                     ? String(
-                          p.productPrice[0] || ""
-                      )
+                        p.productPrice[0] || ""
+                    )
                     : String(
-                          p.productPrice || ""
-                      ),
+                        p.productPrice || ""
+                    ),
 
             productCount:
                 Array.isArray(p.productCount)
                     ? String(
-                          p.productCount[0] || ""
-                      )
+                        p.productCount[0] || ""
+                    )
                     : String(
-                          p.productCount || ""
-                      ),
+                        p.productCount || ""
+                    ),
 
             merchantSignature:
                 String(
@@ -554,7 +624,7 @@ async function startPayment(event) {
             returnUrl:
                 String(
                     p.returnUrl || ""
-                ),
+                )
         };
 
         Object.entries(fields).forEach(
@@ -572,33 +642,30 @@ async function startPayment(event) {
 
         document.body.appendChild(form);
 
-        console.log(
-            "Submitting to:",
-            form.action
-        );
-
-        console.log(
-            "Form HTML:",
-            form.outerHTML
-        );
-
         form.submit();
+
     } catch (err) {
         console.error(
             "Payment error:",
             err
         );
 
-        alert("Помилка запуску оплати.");
+        alert(
+            "Помилка запуску оплати."
+        );
     }
 }
+
+
+/* =========================================================
+   OPEN TOPIC
+========================================================= */
 
 function openTopic(topic) {
     if (!currentUser) {
         alert(
             "Спочатку потрібно увійти або зареєструватися."
         );
-
         return;
     }
 
@@ -614,11 +681,15 @@ function openTopic(topic) {
 
     currentMode = "topic";
     currentTopic = topic;
+
     currentQuestionIndex = 0;
     score = 0;
     answered = false;
+
     currentTopicStarted = false;
+
     elapsedSeconds = 0;
+
     questionStartTime = null;
 
     stopTopicTimer();
@@ -635,8 +706,12 @@ function openTopic(topic) {
         if (trainingSection) {
             trainingSection.innerHTML = `
                 <h2>Тренування</h2>
+
                 <div class="panel">
-                    <p>Для теми "${topic}" ще немає питань.</p>
+                    <p>
+                        Для теми "${topic}"
+                        ще немає питань.
+                    </p>
                 </div>
             `;
         }
@@ -646,7 +721,7 @@ function openTopic(topic) {
 
     if (!questionStates[currentTopic]) {
         questionStates[currentTopic] = {
-            answers: {},
+            answers: {}
         };
     }
 
@@ -680,34 +755,47 @@ function openTopic(topic) {
 
         trainingSection.scrollIntoView({
             behavior: "smooth",
-            block: "start",
+            block: "start"
         });
     }
 }
+
+
+/* =========================================================
+   START TOPIC
+========================================================= */
 
 function startTopic() {
     currentMode = "topic";
     currentTopicStarted = true;
 
     startTopicTimer();
+
     showQuestion();
 }
+
+
+/* =========================================================
+   START EXAM
+========================================================= */
 
 function startExam() {
     if (!currentUser) {
         alert(
             "Спочатку потрібно увійти або зареєструватися."
         );
-
         return;
     }
 
     currentMode = "exam";
     currentTopic = "Екзамен";
+
     currentQuestionIndex = 0;
     score = 0;
     answered = false;
+
     currentTopicStarted = true;
+
     elapsedSeconds = 0;
     questionStartTime = null;
 
@@ -740,21 +828,19 @@ function startExam() {
     }
 
     questionStates[currentTopic] = {
-        answers: {},
+        answers: {}
     };
 
     showQuestion();
 }
 
+
+/* =========================================================
+   SHOW QUESTION
+========================================================= */
+
 function showQuestion() {
     answered = false;
-
-    /*
-     * ВАЖЛИВО:
-     * запускаємо окремий лічильник саме
-     * для поточного питання.
-     */
-    questionStartTime = Date.now();
 
     const question =
         currentQuestions[currentQuestionIndex];
@@ -762,28 +848,32 @@ function showQuestion() {
     const trainingSection =
         document.querySelector("#training");
 
-    if (!trainingSection || !question) {
+    if (
+        !trainingSection ||
+        !question
+    ) {
         return;
     }
 
     const state =
         questionStates[currentTopic] ||
         {
-            answers: {},
+            answers: {}
         };
 
     const savedAnswer =
         state.answers[currentQuestionIndex];
 
-    const imageHtml = question.image
-        ? `
-            <img
-                src="${question.image}"
-                alt="Зображення до питання"
-                class="question-image"
-            >
-        `
-        : "";
+    const imageHtml =
+        question.image
+            ? `
+                <img
+                    src="${question.image}"
+                    alt="Зображення до питання"
+                    class="question-image"
+                >
+            `
+            : "";
 
     const title =
         currentMode === "exam"
@@ -824,40 +914,41 @@ function showQuestion() {
             <div class="options">
 
                 ${question.options
-                    .map(
-                        (option, index) => {
-                            let extraClass = "";
+                    .map((option, index) => {
+
+                        let extraClass = "";
+
+                        if (
+                            savedAnswer !== undefined
+                        ) {
 
                             if (
-                                savedAnswer !==
-                                undefined
+                                index ===
+                                question.correctAnswer
                             ) {
-                                if (
-                                    index ===
-                                    question.correctAnswer
-                                ) {
-                                    extraClass =
-                                        "correct";
-                                } else if (
-                                    index ===
-                                        savedAnswer.selected &&
-                                    !savedAnswer.isCorrect
-                                ) {
-                                    extraClass =
-                                        "wrong";
-                                }
+                                extraClass =
+                                    "correct";
                             }
 
-                            return `
-                                <button
-                                    class="option-btn ${extraClass}"
-                                    onclick="checkAnswer(${index})"
-                                >
-                                    ${option}
-                                </button>
-                            `;
+                            else if (
+                                index ===
+                                savedAnswer.selected &&
+                                !savedAnswer.isCorrect
+                            ) {
+                                extraClass =
+                                    "wrong";
+                            }
                         }
-                    )
+
+                        return `
+                            <button
+                                class="option-btn ${extraClass}"
+                                onclick="checkAnswer(${index})"
+                            >
+                                ${option}
+                            </button>
+                        `;
+                    })
                     .join("")}
 
             </div>
@@ -869,11 +960,9 @@ function showQuestion() {
                 <button
                     class="nav-btn"
                     onclick="prevQuestion()"
-                    ${
-                        currentQuestionIndex === 0
-                            ? "disabled"
-                            : ""
-                    }
+                    ${currentQuestionIndex === 0
+                        ? "disabled"
+                        : ""}
                 >
                     Назад
                 </button>
@@ -893,6 +982,7 @@ function showQuestion() {
 
                 ${currentQuestions
                     .map((_, index) => {
+
                         let cls =
                             "question-square";
 
@@ -907,11 +997,11 @@ function showQuestion() {
                             state.answers[index] !==
                             undefined
                         ) {
-                            cls += state
-                                .answers[index]
-                                .isCorrect
-                                ? " correct-answer"
-                                : " wrong-answer";
+                            cls +=
+                                state.answers[index]
+                                    .isCorrect
+                                    ? " correct-answer"
+                                    : " wrong-answer";
                         }
 
                         return `
@@ -930,7 +1020,30 @@ function showQuestion() {
         </div>
     `;
 
+
+    /*
+       ВАЖЛИВО:
+
+       Якщо питання ще не було відмічене,
+       запускаємо окремий таймер саме цього питання.
+
+       Якщо воно вже було відмічене,
+       таймер НЕ запускаємо заново.
+    */
+
+    if (savedAnswer === undefined) {
+        startQuestionTimer();
+    }
+
+
+    /*
+       Якщо відповідь уже була дана,
+       показуємо її без повторного
+       запису статистики.
+    */
+
     if (savedAnswer !== undefined) {
+
         answered = true;
 
         const result =
@@ -946,6 +1059,7 @@ function showQuestion() {
 
         buttons.forEach(
             (button, index) => {
+
                 button.disabled = true;
 
                 if (
@@ -959,7 +1073,7 @@ function showQuestion() {
 
                 if (
                     index ===
-                        savedAnswer.selected &&
+                    savedAnswer.selected &&
                     !savedAnswer.isCorrect
                 ) {
                     button.classList.add(
@@ -997,6 +1111,11 @@ function showQuestion() {
     }
 }
 
+
+/* =========================================================
+   CHECK ANSWER
+========================================================= */
+
 async function checkAnswer(selectedIndex) {
     if (answered) return;
 
@@ -1023,22 +1142,47 @@ async function checkAnswer(selectedIndex) {
         selectedIndex ===
         question.correctAnswer;
 
-    /*
-     * Рахуємо час ТІЛЬКИ для поточного питання.
-     */
-    let questionTimeSeconds = 0;
 
-    if (questionStartTime) {
-        questionTimeSeconds = Math.floor(
-            (Date.now() - questionStartTime) /
-                1000
-        );
-    }
+    /*
+       =====================================================
+       ГОЛОВНЕ ВИПРАВЛЕННЯ
+       =====================================================
+
+       Рахуємо тільки час ЦЬОГО питання.
+
+       Наприклад:
+       питання 1 = 5 секунд
+       питання 2 = 7 секунд
+       питання 3 = 4 секунди
+
+       У Supabase потраплять:
+       5
+       7
+       4
+
+       А НЕ:
+       5
+       12
+       16
+    */
+
+    const questionTimeSeconds =
+        getCurrentQuestionTime();
+
 
     state.answers[currentQuestionIndex] = {
         selected: selectedIndex,
         isCorrect: isCorrect,
+
+        // Зберігаємо час питання
+        timeSpentSeconds:
+            questionTimeSeconds
     };
+
+
+    /*
+       Записуємо саме час поточного питання.
+    */
 
     await addStat(
         currentTopic,
@@ -1047,8 +1191,10 @@ async function checkAnswer(selectedIndex) {
         questionTimeSeconds
     );
 
+
     buttons.forEach(
         (button, index) => {
+
             button.disabled = true;
 
             if (
@@ -1071,7 +1217,9 @@ async function checkAnswer(selectedIndex) {
         }
     );
 
+
     if (isCorrect) {
+
         score++;
 
         result.innerHTML = `
@@ -1084,7 +1232,9 @@ async function checkAnswer(selectedIndex) {
                 ✅ Правильно!
             </p>
         `;
+
     } else {
+
         result.innerHTML = `
             <p
                 style="
@@ -1097,19 +1247,36 @@ async function checkAnswer(selectedIndex) {
         `;
     }
 
+
+    /*
+       Після відповіді зупиняємо
+       логіку таймера конкретного питання.
+    */
+
+    questionStartTime = null;
+
     nextBtn.style.display =
         "inline-block";
 }
 
+
+/* =========================================================
+   NEXT QUESTION
+========================================================= */
+
 function nextQuestion() {
+
     if (
         currentQuestionIndex <
         currentQuestions.length - 1
     ) {
+
         currentQuestionIndex++;
 
         showQuestion();
+
     } else {
+
         if (
             currentMode === "exam"
         ) {
@@ -1120,22 +1287,43 @@ function nextQuestion() {
     }
 }
 
+
+/* =========================================================
+   PREVIOUS QUESTION
+========================================================= */
+
 function prevQuestion() {
+
     if (currentQuestionIndex > 0) {
+
         currentQuestionIndex--;
 
         showQuestion();
     }
 }
 
+
+/* =========================================================
+   GO TO QUESTION
+========================================================= */
+
 function goToQuestion(index) {
+
     currentQuestionIndex = index;
 
     showQuestion();
 }
 
+
+/* =========================================================
+   RESULT
+========================================================= */
+
 function showResult() {
+
     stopTopicTimer();
+
+    questionStartTime = null;
 
     const trainingSection =
         document.querySelector("#training");
@@ -1180,8 +1368,16 @@ function showResult() {
     `;
 }
 
+
+/* =========================================================
+   EXAM RESULT
+========================================================= */
+
 function showExamResult() {
+
     stopTopicTimer();
+
+    questionStartTime = null;
 
     const trainingSection =
         document.querySelector("#training");
@@ -1195,7 +1391,9 @@ function showExamResult() {
         wrongCount <= 2;
 
     trainingSection.innerHTML = `
-        <h2>Іспит завершено</h2>
+        <h2>
+            Іспит завершено
+        </h2>
 
         <div class="panel">
 
@@ -1252,7 +1450,13 @@ function showExamResult() {
     `;
 }
 
+
+/* =========================================================
+   OPEN TRAINING
+========================================================= */
+
 function openTraining() {
+
     if (!currentUser) {
         alert(
             "Спочатку потрібно увійти або зареєструватися."
@@ -1267,18 +1471,28 @@ function openTraining() {
         )
     ) {
         startExam();
+
     } else {
-        location.href = "training.html";
+
+        location.href =
+            "training.html";
     }
 }
 
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
 async function renderStats() {
+
     const statsSection =
         document.querySelector("#stats");
 
     if (!statsSection) return;
 
     if (!currentUser) {
+
         statsSection.innerHTML = `
             <h2>Статистика</h2>
 
@@ -1293,10 +1507,17 @@ async function renderStats() {
         return;
     }
 
+
     const stats =
         await loadUserStatsFromSupabase();
 
-    const total = stats.length;
+
+    /*
+       Загальна статистика
+    */
+
+    const total =
+        stats.length;
 
     const correct =
         stats.filter(
@@ -1309,67 +1530,89 @@ async function renderStats() {
     const percent =
         total > 0
             ? Math.round(
-                  (correct / total) * 100
-              )
+                (correct / total) * 100
+            )
             : 0;
 
+
     /*
-     * Тепер time_spent_seconds
-     * містить час КОЖНОГО питання,
-     * тому сумування дає справжній
-     * загальний час відповідей.
-     */
+       ТЕПЕР ЦІ ЧИСЛА — ЦЕ СУМА ЧАСУ
+       ОКРЕМИХ ПИТАНЬ.
+    */
+
     const totalTimeSeconds =
         stats.reduce(
             (sum, item) =>
                 sum +
-                (Number(
-                    item.timeSpentSeconds
-                ) || 0),
+                (
+                    Number(
+                        item.timeSpentSeconds
+                    ) || 0
+                ),
             0
         );
+
 
     const averageTimeSeconds =
         total > 0
             ? Math.round(
-                  totalTimeSeconds /
-                      total
-              )
+                totalTimeSeconds / total
+            )
             : 0;
+
+
+    /*
+       Статистика по темах
+    */
 
     const topicStats = {};
 
+
     stats.forEach((item) => {
+
         if (!topicStats[item.topic]) {
+
             topicStats[item.topic] = {
                 total: 0,
                 correct: 0,
                 wrong: 0,
-                time: 0,
+                time: 0
             };
         }
 
+
         topicStats[item.topic].total++;
+
 
         topicStats[item.topic].time +=
             Number(
                 item.timeSpentSeconds
             ) || 0;
 
+
         if (item.correct) {
+
             topicStats[item.topic]
                 .correct++;
+
         } else {
+
             topicStats[item.topic]
                 .wrong++;
         }
     });
 
+
+    /*
+       HTML статистики по темах
+    */
+
     const topicStatsHtml =
         Object.keys(topicStats).length
+
             ? Object.entries(topicStats)
-                  .map(
-                      ([topic, data]) => `
+                .map(
+                    ([topic, data]) => `
                         <div
                             class="panel"
                             style="margin-top:16px;"
@@ -1405,10 +1648,25 @@ async function renderStats() {
                                 )}
                             </p>
 
+                            <p>
+                                Середній час:
+                                ${
+                                    data.total > 0
+                                        ? formatTime(
+                                            Math.round(
+                                                data.time /
+                                                data.total
+                                            )
+                                        )
+                                        : "0 с"
+                                }
+                            </p>
+
                         </div>
                     `
-                  )
-                  .join("")
+                )
+                .join("")
+
             : `
                 <div class="panel">
                     <p>
@@ -1418,55 +1676,76 @@ async function renderStats() {
                 </div>
             `;
 
+
+    /*
+       Історія відповідей
+    */
+
     const historyHtml =
         stats.length
+
             ? `
                 <h2
-                    style="margin-top:24px;"
+                    style="
+                        margin-top:24px;
+                    "
                 >
                     Останні відповіді
                 </h2>
 
                 <div class="panel">
 
-                    ${stats
-                        .slice(-10)
-                        .reverse()
-                        .map(
-                            (item) => `
-                                <p>
+                    ${
+                        stats
+                            .slice(-10)
+                            .reverse()
+                            .map(
+                                (item) => `
+                                    <p>
 
-                                    <strong>
-                                        ${item.topic}
-                                    </strong>
+                                        <strong>
+                                            ${item.topic}
+                                        </strong>
 
-                                    —
-                                    ${
-                                        item.correct
-                                            ? "✅ правильно"
-                                            : "❌ неправильно"
-                                    }
+                                        —
 
-                                    —
-                                    час:
+                                        ${
+                                            item.correct
+                                                ? "✅ правильно"
+                                                : "❌ неправильно"
+                                        }
 
-                                    ${formatTime(
-                                        Number(
-                                            item.timeSpentSeconds
-                                        ) || 0
-                                    )}
+                                        —
 
-                                </p>
-                            `
-                        )
-                        .join("")}
+                                        час:
+
+                                        ${formatTime(
+                                            Number(
+                                                item.timeSpentSeconds
+                                            ) || 0
+                                        )}
+
+                                    </p>
+                                `
+                            )
+                            .join("")
+                    }
 
                 </div>
             `
+
             : "";
 
+
+    /*
+       Виводимо статистику
+    */
+
     statsSection.innerHTML = `
-        <h2>Статистика</h2>
+
+        <h2>
+            Статистика
+        </h2>
 
         <div class="panel">
 
@@ -1492,7 +1771,7 @@ async function renderStats() {
 
             <p>
                 Загальний час:
-                ${formatLongTime(
+                ${formatTime(
                     totalTimeSeconds
                 )}
             </p>
@@ -1506,8 +1785,11 @@ async function renderStats() {
 
         </div>
 
+
         <h2
-            style="margin-top:24px;"
+            style="
+                margin-top:24px;
+            "
         >
             Статистика по темах
         </h2>
@@ -1518,7 +1800,13 @@ async function renderStats() {
     `;
 }
 
+
+/* =========================================================
+   WRONG QUESTION
+========================================================= */
+
 function openWrongQuestion(questionId) {
+
     const question =
         allQuestions.find(
             (q) =>
@@ -1527,61 +1815,96 @@ function openWrongQuestion(questionId) {
         );
 
     if (!question) {
-        alert("Питання не знайдено.");
+
+        alert(
+            "Питання не знайдено."
+        );
+
         return;
     }
 
+
     currentMode = "wrong";
     currentTopic = "wrong-tests";
-    currentQuestions = [question];
+
+    currentQuestions = [
+        question
+    ];
+
     currentQuestionIndex = 0;
+
     score = 0;
     answered = false;
+
     currentTopicStarted = true;
+
     elapsedSeconds = 0;
     questionStartTime = null;
 
     stopTopicTimer();
     startTopicTimer();
 
-    if (!questionStates[currentTopic]) {
+
+    if (
+        !questionStates[currentTopic]
+    ) {
+
         questionStates[currentTopic] = {
-            answers: {},
+            answers: {}
         };
+
     } else {
-        questionStates[
-            currentTopic
-        ].answers = {};
+
+        questionStates[currentTopic]
+            .answers = {};
     }
+
 
     showQuestion();
 }
 
+
+/* =========================================================
+   WRONG TESTS TRAINING
+========================================================= */
+
 async function startWrongTestsTraining() {
+
     if (!currentUser) return;
+
 
     if (
         !allQuestions ||
         allQuestions.length === 0
     ) {
+
         alert(
-            "Питання ще завантажуються. Спробуй ще раз за кілька секунд."
+            "Питання ще завантажуються. " +
+            "Спробуй ще раз за кілька секунд."
         );
 
         return;
     }
 
-    const { data, error } =
-        await supabaseClient
-            .from("user_stats")
-            .select("question_id")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .eq("correct", false);
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("user_stats")
+        .select("question_id")
+        .eq(
+            "user_id",
+            currentUser.id
+        )
+        .eq(
+            "correct",
+            false
+        );
+
 
     if (error) {
+
         console.error(
             "Не вдалося завантажити помилкові тести:",
             error
@@ -1594,10 +1917,12 @@ async function startWrongTestsTraining() {
         return;
     }
 
+
     if (
         !data ||
         data.length === 0
     ) {
+
         alert(
             "У тебе немає помилкових тестів. Молодець!"
         );
@@ -1605,33 +1930,41 @@ async function startWrongTestsTraining() {
         return;
     }
 
-    const wrongIds = [
-        ...new Set(
-            data.map(
-                (item) =>
-                    String(
-                        item.question_id
-                    )
+
+    const wrongIds =
+        [
+            ...new Set(
+                data.map(
+                    item =>
+                        String(
+                            item.question_id
+                        )
+                )
             )
-        ),
-    ];
+        ];
+
 
     const wrongQuestions =
         allQuestions
-            .filter((q) =>
-                wrongIds.includes(
-                    String(q.id)
-                )
+
+            .filter(
+                q =>
+                    wrongIds.includes(
+                        String(q.id)
+                    )
             )
+
             .sort(
                 (a, b) =>
                     Number(a.id) -
                     Number(b.id)
             );
 
+
     if (
         wrongQuestions.length === 0
     ) {
+
         alert(
             "Не вдалося знайти питання для повторення."
         );
@@ -1639,30 +1972,44 @@ async function startWrongTestsTraining() {
         return;
     }
 
+
     currentMode = "wrong";
     currentTopic = "wrong-tests";
+
     currentQuestions =
         wrongQuestions;
 
     currentQuestionIndex = 0;
+
     score = 0;
     answered = false;
+
     currentTopicStarted = true;
+
     elapsedSeconds = 0;
     questionStartTime = null;
 
     stopTopicTimer();
     startTopicTimer();
 
+
     questionStates[currentTopic] = {
-        answers: {},
+        answers: {}
     };
+
 
     showQuestion();
 }
 
+
+/* =========================================================
+   OPEN STATS
+========================================================= */
+
 async function openStats() {
+
     if (!currentUser) {
+
         alert(
             "Спочатку потрібно увійти або зареєструватися."
         );
@@ -1670,31 +2017,47 @@ async function openStats() {
         return;
     }
 
+
     if (
         location.pathname.includes(
             "stats.html"
         )
     ) {
+
         await renderStats();
+
     } else {
-        location.href = "stats.html";
+
+        location.href =
+            "stats.html";
     }
 }
 
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
 async function refreshProfile() {
+
     if (!currentUser) return;
 
-    const { data, error } =
-        await supabaseClient
-            .from("profiles")
-            .select("*")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .single();
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq(
+            "user_id",
+            currentUser.id
+        )
+        .single();
+
 
     if (error) {
+
         console.error(
             "Не вдалося завантажити профіль:",
             error
@@ -1705,37 +2068,47 @@ async function refreshProfile() {
         return;
     }
 
+
     currentProfile = data;
 }
 
+
+/* =========================================================
+   REGISTER
+========================================================= */
+
 async function registerFromForm() {
+
     const name =
         document
             .getElementById("auth-name")
-            .value.trim();
+            .value
+            .trim();
 
     const email =
         document
             .getElementById("auth-email")
-            .value.trim();
+            .value
+            .trim();
 
     const password =
         document
-            .getElementById(
-                "auth-password"
-            )
-            .value.trim();
+            .getElementById("auth-password")
+            .value
+            .trim();
 
     const message =
         document.getElementById(
             "auth-message"
         );
 
+
     if (
         !name ||
         !email ||
         !password
     ) {
+
         message.textContent =
             "Заповни всі поля.";
 
@@ -1745,15 +2118,18 @@ async function registerFromForm() {
         return;
     }
 
-    const { data, error } =
-        await supabaseClient.auth.signUp(
-            {
-                email: email,
-                password: password,
-            }
-        );
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password
+    });
+
 
     if (error) {
+
         message.textContent =
             "Помилка реєстрації: " +
             error.message;
@@ -1764,11 +2140,15 @@ async function registerFromForm() {
         return;
     }
 
+
     const user = data.user;
 
+
     if (!user) {
+
         message.textContent =
-            "Реєстрація виконана, але користувача не створено.";
+            "Реєстрація виконана, " +
+            "але користувача не створено.";
 
         message.style.color =
             "#fca5a5";
@@ -1776,8 +2156,9 @@ async function registerFromForm() {
         return;
     }
 
+
     const {
-        error: profileError,
+        error: profileError
     } = await supabaseClient
         .from("profiles")
         .insert([
@@ -1790,11 +2171,13 @@ async function registerFromForm() {
                     new Date().toISOString(),
                 teacher_ref_code:
                     teacherRefCode,
-                paid_until: null,
-            },
+                paid_until: null
+            }
         ]);
 
+
     if (profileError) {
+
         message.textContent =
             "Профіль створено з помилкою: " +
             profileError.message;
@@ -1805,6 +2188,7 @@ async function registerFromForm() {
         return;
     }
 
+
     message.style.color =
         "#86efac";
 
@@ -1812,25 +2196,36 @@ async function registerFromForm() {
         "Реєстрація успішна. Тепер увійди.";
 }
 
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
 async function loginFromForm() {
+
     const email =
         document
             .getElementById("auth-email")
-            .value.trim();
+            .value
+            .trim();
 
     const password =
         document
-            .getElementById(
-                "auth-password"
-            )
-            .value.trim();
+            .getElementById("auth-password")
+            .value
+            .trim();
 
     const message =
         document.getElementById(
             "auth-message"
         );
 
-    if (!email || !password) {
+
+    if (
+        !email ||
+        !password
+    ) {
+
         message.textContent =
             "Введи email і пароль.";
 
@@ -1840,15 +2235,19 @@ async function loginFromForm() {
         return;
     }
 
-    const { data, error } =
-        await supabaseClient.auth.signInWithPassword(
-            {
-                email: email,
-                password: password,
-            }
-        );
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth
+        .signInWithPassword({
+            email: email,
+            password: password
+        });
+
 
     if (error) {
+
         message.textContent =
             "Помилка входу: " +
             error.message;
@@ -1859,18 +2258,27 @@ async function loginFromForm() {
         return;
     }
 
+
     currentUser = data.user;
 
     await refreshProfile();
     await loadUserProfile();
     await applyAccessRulesAfterLogin();
 
+
     window.location.href =
         "index.html";
 }
 
+
+/* =========================================================
+   ACCESS RULES
+========================================================= */
+
 async function applyAccessRulesAfterLogin() {
+
     if (!currentProfile) return;
+
 
     if (
         location.pathname.includes(
@@ -1878,15 +2286,26 @@ async function applyAccessRulesAfterLogin() {
         ) &&
         isTopicsLocked()
     ) {
+
         showTopicsLockedMessage();
     }
 }
 
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
 async function logoutUser() {
-    const { error } =
-        await supabaseClient.auth.signOut();
+
+    const {
+        error
+    } = await supabaseClient.auth
+        .signOut();
+
 
     if (error) {
+
         alert(
             "Помилка виходу: " +
             error.message
@@ -1895,14 +2314,22 @@ async function logoutUser() {
         return;
     }
 
+
     currentUser = null;
     currentProfile = null;
+
 
     window.location.href =
         "index.html";
 }
 
+
+/* =========================================================
+   AUTH UI
+========================================================= */
+
 function showAuth() {
+
     const auth =
         document.getElementById(
             "auth-screen"
@@ -1913,16 +2340,21 @@ function showAuth() {
             "app-content"
         );
 
+
     if (auth) {
-        auth.style.display = "flex";
+        auth.style.display =
+            "flex";
     }
 
     if (app) {
-        app.style.display = "none";
+        app.style.display =
+            "none";
     }
 }
+
 
 function showApp() {
+
     const auth =
         document.getElementById(
             "auth-screen"
@@ -1933,30 +2365,44 @@ function showApp() {
             "app-content"
         );
 
+
     if (auth) {
-        auth.style.display = "none";
+        auth.style.display =
+            "none";
     }
 
     if (app) {
-        app.style.display = "block";
+        app.style.display =
+            "block";
     }
 }
 
+
+/* =========================================================
+   USER PROFILE
+========================================================= */
+
 async function loadUserProfile() {
+
     if (!currentUser) return;
+
 
     if (!currentProfile) {
         await refreshProfile();
     }
 
+
     if (!currentProfile) return;
+
 
     const greeting =
         document.getElementById(
             "user-greeting"
         );
 
+
     if (greeting) {
+
         greeting.textContent =
             currentProfile.full_name
                 ? `Вітаємо, ${currentProfile.full_name}`
@@ -1964,49 +2410,85 @@ async function loadUserProfile() {
     }
 }
 
+
+/* =========================================================
+   SUBSCRIPTION
+========================================================= */
+
 function formatSubscriptionStatus(
     paidUntil
 ) {
+
     if (!paidUntil) {
+
         return "Підписка ще не оформлена";
     }
 
-    const now = new Date();
-    const end = new Date(
-        paidUntil
-    );
 
-    if (isNaN(end.getTime())) {
+    const now =
+        new Date();
+
+    const end =
+        new Date(paidUntil);
+
+
+    if (
+        isNaN(
+            end.getTime()
+        )
+    ) {
+
         return "Підписка ще не оформлена";
     }
+
 
     if (end <= now) {
+
         return `
             Підписка завершилась
-            ${end.toLocaleDateString(
-                "uk-UA"
-            )}
+            ${end.toLocaleDateString("uk-UA")}
         `;
     }
 
-    const diffMs = end - now;
 
-    const diffDays = Math.floor(
-        diffMs /
-            (1000 * 60 * 60 * 24)
-    );
+    const diffMs =
+        end - now;
 
-    const diffHours = Math.floor(
-        (diffMs %
-            (1000 * 60 * 60 * 24)) /
-            (1000 * 60 * 60)
-    );
+
+    const diffDays =
+        Math.floor(
+            diffMs /
+            (
+                1000 *
+                60 *
+                60 *
+                24
+            )
+        );
+
+
+    const diffHours =
+        Math.floor(
+            (
+                diffMs %
+                (
+                    1000 *
+                    60 *
+                    60 *
+                    24
+                )
+            ) /
+            (
+                1000 *
+                60 *
+                60
+            )
+        );
+
 
     return `
         Активна до
-        ${end.toLocaleDateString(
-            "uk-UA"
-        )}
+        ${end.toLocaleDateString("uk-UA")}
         —
         залишилось
         ${diffDays}
@@ -2016,7 +2498,13 @@ function formatSubscriptionStatus(
     `;
 }
 
+
+/* =========================================================
+   PROFILE PAGE
+========================================================= */
+
 async function loadProfilePage() {
+
     const profileInfo =
         document.getElementById(
             "profile-info"
@@ -2027,9 +2515,12 @@ async function loadProfilePage() {
             "profile-message"
         );
 
+
     if (!profileInfo) return;
 
+
     if (!currentUser) {
+
         profileInfo.innerHTML = `
             <p>
                 Спочатку потрібно увійти
@@ -2040,11 +2531,14 @@ async function loadProfilePage() {
         return;
     }
 
+
     if (!currentProfile) {
         await refreshProfile();
     }
 
+
     if (!currentProfile) {
+
         profileInfo.innerHTML = `
             <p>
                 Не вдалося завантажити профіль.
@@ -2054,8 +2548,11 @@ async function loadProfilePage() {
         return;
     }
 
+
     profileInfo.innerHTML = `
-        <h2>Дані профілю</h2>
+        <h2>
+            Дані профілю
+        </h2>
 
         <p>
             <strong>ПІБ:</strong>
@@ -2080,34 +2577,46 @@ async function loadProfilePage() {
         </p>
     `;
 
+
     if (profileMessage) {
         profileMessage.textContent = "";
     }
 }
 
+
+/* =========================================================
+   CHANGE PASSWORD
+========================================================= */
+
 async function changePasswordFromForm() {
+
     const newPassword =
         document
             .getElementById(
                 "new-password"
             )
-            ?.value.trim();
+            ?.value
+            .trim();
 
     const confirmPassword =
         document
             .getElementById(
                 "confirm-password"
             )
-            ?.value.trim();
+            ?.value
+            .trim();
 
     const message =
         document.getElementById(
             "profile-message"
         );
 
+
     if (!message) return;
 
+
     if (!currentUser) {
+
         message.textContent =
             "Спочатку потрібно увійти.";
 
@@ -2117,10 +2626,12 @@ async function changePasswordFromForm() {
         return;
     }
 
+
     if (
         !newPassword ||
         !confirmPassword
     ) {
+
         message.textContent =
             "Заповни обидва поля.";
 
@@ -2130,10 +2641,12 @@ async function changePasswordFromForm() {
         return;
     }
 
+
     if (
         newPassword !==
         confirmPassword
     ) {
+
         message.textContent =
             "Паролі не збігаються.";
 
@@ -2143,7 +2656,11 @@ async function changePasswordFromForm() {
         return;
     }
 
-    if (newPassword.length < 6) {
+
+    if (
+        newPassword.length < 6
+    ) {
+
         message.textContent =
             "Пароль має містити щонайменше 6 символів.";
 
@@ -2153,14 +2670,17 @@ async function changePasswordFromForm() {
         return;
     }
 
-    const { error } =
-        await supabaseClient.auth.updateUser(
-            {
-                password: newPassword,
-            }
-        );
+
+    const {
+        error
+    } = await supabaseClient.auth
+        .updateUser({
+            password: newPassword
+        });
+
 
     if (error) {
+
         console.error(
             "Не вдалося змінити пароль:",
             error
@@ -2176,11 +2696,13 @@ async function changePasswordFromForm() {
         return;
     }
 
+
     message.textContent =
         "Пароль успішно змінено.";
 
     message.style.color =
         "#86efac";
+
 
     document.getElementById(
         "new-password"
@@ -2191,17 +2713,32 @@ async function changePasswordFromForm() {
     ).value = "";
 }
 
-async function checkCurrentUser() {
-    const { data } =
-        await supabaseClient.auth.getUser();
 
-    currentUser = data.user;
+/* =========================================================
+   CURRENT USER
+========================================================= */
+
+async function checkCurrentUser() {
+
+    const {
+        data
+    } = await supabaseClient.auth
+        .getUser();
+
+
+    currentUser =
+        data.user;
+
 
     showApp();
 
+
     if (currentUser) {
+
         await refreshProfile();
+
         await loadUserProfile();
+
 
         if (
             location.pathname.includes(
@@ -2211,6 +2748,7 @@ async function checkCurrentUser() {
             await loadProfilePage();
         }
 
+
         if (
             location.pathname.includes(
                 "stats.html"
@@ -2218,6 +2756,7 @@ async function checkCurrentUser() {
         ) {
             await renderStats();
         }
+
 
         if (
             location.pathname.includes(
@@ -2229,10 +2768,18 @@ async function checkCurrentUser() {
         }
     }
 
+
     document.body.style.visibility =
         "visible";
 }
 
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
 initReferralCode();
+
 loadQuestions();
+
 checkCurrentUser();
