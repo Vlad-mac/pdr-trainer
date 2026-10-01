@@ -675,28 +675,6 @@ async function loadSectionTexts() {
     return card;
 }
 
-    summary.append(number, heading, chevron);
-
-    const content = document.createElement("div");
-    content.className = "rule-content";
-
-    const message = document.createElement("p");
-    message.textContent =
-        "Матеріал цього розділу буде додано на наступному етапі.";
-
-    content.append(message);
-    card.append(summary, content);
-
-    if (topic.number === "01") {
-        summary.addEventListener("click", function(event) {
-            event.preventDefault();
-            window.location.href = "rules-content/section-01.html";
-        });
-    }
-
-    return card;
-}
-
         function renderRules() {
             rulesList.replaceChildren(
                 ...ruleTopics.map(createRuleCard)
