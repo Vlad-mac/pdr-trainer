@@ -522,6 +522,96 @@
         const searchInput = document.getElementById("ruleSearch");
         const results = document.getElementById("rulesResults");
         const emptyMessage = document.getElementById("rulesEmpty");
+        // Файли з текстами розділів
+const sectionFiles = {
+  "01": "rules-content/section-01.html",
+  "02": "rules-content/section-02.html",
+  "03": "rules-content/section-03.html",
+  "04": "rules-content/section-04.html",
+  "05": "rules-content/section-05.html",
+  "06": "rules-content/section-06.html",
+  "07": "rules-content/section-07.html",
+  "08": "rules-content/section-08.html",
+  "09": "rules-content/section-09.html",
+  "10": "rules-content/section-10.html",
+  "11": "rules-content/section-11.html",
+  "12": "rules-content/section-12.html",
+  "13": "rules-content/section-13.html",
+  "14": "rules-content/section-14.html",
+  "15": "rules-content/section-15.html",
+  "16": "rules-content/section-16.html",
+  "17": "rules-content/section-17.html",
+  "18": "rules-content/section-18.html",
+  "19": "rules-content/section-19.html",
+  "20": "rules-content/section-20.html",
+  "21": "rules-content/section-21.html",
+  "22": "rules-content/section-22.html",
+  "23": "rules-content/section-23.html",
+  "24": "rules-content/section-24.html",
+  "25": "rules-content/section-25.html",
+  "26": "rules-content/section-26.html",
+  "27": "rules-content/section-27.html",
+  "28": "rules-content/section-28.html",
+  "29": "rules-content/section-29.html",
+  "30": "rules-content/section-30.html",
+  "31": "rules-content/section-31.html",
+  "32": "rules-content/section-32.html",
+  "33": "rules-content/section-33.html",
+  "34": "rules-content/section-34.html",
+  "35": "rules-content/section-35.html",
+  "36": "rules-content/section-36.html",
+  "37": "rules-content/section-37.html",
+  "38": "rules-content/section-38.html",
+  "39": "rules-content/section-39.html",
+  "40": "rules-content/section-40.html"
+};
+
+const sectionTexts = {};
+
+async function loadSectionTexts() {
+    await Promise.all(
+        Object.entries(sectionFiles).map(async ([number, path]) => {
+            try {
+                const response = await fetch(path);
+
+                if (!response.ok) {
+                    throw new Error(`Не вдалося завантажити ${path}`);
+                }
+
+                const html = await response.text();
+                const documentHTML = new DOMParser().parseFromString(
+                    html,
+                    "text/html"
+                );
+
+                // Беремо текст матеріалу без HTML-тегів
+                const content = documentHTML.querySelector("main") ||
+                                documentHTML.querySelector(".rule-content") ||
+                                documentHTML.body;
+
+                sectionTexts[number] = content.textContent
+                    .replace(/\s+/g, " ")
+                    .trim()
+                    .toLowerCase();
+
+            } catch (error) {
+                console.error(error);
+                sectionTexts[number] = "";
+            }
+        })
+    );
+
+    // Оновлюємо пошукові дані карток
+    document.querySelectorAll(".rule-card").forEach(card => {
+        const number = card.querySelector(".rule-number").textContent;
+        const sectionText = sectionTexts[number] || "";
+
+        card.dataset.search += " " + sectionText;
+    });
+
+    // Повторно застосовуємо поточний пошуковий запит
+    filterRules();
+}
 
         function createRuleCard(topic) {
     const card = document.createElement("details");
@@ -615,7 +705,8 @@
 
         searchInput.addEventListener("input", filterRules);
 
-        renderRules();
+renderRules();
+loadSectionTexts();
     </script>
 </body>
 </html>
