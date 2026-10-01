@@ -305,16 +305,6 @@
                     Для вивчення використовуй чинну редакцію
                     Правил дорожнього руху України.
                 </p>
-
-                <p>
-                    <a
-                        href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Переглянути офіційні Правила дорожнього руху
-                    </a>
-                </p>
             </div>
         </main>
     </div>
@@ -534,58 +524,64 @@
         const emptyMessage = document.getElementById("rulesEmpty");
 
         function createRuleCard(topic) {
-            const card = document.createElement("details");
-            card.className = "rule-card";
+    const card = document.createElement("details");
+    card.className = "rule-card";
 
-            card.dataset.search = (
-                topic.number + " " +
-                topic.title + " " +
-                topic.description
-            ).toLowerCase();
+    card.dataset.search = (
+        topic.number + " " +
+        topic.title + " " +
+        topic.description
+    ).toLowerCase();
 
-            const summary = document.createElement("summary");
-            summary.className = "rule-summary";
+    const summary = document.createElement("summary");
+    summary.className = "rule-summary";
 
-            const number = document.createElement("span");
-            number.className = "rule-number";
-            number.textContent = topic.number;
+    const number = document.createElement("span");
+    number.className = "rule-number";
+    number.textContent = topic.number;
 
-            const heading = document.createElement("div");
-            heading.className = "rule-heading";
+    const heading = document.createElement("div");
+    heading.className = "rule-heading";
 
-            const title = document.createElement("h2");
-            title.textContent = topic.title;
+    const title = document.createElement("h2");
+    title.textContent = topic.title;
 
-            const description = document.createElement("p");
-            description.textContent = topic.description;
+    const description = document.createElement("p");
+    description.textContent = topic.description;
 
-            heading.append(title, description);
+    heading.append(title, description);
 
-            const chevron = document.createElement("span");
-            chevron.className = "rule-chevron";
-            chevron.textContent = "⌄";
+    const chevron = document.createElement("span");
+    chevron.className = "rule-chevron";
 
-            summary.append(number, heading, chevron);
+    if (topic.number === "01") {
+        chevron.textContent = "→";
+        chevron.style.transform = "none";
+    } else {
+        chevron.textContent = "⌄";
+    }
 
-            const content = document.createElement("div");
-            content.className = "rule-content";
+    summary.append(number, heading, chevron);
 
-            const message = document.createElement("p");
-            message.textContent =
-                "Матеріал цього розділу буде додано на наступному етапі.";
+    const content = document.createElement("div");
+    content.className = "rule-content";
 
-            const link = document.createElement("a");
-            link.href =
-                "https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF";
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = "Переглянути офіційні ПДР";
+    const message = document.createElement("p");
+    message.textContent =
+        "Матеріал цього розділу буде додано на наступному етапі.";
 
-            content.append(message, link);
-            card.append(summary, content);
+    content.append(message);
+    card.append(summary, content);
 
-            return card;
-        }
+    if (topic.number === "01") {
+        summary.addEventListener("click", function(event) {
+            event.preventDefault();
+            window.location.href = "rules-content/section-01.html";
+        });
+    }
+
+    return card;
+}
 
         function renderRules() {
             rulesList.replaceChildren(
