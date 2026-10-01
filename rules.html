@@ -644,12 +644,36 @@ async function loadSectionTexts() {
     const chevron = document.createElement("span");
     chevron.className = "rule-chevron";
 
-    if (topic.number === "01") {
+    const sectionPath = sectionFiles[topic.number];
+
+    if (sectionPath && ["01", "02"].includes(topic.number)) {
         chevron.textContent = "→";
         chevron.style.transform = "none";
     } else {
         chevron.textContent = "⌄";
     }
+
+    summary.append(number, heading, chevron);
+
+    const content = document.createElement("div");
+    content.className = "rule-content";
+
+    const message = document.createElement("p");
+    message.textContent =
+        "Матеріал цього розділу буде додано на наступному етапі.";
+
+    content.append(message);
+    card.append(summary, content);
+
+    if (sectionPath && ["01", "02"].includes(topic.number)) {
+        summary.addEventListener("click", function(event) {
+            event.preventDefault();
+            window.location.href = sectionPath;
+        });
+    }
+
+    return card;
+}
 
     summary.append(number, heading, chevron);
 
