@@ -4,27 +4,622 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Правила дорожнього руху — PDR Trainer</title>
+    <meta name="description" content="Вивчай правила дорожнього руху України онлайн. Зручний довідник із пошуком розділів ПДР.">
+
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        .rules-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+
+        .rules-hero {
+            text-align: center;
+            padding: 35px 20px;
+            margin-bottom: 25px;
+        }
+
+        .rules-hero h1 {
+            font-size: clamp(26px, 5vw, 38px);
+            margin-bottom: 12px;
+        }
+
+        .rules-hero p {
+            color: #aebbd0;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .rules-search {
+            max-width: 700px;
+            margin: 28px auto 10px;
+            position: relative;
+        }
+
+        .rules-search input {
+            width: 100%;
+            padding: 16px 20px 16px 48px;
+            border: 1px solid #35465f;
+            border-radius: 12px;
+            background: #1b293c;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .rules-search input:focus {
+            border-color: #4c91e8;
+            box-shadow: 0 0 0 3px rgba(76, 145, 232, 0.15);
+        }
+
+        .rules-search input::placeholder {
+            color: #9aa9bd;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 17px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 19px;
+            color: #aebbd0;
+            pointer-events: none;
+        }
+
+        .rules-results {
+            color: #aebbd0;
+            font-size: 14px;
+            margin: 12px 2px 22px;
+            text-align: center;
+        }
+
+        .rules-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .rule-card {
+            background: #172538;
+            border: 1px solid #2b3c54;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .rule-card:hover {
+            border-color: #4c91e8;
+        }
+
+        .rule-card[open] {
+            border-color: #4c91e8;
+        }
+
+        .rule-summary {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .rule-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .rule-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #263c58;
+            color: #8fc0ff;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .rule-heading {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rule-heading h2 {
+            font-size: 17px;
+            margin: 0 0 5px;
+            color: #f3f6fb;
+        }
+
+        .rule-heading p {
+            font-size: 13px;
+            color: #aebbd0;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .rule-chevron {
+            color: #aebbd0;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .rule-card[open] .rule-chevron {
+            transform: rotate(180deg);
+        }
+
+        .rule-content {
+            border-top: 1px solid #2b3c54;
+            padding: 20px;
+            color: #d7e0ed;
+            line-height: 1.7;
+        }
+
+        .rule-content h3 {
+            color: #fff;
+            font-size: 16px;
+            margin: 0 0 10px;
+        }
+
+        .rule-content p {
+            margin: 0 0 12px;
+        }
+
+        .rule-content a {
+            color: #8fc0ff;
+            text-decoration: underline;
+        }
+
+        .rule-note {
+            background: #22354c;
+            border-left: 3px solid #4c91e8;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .rules-empty {
+            display: none;
+            text-align: center;
+            padding: 35px 15px;
+            color: #aebbd0;
+            background: #172538;
+            border-radius: 12px;
+        }
+
+        .rules-footer {
+            text-align: center;
+            margin-top: 35px;
+            color: #91a0b5;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .rules-footer a {
+            color: #8fc0ff;
+        }
+
+        @media (max-width: 600px) {
+            .rules-page {
+                padding: 15px 12px 40px;
+            }
+
+            .rules-hero {
+                padding: 25px 8px;
+            }
+
+            .rule-summary {
+                gap: 11px;
+                padding: 14px 12px;
+            }
+
+            .rule-number {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+
+            .rule-heading h2 {
+                font-size: 15px;
+            }
+
+            .rule-heading p {
+                font-size: 12px;
+            }
+
+            .rule-content {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <div id="app-content">
         <header class="topbar">
             <div class="logo">🚗 PDR Trainer</div>
+
             <nav class="menu">
                 <a href="index.html">Головна</a>
                 <a href="topics.html">Теми</a>
                 <a href="training.html">Тренування</a>
-                <a href="rules.html">Правила ПДР</a>
+                <a href="stats.html">Статистика</a>
+                <a href="profile.html">Особистий кабінет</a>
+                <a href="pronas.html">Про нас</a>
+                <a href="rules.html" class="active">Правила ПДР</a>
+                <a href="auth.html">Вхід</a>
+                <span id="user-greeting" class="user-greeting"></span>
+                <a href="#" onclick="logoutUser(); return false;">Вийти</a>
             </nav>
         </header>
 
-        <main class="page">
-            <section class="hero">
-                <h1>Правила дорожнього руху</h1>
-                <p>Тут буде розміщено навчальний матеріал для вивчення ПДР України.</p>
+        <main class="rules-page">
+            <section class="rules-hero">
+                <h1>📘 Правила дорожнього руху</h1>
+
+                <p>
+                    Зручний довідник для вивчення ПДР України.
+                    Знаходь потрібні розділи, читай правила
+                    та готуйся до теоретичного іспиту.
+                </p>
+
+                <div class="rules-search">
+                    <span class="search-icon">⌕</span>
+                    <input
+                        type="search"
+                        id="ruleSearch"
+                        placeholder="Пошук за назвою, номером або ключовим словом..."
+                        aria-label="Пошук правил дорожнього руху"
+                    >
+                </div>
+
+                <div
+                    class="rules-results"
+                    id="rulesResults"
+                    aria-live="polite"
+                >
+                    Показано 40 розділів
+                </div>
             </section>
+
+            <section class="rules-list" id="rulesList"></section>
+
+            <div class="rules-empty" id="rulesEmpty">
+                <h3>Нічого не знайдено</h3>
+                <p>Спробуй змінити пошуковий запит.</p>
+            </div>
+
+            <div class="rules-footer">
+                <p>
+                    Навчальний довідник PDR Trainer.
+                    Для вивчення використовуй чинну редакцію
+                    Правил дорожнього руху України.
+                </p>
+
+                <p>
+                    <a
+                        href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Переглянути офіційні Правила дорожнього руху
+                    </a>
+                </p>
+            </div>
         </main>
     </div>
+
+    <script>
+        const ruleTopics = [
+            {
+                number: "01",
+                title: "Загальні положення",
+                description: "Основні терміни та визначення"
+            },
+            {
+                number: "02",
+                title: "Обов’язки і права водіїв механічних транспортних засобів",
+                description: "Документи, обов’язки та права водіїв"
+            },
+            {
+                number: "03",
+                title: "Рух транспортних засобів із спеціальними сигналами",
+                description: "Спеціальні світлові та звукові сигнали"
+            },
+            {
+                number: "04",
+                title: "Обов’язки і права пішоходів",
+                description: "Правила руху та переходу дороги"
+            },
+            {
+                number: "05",
+                title: "Обов’язки і права пасажирів",
+                description: "Посадка, висадка та безпека пасажирів"
+            },
+            {
+                number: "06",
+                title: "Вимоги до велосипедистів",
+                description: "Правила руху на велосипеді"
+            },
+            {
+                number: "07",
+                title: "Вимоги до осіб, які керують гужовим транспортом, і погоничів тварин",
+                description: "Особливості руху гужового транспорту"
+            },
+            {
+                number: "08",
+                title: "Регулювання дорожнього руху",
+                description: "Сигнали регулювальника та світлофора"
+            },
+            {
+                number: "09",
+                title: "Попереджувальні сигнали",
+                description: "Повороти, перестроювання та інші маневри"
+            },
+            {
+                number: "10",
+                title: "Початок руху та зміна його напрямку",
+                description: "Маневрування, повороти та розвороти"
+            },
+            {
+                number: "11",
+                title: "Розташування транспортних засобів на дорозі",
+                description: "Смуги руху та розташування автомобілів"
+            },
+            {
+                number: "12",
+                title: "Швидкість руху",
+                description: "Обмеження швидкості та умови руху"
+            },
+            {
+                number: "13",
+                title: "Дистанція, інтервал, зустрічний роз’їзд",
+                description: "Безпечна відстань між транспортними засобами"
+            },
+            {
+                number: "14",
+                title: "Обгін",
+                description: "Умови та правила виконання обгону"
+            },
+            {
+                number: "15",
+                title: "Зупинка і стоянка",
+                description: "Дозволені та заборонені місця зупинки"
+            },
+            {
+                number: "16",
+                title: "Проїзд перехресть",
+                description: "Регульовані та нерегульовані перехрестя"
+            },
+            {
+                number: "17",
+                title: "Перевага маршрутних транспортних засобів",
+                description: "Рух автобусів, тролейбусів та іншого транспорту"
+            },
+            {
+                number: "18",
+                title: "Проїзд пішохідних переходів і зупинок транспортних засобів",
+                description: "Правила проїзду переходів і зупинок"
+            },
+            {
+                number: "19",
+                title: "Користування зовнішніми світловими приладами",
+                description: "Фари, ліхтарі та світлові сигнали"
+            },
+            {
+                number: "20",
+                title: "Рух через залізничні переїзди",
+                description: "Безпечний проїзд залізничних переїздів"
+            },
+            {
+                number: "21",
+                title: "Перевезення пасажирів",
+                description: "Правила перевезення людей у транспорті"
+            },
+            {
+                number: "22",
+                title: "Перевезення вантажу",
+                description: "Вимоги до розміщення та перевезення вантажів"
+            },
+            {
+                number: "23",
+                title: "Буксирування та експлуатація транспортних составів",
+                description: "Правила буксирування та руху з причепом"
+            },
+            {
+                number: "24",
+                title: "Навчальна їзда",
+                description: "Вимоги до навчання водінню"
+            },
+            {
+                number: "25",
+                title: "Рух транспортних засобів у колонах",
+                description: "Організований рух транспортних засобів"
+            },
+            {
+                number: "26",
+                title: "Рух у житловій та пішохідній зоні",
+                description: "Особливості руху в житлових і пішохідних зонах"
+            },
+            {
+                number: "27",
+                title: "Рух по автомагістралях і дорогах для автомобілів",
+                description: "Правила руху на швидкісних дорогах"
+            },
+            {
+                number: "28",
+                title: "Рух по гірських дорогах і на крутих спусках",
+                description: "Особливості руху в гірській місцевості"
+            },
+            {
+                number: "29",
+                title: "Міжнародний рух",
+                description: "Вимоги до міжнародного дорожнього руху"
+            },
+            {
+                number: "30",
+                title: "Номерні, розпізнавальні знаки, написи і позначення",
+                description: "Номерні знаки та позначення на транспорті"
+            },
+            {
+                number: "31",
+                title: "Технічний стан транспортних засобів та їх обладнання",
+                description: "Вимоги до справності та обладнання автомобіля"
+            },
+            {
+                number: "32",
+                title: "Окремі питання дорожнього руху, що потребують узгодження",
+                description: "Випадки, які потребують погодження"
+            },
+            {
+                number: "33",
+                title: "Дорожні знаки",
+                description: "Види дорожніх знаків та правила їх застосування"
+            },
+            {
+                number: "33.1",
+                title: "Попереджувальні знаки",
+                description: "Знаки, що попереджають про небезпеку"
+            },
+            {
+                number: "33.2",
+                title: "Знаки пріоритету",
+                description: "Знаки черговості проїзду"
+            },
+            {
+                number: "33.3",
+                title: "Заборонні знаки",
+                description: "Знаки, що вводять обмеження та заборони"
+            },
+            {
+                number: "33.4",
+                title: "Наказові знаки",
+                description: "Знаки, що встановлюють обов’язкові напрямки руху"
+            },
+            {
+                number: "33.5",
+                title: "Інформаційно-вказівні знаки",
+                description: "Напрямки, маршрути та особливості руху"
+            },
+            {
+                number: "33.6",
+                title: "Знаки сервісу",
+                description: "Позначення об’єктів обслуговування"
+            },
+            {
+                number: "33.7",
+                title: "Таблички до дорожніх знаків",
+                description: "Додаткова інформація до дорожніх знаків"
+            },
+            {
+                number: "34",
+                title: "Дорожня розмітка",
+                description: "Горизонтальна та вертикальна дорожня розмітка"
+            }
+        ];
+
+        const rulesList = document.getElementById("rulesList");
+        const searchInput = document.getElementById("ruleSearch");
+        const results = document.getElementById("rulesResults");
+        const emptyMessage = document.getElementById("rulesEmpty");
+
+        function createRuleCard(topic) {
+            const card = document.createElement("details");
+            card.className = "rule-card";
+
+            card.dataset.search = (
+                topic.number + " " +
+                topic.title + " " +
+                topic.description
+            ).toLowerCase();
+
+            const summary = document.createElement("summary");
+            summary.className = "rule-summary";
+
+            const number = document.createElement("span");
+            number.className = "rule-number";
+            number.textContent = topic.number;
+
+            const heading = document.createElement("div");
+            heading.className = "rule-heading";
+
+            const title = document.createElement("h2");
+            title.textContent = topic.title;
+
+            const description = document.createElement("p");
+            description.textContent = topic.description;
+
+            heading.append(title, description);
+
+            const chevron = document.createElement("span");
+            chevron.className = "rule-chevron";
+            chevron.textContent = "⌄";
+
+            summary.append(number, heading, chevron);
+
+            const content = document.createElement("div");
+            content.className = "rule-content";
+
+            const message = document.createElement("p");
+            message.textContent =
+                "Матеріал цього розділу буде додано на наступному етапі.";
+
+            const link = document.createElement("a");
+            link.href =
+                "https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF";
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = "Переглянути офіційні ПДР";
+
+            content.append(message, link);
+            card.append(summary, content);
+
+            return card;
+        }
+
+        function renderRules() {
+            rulesList.replaceChildren(
+                ...ruleTopics.map(createRuleCard)
+            );
+
+            filterRules();
+        }
+
+        function filterRules() {
+            const query = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            document.querySelectorAll(".rule-card").forEach(card => {
+                const matches = card.dataset.search.includes(query);
+
+                card.style.display = matches ? "" : "none";
+
+                if (matches) {
+                    visibleCount++;
+                }
+            });
+
+            results.textContent = query
+                ? `Знайдено розділів: ${visibleCount}`
+                : `Показано ${visibleCount} розділів`;
+
+            emptyMessage.style.display =
+                visibleCount === 0 ? "block" : "none";
+        }
+
+        searchInput.addEventListener("input", filterRules);
+
+        renderRules();
+    </script>
 </body>
 </html>
