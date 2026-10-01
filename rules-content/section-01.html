@@ -732,4 +732,31 @@
       PDRTrainer — навчальні матеріали з правил дорожнього руху
     </footer>
 
+    ```html
+<script>
+  const searchInput = document.getElementById("search");
+  const rules = document.querySelectorAll("#content .rule");
+  const noResults = document.getElementById("no-results");
+
+  searchInput.addEventListener("input", function () {
+    const query = this.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    rules.forEach(rule => {
+      const text = rule.textContent.toLowerCase();
+      const matches = text.includes(query);
+
+      rule.classList.toggle("hidden", !matches);
+
+      if (matches) {
+        visibleCount++;
+      }
+    });
+
+    noResults.style.display =
+      visibleCount === 0 ? "block" : "none";
+  });
+</script>
+```
+
   </main>
