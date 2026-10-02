@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Розділ 9. Попереджувальні сигнали</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    line-height: 1.6;
+}
+
+.container {
+    width: min(100% - 32px, 1000px);
+    margin: 0 auto;
+    padding: 30px 0 60px;
+}
+
+.back-link {
+    display: inline-block;
+    color: #94a3b8;
+    text-decoration: none;
+    margin-bottom: 24px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #38bdf8;
+}
+
+.hero {
+    padding: 30px;
+    margin-bottom: 28px;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #1e293b, #172554);
+}
+
+.section-number {
+    display: inline-block;
+    color: #38bdf8;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(24px, 4vw, 34px);
+    line-height: 1.25;
+    color: #f8fafc;
+}
+
+.hero p {
+    margin: 14px 0 0;
+    color: #94a3b8;
+}
+
+.search-box {
+    margin-bottom: 24px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 15px 18px;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    outline: none;
+    background: #1e293b;
+    color: #f8fafc;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.search-box input:focus {
+    border-color: #38bdf8;
+}
+
+.search-box input::placeholder {
+    color: #64748b;
+}
+
+.rules-list {
+    display: grid;
+    gap: 16px;
+}
+
+.rule-card {
+    padding: 22px 24px;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    background: #1e293b;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.rule-card:hover {
+    border-color: #475569;
+    transform: translateY(-2px);
+}
+
+.rule-card h2 {
+    margin: 0 0 10px;
+    color: #38bdf8;
+    font-size: 18px;
+}
+
+.rule-card p {
+    margin: 0 0 10px;
+    color: #cbd5e1;
+}
+
+.rule-card p:last-child {
+    margin-bottom: 0;
+}
+
+.rule-card ul {
+    margin: 12px 0 0;
+    padding-left: 24px;
+    color: #cbd5e1;
+}
+
+.rule-card li {
+    margin: 8px 0;
+}
+
+.rule-card li:last-child {
+    margin-bottom: 0;
+}
+
+.rule-card strong {
+    color: #f8fafc;
+}
+
+.amendment {
+    display: block;
+    margin-top: 12px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.amendment a {
+    color: #38bdf8;
+    text-decoration: none;
+}
+
+.amendment a:hover {
+    text-decoration: underline;
+}
+
+.no-results {
+    display: none;
+    padding: 24px;
+    text-align: center;
+    color: #94a3b8;
+    border: 1px dashed #475569;
+    border-radius: 14px;
+}
+
+@media (max-width: 600px) {
+    .container {
+        width: min(100% - 24px, 1000px);
+        padding-top: 20px;
+    }
+
+    .hero {
+        padding: 22px;
+    }
+
+    .rule-card {
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <a href="../rules.html" class="back-link">← Назад до всіх розділів</a>
+
+    <header class="hero">
+        <span class="section-number">РОЗДІЛ 9</span>
+        <h1>Попереджувальні сигнали</h1>
+        <p>Сигнали повороту, звукові сигнали, світло фар та аварійна сигналізація</p>
+    </header>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="ruleSearch"
+            placeholder="Пошук за пунктами або ключовими словами..."
+            aria-label="Пошук за правилами"
+        >
+    </div>
+
+    <main class="rules-list" id="rulesList">
+
+        <!-- 9.1 -->
+        <article class="rule-card">
+            <h2>9.1. Попереджувальні сигнали</h2>
+            <p>Попереджувальними сигналами є:</p>
+            <ul>
+                <li><strong>а)</strong> сигнали, що подаються світловими покажчиками повороту або рукою;</li>
+                <li><strong>б)</strong> звукові сигнали;</li>
+                <li><strong>в)</strong> перемикання світла фар;</li>
+                <li><strong>г)</strong> увімкнення ближнього світла фар у світлу пору доби;</li>
+                <li><strong>ґ)</strong> увімкнення аварійної сигналізації, сигналів гальмування, ліхтаря заднього ходу, розпізнавального знака автопоїзда;</li>
+                <li><strong>д)</strong> увімкнення проблискового маячка оранжевого кольору.</li>
+            </ul>
+        </article>
+
+        <!-- 9.2 -->
+        <article class="rule-card">
+            <h2>9.2. Використання покажчиків повороту</h2>
+            <p>
+                Водій повинен подавати сигнали світловими покажчиками
+                повороту відповідного напрямку:
+            </p>
+            <ul>
+                <li><strong>а)</strong> перед початком руху і зупинкою;</li>
+                <li><strong>б)</strong> перед перестроюванням, поворотом або розворотом.</li>
+            </ul>
+        </article>
+
+        <!-- 9.3 -->
+        <article class="rule-card">
+            <h2>9.3. Сигнали, що подаються рукою</h2>
+            <p>
+                У разі відсутності або несправності світлових покажчиків
+                повороту сигнали початку руху від правого краю проїзної
+                частини, зупинки зліва, повороту ліворуч, розвороту або
+                перестроювання на смугу руху ліворуч подаються лівою рукою,
+                витягнутою вбік, або правою рукою, витягнутою вбік і зігнутою
+                у лікті під прямим кутом угору.
+            </p>
+            <p>
+                Сигнали початку руху від лівого краю проїзної частини,
+                зупинки справа, повороту праворуч, перестроювання на смугу
+                руху праворуч подаються правою рукою, витягнутою вбік,
+                або лівою рукою, витягнутою вбік і зігнутою у лікті
+                під прямим кутом угору.
+            </p>
+            <p>
+                У разі відсутності або несправності сигналів гальмування
+                такий сигнал подається лівою або правою рукою,
+                піднятою вгору.
+            </p>
+        </article>
+
+        <!-- 9.4 -->
+        <article class="rule-card">
+            <h2>9.4. Час і порядок подавання попереджувальних сигналів</h2>
+            <p>
+                Подавати сигнал покажчиками повороту або рукою належить
+                завчасно до початку маневру (з урахуванням швидкості руху),
+                але не менш як:
+            </p>
+            <ul>
+                <li><strong>50–100 м</strong> — у населених пунктах;</li>
+                <li><strong>150–200 м</strong> — поза населеними пунктами.</li>
+            </ul>
+            <p>
+                Припиняти сигнал потрібно негайно після закінчення маневру
+                (подавання сигналу рукою слід закінчити безпосередньо
+                перед початком виконання маневру).
+            </p>
+            <p>
+                Сигнал забороняється подавати, якщо він може бути не
+                зрозумілим для інших учасників руху.
+            </p>
+            <p>
+                Подавання попереджувального сигналу не дає водієві переваги
+                і не звільняє його від вжиття запобіжних заходів.
+            </p>
+        </article>
+
+        <!-- 9.5 -->
+        <article class="rule-card">
+            <h2>9.5. Звукові сигнали в населених пунктах</h2>
+            <p>
+                Подавати звукові сигнали у населених пунктах забороняється,
+                крім випадків, коли без цього неможливо запобігти
+                дорожньо-транспортній пригоді.
+            </p>
+        </article>
+
+        <!-- 9.6 -->
+        <article class="rule-card">
+            <h2>9.6. Привертання уваги водія під час обгону</h2>
+            <p>
+                Для привертання уваги водія транспортного засобу,
+                який обганяється, можна застосовувати перемикання
+                світла фар, а поза населеними пунктами — і звуковий сигнал.
+            </p>
+        </article>
+
+        <!-- 9.7 -->
+        <article class="rule-card">
+            <h2>9.7. Заборона використання дальнього світла як сигналу</h2>
+            <p>
+                Забороняється користуватися дальнім світлом фар як
+                попереджувальним сигналом в умовах, коли це може призвести
+                до засліплення інших водіїв, у тому числі через дзеркало
+                заднього виду.
+            </p>
+        </article>
+
+        <!-- 9.8 -->
+        <article class="rule-card">
+            <h2>9.8. Використання ближнього світла фар і денних ходових вогнів</h2>
+            <p>
+                Під час руху механічних транспортних засобів у світлу
+                пору доби з метою позначення транспортного засобу,
+                що рухається, ближнє світло фар повинно бути увімкнене:
+            </p>
+            <ul>
+                <li><strong>а)</strong> у колоні;</li>
+                <li>
+                    <strong>б)</strong> на маршрутних транспортних засобах,
+                    що рухаються по смузі, позначеній дорожнім знаком 5.8,
+                    назустріч загальному потоку транспортних засобів;
+                </li>
+                <li>
+                    <strong>в)</strong> на автобусах (мікроавтобусах),
+                    що здійснюють перевезення організованих груп дітей;
+                </li>
+                <li>
+                    <strong>г)</strong> на великовагових, великогабаритних
+                    транспортних засобах, сільськогосподарській техніці,
+                    ширина якої перевищує 2,6 м, та транспортних засобах,
+                    що здійснюють дорожнє перевезення небезпечних вантажів;
+                </li>
+                <li><strong>ґ)</strong> на транспортному засобі, що буксирує;</li>
+                <li><strong>д)</strong> у тунелях.</li>
+            </ul>
+            <p>
+                На всіх механічних транспортних засобах поза населеними
+                пунктами повинні бути ввімкнені денні ходові вогні,
+                а в разі їх відсутності в конструкції транспортного
+                засобу — ближнє світло фар.
+            </p>
+            <p>
+                В умовах недостатньої видимості на механічних транспортних
+                засобах можна ввімкнути дальнє світло фар або додатково
+                протитуманні фари за умови, що це не буде засліплювати
+                інших водіїв.
+            </p>
+            <span class="amendment">
+                Підпункт «в» пункту 9.8 в редакції
+                <a href="https://zakon.rada.gov.ua/laws/show/876-2008-%D0%BF"
+                   target="_blank" rel="noopener noreferrer">
+                    Постанови КМ № 876 від 01.10.2008
+                </a>.
+                Підпункт «г» пункту 9.8 в редакції
+                <a href="https://zakon.rada.gov.ua/laws/show/634-2008-%D0%BF"
+                   target="_blank" rel="noopener noreferrer">
+                    Постанови КМ № 634 від 09.07.2008
+                </a>;
+                із змінами, внесеними згідно з
+                <a href="https://zakon.rada.gov.ua/laws/show/196-2020-%D0%BF#n14"
+                   target="_blank" rel="noopener noreferrer">
+                    Постановою КМ № 196 від 26.02.2020
+                </a>.
+                Пункт 9.8 доповнено абзацом згідно з
+                <a href="https://zakon.rada.gov.ua/laws/show/111-2013-%D0%BF#n114"
+                   target="_blank" rel="noopener noreferrer">
+                    Постановою КМ № 111 від 11.02.2013
+                </a>;
+                із змінами, внесеними згідно з
+                <a href="https://zakon.rada.gov.ua/laws/show/1105-2023-%D0%BF#n6"
+                   target="_blank" rel="noopener noreferrer">
+                    Постановою КМ № 1105 від 20.10.2023
+                </a>.
+            </span>
+        </article>
+
+        <!-- 9.9 -->
+        <article class="rule-card">
+            <h2>9.9. Випадки обов'язкового ввімкнення аварійної сигналізації</h2>
+            <p>
+                Аварійна світлова сигналізація повинна бути ввімкнена:
+            </p>
+            <ul>
+                <li><strong>а)</strong> у разі вимушеної зупинки на дорозі;</li>
+                <li>
+                    <strong>б)</strong> у разі зупинки на вимогу поліцейського
+                    або внаслідок засліплення водія світлом фар;
+                </li>
+                <li>
+                    <strong>в)</strong> на механічному транспортному засобі,
+                    що рухається з технічними несправностями, якщо такий рух
+                    не заборонено цими Правилами;
+                </li>
+                <li><strong>г)</strong> на механічному транспортному засобі, що буксирується;</li>
+                <li>
+                    <strong>ґ)</strong> на механічному транспортному засобі,
+                    позначеному розпізнавальним знаком «Діти», що перевозить
+                    організовану групу дітей, під час їх посадки чи висадки;
+                </li>
+                <li>
+                    <strong>д)</strong> на всіх механічних транспортних
+                    засобах колони під час їх зупинки на дорозі;
+                </li>
+                <li><strong>е)</strong> у разі скоєння дорожньо-транспортної пригоди.</li>
+            </ul>
+            <span class="amendment">
+                Підпункт «б» пункту 9.9 в редакції
+                <a href="https://zakon.rada.gov.ua/laws/show/1029-2011-%D0%BF"
+                   target="_blank" rel="noopener noreferrer">
+                    Постанови КМ № 1029 від 26.09.2011
+                </a>.
+            </span>
+        </article>
+
+        <!-- 9.10 -->
+        <article class="rule-card">
+            <h2>9.10. Знак аварійної зупинки або миготливий червоний ліхтар</h2>
+            <p>
+                Разом з увімкненням аварійної світлової сигналізації
+                слід установити знак аварійної зупинки або миготливий
+                червоний ліхтар на відстані, що забезпечує безпеку
+                дорожнього руху, але не ближче:
+            </p>
+            <ul>
+                <li><strong>20 м</strong> — до транспортного засобу в населених пунктах;</li>
+                <li><strong>40 м</strong> — до транспортного засобу поза населеними пунктами.</li>
+            </ul>
+            <p>Це необхідно зробити у разі:</p>
+            <ul>
+                <li><strong>а)</strong> скоєння дорожньо-транспортної пригоди;</li>
+                <li>
+                    <strong>б)</strong> вимушеної зупинки в місцях з обмеженою
+                    оглядовістю дороги хоча б в одному напрямку менше 100 м.
+                </li>
+            </ul>
+        </article>
+
+        <!-- 9.11 -->
+        <article class="rule-card">
+            <h2>9.11. Дії у разі несправності аварійної сигналізації</h2>
+            <p>
+                Якщо транспортний засіб не обладнано аварійною світловою
+                сигналізацією або вона несправна, треба встановити знак
+                аварійної зупинки або миготливий червоний ліхтар:
+            </p>
+            <ul>
+                <li>
+                    <strong>а)</strong> ззаду на транспортному засобі,
+                    зазначеному в підпунктах «в», «г», «ґ» пункту 9.9
+                    цих Правил;
+                </li>
+                <li>
+                    <strong>б)</strong> з боку гіршої видимості для інших
+                    учасників дорожнього руху у випадку, зазначеному
+                    в підпункті «б» пункту 9.10 цих Правил.
+                </li>
+            </ul>
+        </article>
+
+        <!-- 9.12 -->
+        <article class="rule-card">
+            <h2>9.12. Видимість миготливого червоного світла</h2>
+            <p>
+                Миготливе червоне світло, випромінюване ліхтарем,
+                який застосовується відповідно до вимог пунктів 9.10
+                і 9.11 цих Правил, повинно бути добре видно як удень
+                за сонячної погоди, так і в умовах недостатньої видимості.
+            </p>
+        </article>
+
+    </main>
+
+    <div class="no-results" id="noResults">
+        За вашим запитом нічого не знайдено.
+    </div>
+
+</div>
+
+<script>
+const searchInput = document.getElementById("ruleSearch");
+const ruleCards = document.querySelectorAll(".rule-card");
+const noResults = document.getElementById("noResults");
+
+searchInput.addEventListener("input", function () {
+    const query = this.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    ruleCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const matches = text.includes(query);
+
+        card.style.display = matches ? "" : "none";
+
+        if (matches) {
+            visibleCount++;
+        }
+    });
+
+    noResults.style.display = visibleCount === 0 ? "block" : "none";
+});
+</script>
+
+</body>
