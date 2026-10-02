@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тема 33.4. Наказові знаки | PDR Trainer</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0b1220; color: #e5edf8; font-family: Arial, sans-serif; line-height: 1.7; }
+    header { background: #121d30; border-bottom: 1px solid #263750; padding: 16px 20px; }
+    .header-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .logo { color: #fff; font-size: 18px; font-weight: bold; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 30px 20px 60px; }
+    .hero { background: linear-gradient(135deg, #17253b, #121d30); border: 1px solid #263750; border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+    .section-label { display: inline-block; color: #93c5fd; background: #203957; border: 1px solid #31547b; border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; }
+    h1 { color: #fff; font-size: clamp(23px, 4vw, 32px); line-height: 1.3; margin: 0 0 10px; }
+    .hero p { color: #aebbd0; margin: 0; }
+    .tools { position: sticky; top: 0; z-index: 10; padding: 12px 0; background: #0b1220; }
+    .search { width: 100%; padding: 14px 17px; border: 1px solid #35465f; border-radius: 12px; background: #172538; color: #fff; font-size: 15px; outline: none; }
+    .search:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12); }
+    .search::placeholder { color: #91a0b5; }
+    .result-count { color: #91a0b5; font-size: 13px; text-align: right; margin: 8px 3px 0; }
+    .content { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+    .rule-card { padding: 20px 22px; background: #121d30; border: 1px solid #263750; border-radius: 14px; transition: border-color 0.2s; overflow-wrap: anywhere; }
+    .rule-card:hover { border-color: #426b9b; }
+    .rule-card h2 { color: #93c5fd; font-size: 18px; margin: 0 0 10px; line-height: 1.45; }
+    .rule-card p { margin: 0; color: #d7e0ed; }
+    .rule-card p + p { margin-top: 12px; }
+    .rule-card a { color: #93c5fd; text-decoration: none; }
+    .rule-card a:hover { text-decoration: underline; }
+    .rule-card ul { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .rule-card li { background: #17253b; border-left: 3px solid #426b9b; border-radius: 7px; padding: 11px 14px; color: #d7e0ed; }
+    .no-results { display: none; background: #121d30; border: 1px solid #263750; border-radius: 12px; padding: 25px; text-align: center; color: #aebbd0; }
+    .footer { text-align: center; color: #8190a6; font-size: 13px; margin-top: 35px; line-height: 1.6; }
+    @media (max-width: 600px) { header { padding: 13px 15px; } .logo { font-size: 15px; } .back-link { font-size: 12px; } .wrap { padding: 18px 12px 40px; } .hero { padding: 21px 17px; } .rule-card { padding: 16px; } .rule-card h2 { font-size: 16px; } .rule-card li { padding: 10px 11px; } }
+  </style>
+</head>
+<body>
+  <header><div class="header-inner"><div class="logo">🚗 PDR Trainer</div><a class="back-link" href="../rules.html">← До всіх розділів</a></div></header>
+  <main class="wrap">
+    <section class="hero"><span class="section-label">ТЕМА 33.4</span><h1>Наказові знаки</h1><p>Знаки, що вказують обов’язкові напрямки руху, дозволені види транспорту та призначені доріжки.</p></section>
+    <div class="tools"><input type="search" class="search" id="ruleSearch" placeholder="Пошук за номером знака або ключовим словом..." aria-label="Пошук у темі"><div class="result-count" id="resultCount"></div></div>
+    <section class="content" id="content">
+      <article class="rule-card"><h2>4.1–4.6. Напрямки руху</h2><ul><li><b>4.1</b> «Рух прямо».</li><li><b>4.2</b> «Рух праворуч».</li><li><b>4.3</b> «Рух ліворуч».</li><li><b>4.4</b> «Рух прямо або праворуч».</li><li><b>4.5</b> «Рух прямо або ліворуч».</li><li><b>4.6</b> «Рух праворуч або ліворуч».</li></ul><p>Знаки 4.1–4.6 вимагають руху лише у напрямках, показаних стрілками. Знаки 4.3, 4.5 і 4.6 дозволяють також розворот транспортних засобів.</p></article>
+      <article class="rule-card"><h2>4.7–4.9. Об’їзд перешкоди</h2><ul><li><b>4.7</b> «Об’їзд перешкоди з правого боку».</li><li><b>4.8</b> «Об’їзд перешкоди з лівого боку».</li><li><b>4.9</b> «Об’їзд перешкоди з правого або лівого боку».</li></ul><p>Знаки 4.7 і 4.8 дозволяють об’їзд лише з боку, показаного стрілкою.</p></article>
+      <article class="rule-card"><h2>4.10. «Круговий рух»</h2><p>Вимагає об’їзду клумби (центрального острівця) в напрямку, показаному стрілками на перехресті з круговим рухом.</p></article>
+      <article class="rule-card"><h2>4.11. «Рух легкових автомобілів»</h2><p>Дозволяється рух лише легкових автомобілів, автобусів, мотоциклів, маршрутних транспортних засобів і вантажних автомобілів, дозволена максимальна маса яких не перевищує 3,5 т.</p><p>Дія знака 4.11 не поширюється на транспортні засоби, що обслуговують громадян чи належать громадянам, які проживають або працюють у позначеній зоні, а також на транспортні засоби, що обслуговують підприємства, розташовані у цій зоні. У таких випадках транспортні засоби повинні в’їжджати до позначеної зони і виїжджати з неї на найближчому перехресті до місця призначення.</p></article>
+      <article class="rule-card"><h2>4.12–4.13. Мінімальна швидкість</h2><ul><li><b>4.12</b> «Обмеження мінімальної швидкості». Рух із швидкістю не меншою, ніж зазначено на знаку, але і не більшою, ніж це передбачено <a href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF#n503" target="_blank" rel="noopener noreferrer">пунктами 12.4–12.7</a> цих Правил.</li><li><b>4.13</b> «Кінець обмеження мінімальної швидкості».</li></ul></article>
+      <article class="rule-card"><h2>4.14–4.18. Велосипедні та пішохідні доріжки</h2><ul><li><b>4.14</b> «Доріжка для велосипедистів». Рух на велосипедах. Дозволяється рух із швидкістю пішохода особам, які рухаються в кріслах колісних. Якщо немає тротуару або пішохідної доріжки, дозволяється також рух пішоходів.</li><li><b>4.15</b> «Кінець доріжки для велосипедистів». Кінець доріжки, позначеної знаком 4.14.</li><li><b>4.16</b> «Доріжка для пішоходів». Застосовується для позначення доріжок, призначених тільки для руху пішоходів.</li><li><b>4.17</b> «Доріжка для пішоходів і велосипедистів». Рух пішоходів і велосипедистів. Дозволяється рух із швидкістю пішохода особам, які рухаються в кріслах колісних.</li><li><b>4.18</b> «Суміжні пішохідна та велосипедна доріжки». Рух пішоходів і велосипедистів відповідно по пішохідній і велосипедній доріжках, які прилягають одна до одної, але розмежовані розміткою 1.1 або кольором покриття. Дозволяється рух із швидкістю пішохода по будь-якій з доріжок особам, які рухаються в кріслах колісних.</li></ul></article>
+      <article class="rule-card"><h2>4.19. «Доріжка для вершників»</h2><p>Рух лише вершників.</p></article>
+      <article class="rule-card"><h2>4.20.1–4.20.3. Напрямок руху транспортних засобів з небезпечними вантажами</h2><p>Показує дозволений напрямок руху транспортних засобів з розпізнавальними знаками «Знак небезпеки» та «Табличка оранжевого кольору».</p></article>
+      <article class="rule-card"><h2>4.21–4.22. Рух із ланцюгами проти ковзання</h2><ul><li><b>4.21</b> «Рух із застосуванням ланцюгів проти ковзання». Рух легкових, вантажних автомобілів та автобусів із застосуванням ланцюгів проти ковзання не менше ніж на двох ведучих колесах транспортного засобу. Знак 4.21 застосовується з табличкою 7.12.</li><li><b>4.22</b> «Кінець ділянки руху із застосуванням ланцюгів проти ковзання». Позначає кінець зони дії знака 4.21.</li></ul></article>
+      <article class="rule-card"><h2>4.23–4.24. Суміщений рух легкових автомобілів та велосипедистів</h2><ul><li><b>4.23</b> «Дорога для суміщеного руху легкових автомобілів та велосипедистів». Позначає початок вулиць і доріг місцевого значення (крім пішохідних вулиць), призначених для суміщеного руху велосипедистів і легкових автомобілів.</li><li><b>4.24</b> «Кінець дороги для суміщеного руху легкових автомобілів та велосипедистів». Позначає кінець вулиць і доріг місцевого значення (крім пішохідних вулиць), призначених для суміщеного руху велосипедистів і легкових автомобілів.</li></ul></article>
+      <article class="rule-card"><h2>Загальні правила дії знаків 4.1–4.6</h2><ul><li>Дія знаків 4.1–4.6 не поширюється на транспортні засоби, що рухаються за встановленими маршрутами.</li><li>Дія знаків 4.1–4.6 поширюється на перехрещення проїзних частин, перед яким вони встановлені.</li><li>Дія знака 4.1, установленого на початку дороги або за перехрестям, поширюється на ділянку дороги до найближчого перехрестя. Знак не забороняє поворот праворуч у двори та на інші прилеглі до дороги території.</li></ul></article>
+    </section>
+    <div class="no-results" id="noResults">За цим запитом нічого не знайдено.</div>
+    <div class="footer">Навчальний довідник PDR Trainer.<br>Для вивчення використовуй чинну редакцію Правил дорожнього руху України.</div>
+  </main>
+  <script>
+    const searchInput = document.getElementById("ruleSearch");
+    const cards = document.querySelectorAll(".rule-card");
+    const resultCount = document.getElementById("resultCount");
+    const noResults = document.getElementById("noResults");
+    function filterRules() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      cards.forEach(card => {
+        const matches = card.textContent.toLowerCase().includes(query);
+        card.style.display = matches ? "" : "none";
+        if (matches) visibleCount++;
+      });
+      resultCount.textContent = query ? `Знайдено блоків: ${visibleCount}` : `Показано блоків: ${visibleCount}`;
+      noResults.style.display = visibleCount === 0 ? "block" : "none";
+    }
+    searchInput.addEventListener("input", filterRules);
+    filterRules();
+  </script>
+</body>
+</html>
