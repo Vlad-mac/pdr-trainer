@@ -703,3 +703,9 @@ body {
         border-radius: 18px;
     }
 }
+
+
+/* Keep the account greeting out of the compact, shared top navigation. */
+.topbar .user-greeting {
+    display: none;
+}
