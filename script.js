@@ -91,7 +91,7 @@ async function loadQuestions() {
 
         if (trainingSection) {
             trainingSection.innerHTML = `
-                <h2>Тренування</h2>
+                <h2>Іспит</h2>
                 <div class="panel">
                     <p>
                         Не вдалося завантажити питання.
@@ -350,9 +350,7 @@ function showTopicsLockedMessage() {
                     активна оплата на 6 тижнів.
                 </p>
 
-                <p>
-                    Викладачі та адмін мають доступ без оплати.
-                </p>
+                
 
                 <button
                     class="btn btn-primary"
@@ -708,7 +706,7 @@ function openTopic(topic) {
 
         if (trainingSection) {
             trainingSection.innerHTML = `
-                <h2>Тренування</h2>
+                <h2>Іспит</h2>
 
                 <div class="panel">
                     <p>
