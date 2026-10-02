@@ -6,161 +6,196 @@
   <title>Розділ 2. Обов’язки і права водіїв</title>
 
   <style>
-    :root {
-      --bg: #0b1220;
-      --panel: #121d30;
-      --panel-hover: #1a2940;
-      --text: #e8eef8;
-      --muted: #a9b8cc;
-      --accent: #60a5fa;
-      --line: #2b3b54;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      padding: 24px 16px 50px;
-      background: var(--bg);
-      color: var(--text);
+      padding: 0;
+      background: #0b1220;
+      color: #e5edf8;
       font-family: Arial, sans-serif;
-      line-height: 1.65;
+      line-height: 1.7;
     }
 
-    .container {
+    header {
+      background: #121d30;
+      border-bottom: 1px solid #263750;
+      padding: 16px 20px;
+    }
+
+    .header-inner {
       max-width: 1000px;
       margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
     }
 
-    .back-link {
+    .logo { color: #fff; font-size: 18px; font-weight: bold; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px 60px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #17253b, #121d30);
+      border: 1px solid #263750;
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .section-label {
       display: inline-block;
-      margin-bottom: 18px;
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .back-link:hover {
-      text-decoration: underline;
+      color: #93c5fd;
+      background: #203957;
+      border: 1px solid #31547b;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 12px;
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: 30px;
+      color: #fff;
+      font-size: clamp(23px, 4vw, 32px);
       line-height: 1.3;
+      margin: 0 0 10px;
     }
 
-    .subtitle {
-      margin: 0 0 24px;
-      color: var(--muted);
-      font-size: 15px;
-    }
+    .hero p { color: #aebbd0; margin: 0; }
 
-    .search-wrap {
+    .tools {
       position: sticky;
       top: 0;
       z-index: 10;
       padding: 12px 0;
-      background: var(--bg);
+      background: #0b1220;
     }
 
-    #search {
+    .search {
       width: 100%;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
+      padding: 14px 17px;
+      border: 1px solid #35465f;
       border-radius: 12px;
+      background: #172538;
+      color: #fff;
+      font-size: 15px;
       outline: none;
-      background: var(--panel);
-      color: var(--text);
-      font-size: 16px;
     }
 
-    #search:focus {
-      border-color: var(--accent);
+    .search:focus {
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12);
     }
 
-    #search::placeholder {
-      color: var(--muted);
+    .search::placeholder { color: #91a0b5; }
+    .result-count { color: #91a0b5; font-size: 13px; text-align: right; margin: 8px 3px 0; }
+
+    #content {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 12px;
     }
 
     .rule {
-      margin-bottom: 14px;
-      padding: 20px;
-      border: 1px solid var(--line);
+      margin: 0;
+      padding: 20px 22px;
+      background: #121d30;
+      border: 1px solid #263750;
       border-radius: 14px;
-      background: var(--panel);
-      transition: background 0.2s ease;
+      transition: border-color 0.2s;
+      overflow-wrap: anywhere;
     }
 
-    .rule:hover {
-      background: var(--panel-hover);
-    }
-
-    .rule h2 {
-      margin: 0 0 10px;
-      color: var(--accent);
-      font-size: 20px;
-      line-height: 1.4;
-    }
-
-    .rule p {
-      margin: 8px 0;
-    }
-
+    .rule:hover { border-color: #426b9b; }
+    .rule h2 { color: #93c5fd; font-size: 18px; margin: 0 0 10px; line-height: 1.45; }
+    .rule p { margin: 0; color: #d7e0ed; }
+    .rule p + p { margin-top: 10px; }
+    .rule strong { color: #93c5fd; }
     .rule ul {
-      margin: 8px 0;
-      padding-left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
     }
 
     .rule li {
-      margin: 5px 0;
+      background: #17253b;
+      border-left: 3px solid #426b9b;
+      border-radius: 7px;
+      padding: 11px 14px;
+      color: #d7e0ed;
     }
+
+    .rule li p { margin-top: 9px; color: #91a0b5; font-size: 12px; line-height: 1.5; }
+    .rule em { font-style: normal; }
 
     .no-results {
       display: none;
-      padding: 24px;
-      color: var(--muted);
+      background: #121d30;
+      border: 1px solid #263750;
+      border-radius: 12px;
+      padding: 25px;
       text-align: center;
+      color: #aebbd0;
+    }
+
+    .footer {
+      text-align: center;
+      color: #8190a6;
+      font-size: 13px;
+      margin-top: 35px;
+      line-height: 1.6;
     }
 
     @media (max-width: 600px) {
-      body {
-        padding: 16px 12px 36px;
-      }
-
-      h1 {
-        font-size: 24px;
-      }
-
-      .rule {
-        padding: 16px;
-      }
-
-      .rule h2 {
-        font-size: 18px;
-      }
+      header { padding: 13px 15px; }
+      .logo { font-size: 15px; }
+      .back-link { font-size: 12px; }
+      .wrap { padding: 18px 12px 40px; }
+      .hero { padding: 21px 17px; }
+      .rule { padding: 16px; }
+      .rule h2 { font-size: 16px; }
+      .rule li { padding: 10px 11px; }
     }
   </style>
 </head>
 
 <body>
-  <main class="container">
-    <a class="back-link" href="../rules.html">← До всіх розділів</a>
+  <header>
+    <div class="header-inner">
+      <div class="logo">🚗 PDR Trainer</div>
+      <a class="back-link" href="../rules.html">← До всіх розділів</a>
+    </div>
+  </header>
 
-    <h1>Розділ 2. Обов’язки і права водіїв механічних транспортних засобів</h1>
-    <p class="subtitle">
-      Правила дорожнього руху України
-    </p>
+  <main class="wrap">
+    <section class="hero">
+      <span class="section-label">РОЗДІЛ 2</span>
+      <h1>Обов’язки і права водіїв механічних транспортних засобів</h1>
+      <p>Вимоги Правил дорожнього руху України до водіїв, їхні обов’язки та права.</p>
+    </section>
 
-    <div class="search-wrap">
+    <div class="tools">
       <input
         type="search"
+        class="search"
         id="search"
         placeholder="Пошук за пунктом або текстом..."
+        aria-label="Пошук у розділі"
         autocomplete="off"
       >
+      <div class="result-count" id="resultCount"></div>
     </div>
 
     <section id="content">
@@ -389,12 +424,15 @@
     <p class="no-results" id="no-results">
       За вашим запитом нічого не знайдено.
     </p>
+
+    <div class="footer">Навчальний довідник PDR Trainer.<br>Для вивчення використовуй чинну редакцію Правил дорожнього руху України.</div>
   </main>
 
   <script>
     const searchInput = document.getElementById("search");
     const rules = document.querySelectorAll(".rule");
     const noResults = document.getElementById("no-results");
+    const resultCount = document.getElementById("resultCount");
 
     searchInput.addEventListener("input", function () {
       const query = this.value.trim().toLowerCase();
@@ -410,6 +448,10 @@
           visibleCount++;
         }
       });
+
+      resultCount.textContent = query
+        ? `Знайдено пунктів: ${visibleCount}`
+        : `Показано ${visibleCount} пунктів`;
 
       noResults.style.display = visibleCount === 0 ? "block" : "none";
     });
