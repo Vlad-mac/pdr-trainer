@@ -1,0 +1,482 @@
+```html
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розділ 6. Вимоги до велосипедистів — PDR Trainer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0b1220;
+            color: #e5edf8;
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+        }
+
+        header {
+            background: #121d30;
+            border-bottom: 1px solid #263750;
+            padding: 16px 20px;
+        }
+
+        .header-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .logo {
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .back-link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .wrap {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #17253b, #121d30);
+            border: 1px solid #263750;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .section-label {
+            display: inline-block;
+            color: #93c5fd;
+            background: #203957;
+            border: 1px solid #31547b;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: clamp(23px, 4vw, 32px);
+            line-height: 1.3;
+            margin: 0 0 10px;
+        }
+
+        .hero p {
+            color: #aebbd0;
+            margin: 0;
+        }
+
+        .tools {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 12px 0;
+            background: #0b1220;
+        }
+
+        .search {
+            width: 100%;
+            padding: 14px 17px;
+            border: 1px solid #35465f;
+            border-radius: 12px;
+            background: #172538;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .search:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12);
+        }
+
+        .search::placeholder {
+            color: #91a0b5;
+        }
+
+        .result-count {
+            color: #91a0b5;
+            font-size: 13px;
+            text-align: right;
+            margin: 8px 3px 0;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 12px;
+        }
+
+        .rule-card {
+            background: #121d30;
+            border: 1px solid #263750;
+            border-radius: 14px;
+            padding: 20px 22px;
+            transition: border-color 0.2s;
+        }
+
+        .rule-card:hover {
+            border-color: #426b9b;
+        }
+
+        .rule-card h2 {
+            color: #93c5fd;
+            font-size: 18px;
+            margin: 0 0 10px;
+        }
+
+        .rule-card p {
+            margin: 0;
+            color: #d7e0ed;
+        }
+
+        .sublist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 12px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .sublist li {
+            background: #17253b;
+            border-left: 3px solid #426b9b;
+            border-radius: 7px;
+            padding: 11px 14px;
+            color: #d7e0ed;
+        }
+
+        .letter {
+            color: #93c5fd;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .amendment {
+            margin-top: 12px;
+            color: #91a0b5;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .amendment a {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+
+        .amendment a:hover {
+            text-decoration: underline;
+        }
+
+        .empty {
+            display: none;
+            background: #121d30;
+            border: 1px solid #263750;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            color: #aebbd0;
+        }
+
+        .footer {
+            text-align: center;
+            color: #8190a6;
+            font-size: 13px;
+            margin-top: 35px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 13px 15px;
+            }
+
+            .logo {
+                font-size: 15px;
+            }
+
+            .back-link {
+                font-size: 12px;
+            }
+
+            .wrap {
+                padding: 18px 12px 40px;
+            }
+
+            .hero {
+                padding: 21px 17px;
+            }
+
+            .rule-card {
+                padding: 16px;
+            }
+
+            .rule-card h2 {
+                font-size: 16px;
+            }
+
+            .sublist li {
+                padding: 10px 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <div class="logo">🚗 PDR Trainer</div>
+        <a class="back-link" href="../rules.html">← До всіх розділів</a>
+    </div>
+</header>
+
+<main class="wrap">
+    <section class="hero">
+        <span class="section-label">РОЗДІЛ 6</span>
+        <h1>Вимоги до велосипедистів</h1>
+        <p>
+            Вікові обмеження, обладнання велосипеда, правила руху,
+            обов’язки та заборони для велосипедистів.
+        </p>
+    </section>
+
+    <div class="tools">
+        <input
+            type="search"
+            class="search"
+            id="ruleSearch"
+            placeholder="Пошук за пунктом або ключовим словом..."
+            aria-label="Пошук у розділі"
+        >
+        <div class="result-count" id="resultCount">
+            Показано 7 пунктів
+        </div>
+    </div>
+
+    <section class="content" id="rulesContent">
+
+        <!-- Пункт 6.1 -->
+        <article class="rule-card" data-search="6.1 велосипедист вік 14 років рухатися дорога велосипеди">
+            <h2>6.1. Вік велосипедиста</h2>
+            <p>
+                Рухатися по дорозі на велосипедах дозволяється особам,
+                які досягли 14-річного віку.
+            </p>
+        </article>
+
+        <!-- Пункт 6.2 -->
+        <article class="rule-card" data-search="6.2 обладнання велосипеда звуковий сигнал світлоповертачі білий оранжевий червоний ліхтар фара темна пора недостатня видимість">
+            <h2>6.2. Обладнання велосипеда</h2>
+            <p>
+                Велосипедист має право керувати велосипедом, який
+                обладнаний звуковим сигналом та світлоповертачами:
+                спереду — білого кольору, по боках — оранжевого,
+                позаду — червоного. Для руху в темну пору доби і
+                в умовах недостатньої видимості на велосипеді повинен
+                бути встановлений та увімкнений ліхтар (фара).
+            </p>
+        </article>
+
+        <!-- Пункт 6.3 -->
+        <article class="rule-card" data-search="6.3 групи колона велосипедистів один за одним 10 велосипедистів дистанція 80 100 метрів проїзна частина">
+            <h2>6.3. Рух велосипедистів групами</h2>
+            <p>
+                Велосипедисти, рухаючись групами, повинні їхати один
+                за одним, щоб не заважати іншим учасникам дорожнього руху.
+            </p>
+            <p style="margin-top: 12px;">
+                Колона велосипедистів, що рухається по проїзній частині,
+                повинна бути розділена на групи (до 10 велосипедистів
+                у групі) з дистанцією руху між групами 80–100 м.
+            </p>
+        </article>
+
+        <!-- Пункт 6.4 -->
+        <article class="rule-card" data-search="6.4 вантаж велосипед перевезення багаж керування перешкоди інші учасники">
+            <h2>6.4. Перевезення вантажів</h2>
+            <p>
+                Велосипедист може перевозити лише такі вантажі, які
+                не заважають керувати велосипедом і не створюють
+                перешкод іншим учасникам дорожнього руху.
+            </p>
+        </article>
+
+        <!-- Пункт 6.5 -->
+        <article class="rule-card" data-search="6.5 велосипедна доріжка перетинає дорогу перехрестя дати дорогу велосипедний переїзд проїзна частина регулювання регулювальник світлофор">
+            <h2>6.5. Перетин дороги та регулювання руху</h2>
+            <p>
+                Якщо велосипедна доріжка перетинає дорогу поза
+                перехрестям, велосипедисти зобов'язані дати дорогу
+                іншим транспортним засобам, що рухаються по дорозі.
+            </p>
+            <p style="margin-top: 12px;">
+                Велосипедисти повинні переїжджати проїзну частину
+                по велосипедному переїзді, а у разі його відсутності —
+                відповідно до вимог цих Правил.
+            </p>
+
+            <div class="amendment">
+                Пункт 6.5 доповнено абзацом згідно з
+                <a href="https://zakon.rada.gov.ua/laws/show/1091-2021-%D0%BF#n24" target="_blank" rel="noopener">постановою КМ № 1091 від 29.09.2021</a>.
+            </div>
+
+            <p style="margin-top: 12px;">
+                У місцях, де рух регулюється, велосипедисти повинні
+                керуватися сигналами регулювальника або світлофора.
+            </p>
+
+            <div class="amendment">
+                Пункт 6.5 доповнено абзацом згідно з
+                <a href="https://zakon.rada.gov.ua/laws/show/1091-2021-%D0%BF#n24" target="_blank" rel="noopener">постановою КМ № 1091 від 29.09.2021</a>.
+            </div>
+        </article>
+
+        <!-- Пункт 6.6 -->
+        <article class="rule-card" data-search="6.6 забороняється несправне гальмо звуковий сигнал вимкнений ліхтар світлоповертачі автомагістраль дороги для автомобілів велосипедна доріжка тротуар пішохідна доріжка діти 7 років триматися транспортний засіб руль педалі пасажири буксирування причіп">
+            <h2>6.6. Велосипедисту забороняється</h2>
+
+            <ul class="sublist">
+                <li>
+                    <span class="letter">а)</span>
+                    керувати велосипедом з несправним гальмом,
+                    звуковим сигналом, а в темну пору доби і в умовах
+                    недостатньої видимості — з вимкненим ліхтарем
+                    (фарою) чи без світлоповертачів;
+                </li>
+
+                <li>
+                    <span class="letter">б)</span>
+                    рухатися по автомагістралях і дорогах для автомобілів,
+                    а також по проїзній частині, коли поряд облаштовано
+                    велосипедну доріжку;
+                </li>
+
+                <li>
+                    <span class="letter">в)</span>
+                    рухатися по тротуарах і пішохідних доріжках
+                    (крім дітей до 7 років на дитячих велосипедах
+                    під наглядом дорослих);
+                </li>
+
+                <li>
+                    <span class="letter">г)</span>
+                    під час руху триматися за інший транспортний засіб;
+                </li>
+
+                <li>
+                    <span class="letter">ґ)</span>
+                    їздити, не тримаючись за руль, та знімати ноги
+                    з педалей (підніжок);
+                </li>
+
+                <li>
+                    <span class="letter">д)</span>
+                    перевозити пасажирів на велосипеді (за винятком
+                    дітей до 7 років, які перевозяться на додатковому
+                    сидінні, обладнаному надійно закріпленими підніжками);
+                </li>
+
+                <li>
+                    <span class="letter">е)</span>
+                    буксирувати велосипеди;
+                </li>
+
+                <li>
+                    <span class="letter">є)</span>
+                    буксирувати причеп, не передбачений для експлуатації
+                    з велосипедом.
+                </li>
+            </ul>
+        </article>
+
+        <!-- Пункт 6.7 -->
+        <article class="rule-card" data-search="6.7 виконувати вимоги правил водії пішоходи велосипедисти">
+            <h2>6.7. Виконання вимог Правил</h2>
+            <p>
+                Велосипедисти повинні виконувати вимоги цих Правил,
+                що стосуються водіїв або пішоходів і не суперечать
+                вимогам цього розділу.
+            </p>
+        </article>
+
+    </section>
+
+    <div class="empty" id="emptyMessage">
+        За цим запитом нічого не знайдено.
+    </div>
+
+    <div class="footer">
+        Навчальний довідник PDR Trainer.<br>
+        Для вивчення використовуй чинну редакцію
+        Правил дорожнього руху України.
+        <div class="amendment">
+            Розділ 6 в редакції
+            <a href="https://zakon.rada.gov.ua/laws/show/1029-2011-%D0%BF" target="_blank" rel="noopener">постанови КМ № 1029 від 26.09.2011</a>.
+        </div>
+    </div>
+</main>
+
+<script>
+    const searchInput = document.getElementById("ruleSearch");
+    const cards = document.querySelectorAll(".rule-card");
+    const resultCount = document.getElementById("resultCount");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    function filterRules() {
+        const query = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const text = (
+                card.textContent + " " +
+                card.dataset.search
+            ).toLowerCase();
+
+            const matches = text.includes(query);
+
+            card.style.display = matches ? "" : "none";
+
+            if (matches) {
+                visibleCount++;
+            }
+        });
+
+        resultCount.textContent = query
+            ? `Знайдено пунктів: ${visibleCount}`
+            : `Показано ${visibleCount} пунктів`;
+
+        emptyMessage.style.display =
+            visibleCount === 0 ? "block" : "none";
+    }
+
+    searchInput.addEventListener("input", filterRules);
+    filterRules();
+</script>
+
+</body>
+</html>
+```
