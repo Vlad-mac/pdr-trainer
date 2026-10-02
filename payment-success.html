@@ -11,24 +11,27 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #0b1020;
-      color: #fff;
+      background: #101827;
+      color: #f5f7fb;
       font-family: Arial, sans-serif;
+      padding: 20px;
     }
     .card {
-      max-width: 560px;
-      padding: 32px;
-      border-radius: 18px;
-      background: #111827;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      width: min(560px, 100%);
+      padding: clamp(24px, 5vw, 40px);
+      border: 1px solid #2b3a53;
+      border-radius: 24px;
+      background: #172235;
+      box-shadow: 0 24px 70px rgba(0,0,0,.28);
       text-align: center;
     }
     a {
       display: inline-block;
       margin-top: 20px;
-      padding: 12px 18px;
-      border-radius: 12px;
+      padding: 14px 20px;
+      border-radius: 14px;
       background: #2563eb;
+      font-weight: 700;
       color: #fff;
       text-decoration: none;
     }
