@@ -646,7 +646,7 @@ async function loadSectionTexts() {
 
     const sectionPath = sectionFiles[topic.number];
 
-    if (sectionPath && ["01", "02"].includes(topic.number)) {
+    if (sectionPath) {
         chevron.textContent = "→";
         chevron.style.transform = "none";
     } else {
@@ -665,7 +665,7 @@ async function loadSectionTexts() {
     content.append(message);
     card.append(summary, content);
 
-    if (sectionPath && ["01", "02"].includes(topic.number)) {
+    if (sectionPath) {
         summary.addEventListener("click", function(event) {
             event.preventDefault();
             window.location.href = sectionPath;
