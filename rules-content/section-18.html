@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розділ 18. Проїзд пішохідних переходів і зупинок транспортних засобів | PDR Trainer</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0b1220; color: #e5edf8; font-family: Arial, sans-serif; line-height: 1.7; }
+    header { background: #121d30; border-bottom: 1px solid #263750; padding: 16px 20px; }
+    .header-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .logo { color: #fff; font-size: 18px; font-weight: bold; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 30px 20px 60px; }
+    .hero { background: linear-gradient(135deg, #17253b, #121d30); border: 1px solid #263750; border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+    .section-label { display: inline-block; color: #93c5fd; background: #203957; border: 1px solid #31547b; border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; }
+    h1 { color: #fff; font-size: clamp(23px, 4vw, 32px); line-height: 1.3; margin: 0 0 10px; }
+    .hero p { color: #aebbd0; margin: 0; }
+    .tools { position: sticky; top: 0; z-index: 10; padding: 12px 0; background: #0b1220; }
+    .search { width: 100%; padding: 14px 17px; border: 1px solid #35465f; border-radius: 12px; background: #172538; color: #fff; font-size: 15px; outline: none; }
+    .search:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12); }
+    .search::placeholder { color: #91a0b5; }
+    .result-count { color: #91a0b5; font-size: 13px; text-align: right; margin: 8px 3px 0; }
+    .content { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+    .rule-card { padding: 20px 22px; background: #121d30; border: 1px solid #263750; border-radius: 14px; transition: border-color 0.2s; overflow-wrap: anywhere; }
+    .rule-card:hover { border-color: #426b9b; }
+    .rule-card h2 { color: #93c5fd; font-size: 18px; margin: 0 0 10px; line-height: 1.45; }
+    .rule-card p { margin: 0; color: #d7e0ed; }
+    .rule-card p + p { margin-top: 12px; }
+    .rule-card a { color: #93c5fd; text-decoration: none; }
+    .rule-card a:hover { text-decoration: underline; }
+    .amendment { margin-top: 12px; color: #91a0b5; font-size: 12px; line-height: 1.5; }
+    .no-results { display: none; background: #121d30; border: 1px solid #263750; border-radius: 12px; padding: 25px; text-align: center; color: #aebbd0; }
+    .footer { text-align: center; color: #8190a6; font-size: 13px; margin-top: 35px; line-height: 1.6; }
+    @media (max-width: 600px) {
+      header { padding: 13px 15px; }
+      .logo { font-size: 15px; }
+      .back-link { font-size: 12px; }
+      .wrap { padding: 18px 12px 40px; }
+      .hero { padding: 21px 17px; }
+      .rule-card { padding: 16px; }
+      .rule-card h2 { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">🚗 PDR Trainer</div>
+      <a class="back-link" href="../rules.html">← До всіх розділів</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <span class="section-label">РОЗДІЛ 18</span>
+      <h1>Проїзд пішохідних переходів і зупинок транспортних засобів</h1>
+      <p>Обов’язки водіїв щодо пішоходів на переходах, біля трамваїв і транспортних засобів із знаком «Діти».</p>
+    </section>
+
+    <div class="tools">
+      <input type="search" class="search" id="ruleSearch" placeholder="Пошук за пунктом або ключовим словом..." aria-label="Пошук у розділі">
+      <div class="result-count" id="resultCount"></div>
+    </div>
+
+    <section class="content" id="content">
+      <article class="rule-card"><h2>18.1. Наближення до нерегульованого пішохідного переходу</h2><p>Водій транспортного засобу, що наближається до нерегульованого пішохідного переходу, на якому перебувають пішоходи, повинен зменшити швидкість, а в разі потреби зупинитися, щоб дати дорогу пішоходам, для яких може бути створена перешкода чи небезпека.</p></article>
+      <article class="rule-card"><h2>18.2. Пішоходи, які закінчують перехід</h2><p>На регульованих пішохідних переходах і перехрестях при сигналі світлофора чи регулювальника, що дозволяє рух транспортним засобам, водій повинен дати дорогу пішоходам, які закінчують перехід проїзної частини відповідного напрямку руху і для яких може бути створена перешкода чи небезпека.</p></article>
+      <article class="rule-card"><h2>18.3. Безпечний інтервал біля пішоходів на острівці безпеки</h2><p>Проїжджаючи повз пішоходів, які не встигли закінчити перехід проїзної частини і вимушено перебувають на острівці безпеки або лінії, що розділяє транспортні потоки протилежних напрямків, водії повинні дотримувати безпечного інтервалу.</p></article>
+      <article class="rule-card"><h2>18.4. Рух на сусідніх смугах біля переходу</h2><p>Якщо перед нерегульованим пішохідним переходом зменшує швидкість чи зупинився транспортний засіб, водії інших транспортних засобів, що рухаються по сусідніх смугах, повинні зменшити швидкість, а в разі потреби зупинитися і можуть продовжити (відновити) рух лише переконавшись, що на пішохідному переході немає пішоходів, для яких може бути створена перешкода чи небезпека.</p></article>
+      <article class="rule-card"><h2>18.5. Пішоходи з порушенням зору</h2><p>У будь-якому місці водій повинен пропустити пішоходів з порушенням зору, які подають сигнал тростиною білого кольору, спрямованою вперед.</p><div class="amendment">Пункт 18.5 із змінами, внесеними згідно з Постановою КМ <a href="https://zakon.rada.gov.ua/laws/show/1091-2021-%D0%BF#n35" target="_blank" rel="noopener noreferrer">№ 1091 від 29.09.2021</a>.</div></article>
+      <article class="rule-card"><h2>18.6. Заборона виїзду на перехід із затором</h2><p>Забороняється в'їжджати на пішохідний перехід, якщо за ним утворився затор, який змусить водія зупинитися на цьому переході.</p></article>
+      <article class="rule-card"><h2>18.7. Зупинка на вимогу супроводжуючих дітей</h2><p>Водії повинні зупинитися перед пішохідним переходом на сигнал, передбачений <a href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF#n399" target="_blank" rel="noopener noreferrer">підпунктом «в» пункту 8.8</a> цих Правил, якщо така вимога надійшла від членів шкільного патруля, загону юних інспекторів руху, відповідним чином екіпірованих, або осіб, що супроводжують групи дітей, і дати дорогу дітям, які переходять проїзну частину дороги.</p></article>
+      <article class="rule-card"><h2>18.8. Пішоходи біля трамвая на зупинці</h2><p>Водій транспортного засобу повинен зупинитися, щоб дати дорогу пішоходам, які йдуть з боку відчинених дверей до (або від) трамвая, що стоїть на зупинці, якщо посадка чи висадка проводиться з проїзної частини чи посадкового майданчика, розміщеного на ній.</p><p>Продовжувати рух дозволяється лише тоді, коли пішоходи залишать проїзну частину і в трамваї зачиняться двері.</p></article>
+      <article class="rule-card"><h2>18.9. Наближення до транспортного засобу зі знаком «Діти»</h2><p>Наближаючись до транспортного засобу з розпізнавальним знаком «Діти», що зупинився з увімкненими проблисковими маячками оранжевого кольору та (або) аварійною світловою сигналізацією, водії транспортних засобів, що рухаються по суміжній смузі, повинні зменшити швидкість, а в разі потреби зупинитися, щоб уникнути наїзду на дітей.</p><div class="amendment">Пункт 18.9 в редакції Постанови КМ <a href="https://zakon.rada.gov.ua/laws/show/111-2013-%D0%BF#n131" target="_blank" rel="noopener noreferrer">№ 111 від 11.02.2013</a>.</div></article>
+    </section>
+
+    <div class="no-results" id="noResults">За цим запитом нічого не знайдено.</div>
+    <div class="footer">Навчальний довідник PDR Trainer.<br>Для вивчення використовуй чинну редакцію Правил дорожнього руху України.</div>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById("ruleSearch");
+    const cards = document.querySelectorAll(".rule-card");
+    const resultCount = document.getElementById("resultCount");
+    const noResults = document.getElementById("noResults");
+    function filterRules() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      cards.forEach(card => {
+        const matches = card.textContent.toLowerCase().includes(query);
+        card.style.display = matches ? "" : "none";
+        if (matches) visibleCount++;
+      });
+      resultCount.textContent = query ? `Знайдено пунктів: ${visibleCount}` : `Показано ${visibleCount} пунктів`;
+      noResults.style.display = visibleCount === 0 ? "block" : "none";
+    }
+    searchInput.addEventListener("input", filterRules);
+    filterRules();
+  </script>
+</body>
+</html>
