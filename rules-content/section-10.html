@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10. Початок руху та зміна його напрямку | PDR Trainer</title>
+
+<style>
+:root {
+    --bg: #10141d;
+    --card: #1b2230;
+    --card-hover: #222c3d;
+    --text: #f1f5f9;
+    --muted: #a4afc0;
+    --accent: #4f9cf9;
+    --border: #303b4e;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.65;
+}
+
+.container {
+    width: min(100% - 32px, 1000px);
+    margin: 0 auto;
+    padding: 32px 0 60px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.header {
+    margin-bottom: 28px;
+}
+
+.section-number {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+h1 {
+    margin: 0 0 12px;
+    font-size: clamp(24px, 5vw, 36px);
+    line-height: 1.25;
+    font-weight: 750;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0;
+}
+
+.search-wrap {
+    position: relative;
+    margin: 28px 0;
+}
+
+.search-wrap input {
+    width: 100%;
+    padding: 15px 18px 15px 46px;
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    font-size: 15px;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.search-wrap input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 156, 249, .12);
+}
+
+.search-wrap input::placeholder {
+    color: #7f8ba0;
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 18px;
+    pointer-events: none;
+}
+
+.rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.rule-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    transition: background .2s, border-color .2s;
+}
+
+.rule-card:hover {
+    background: var(--card-hover);
+    border-color: #42516a;
+}
+
+.rule-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.rule-number {
+    flex: 0 0 auto;
+    min-width: 48px;
+    color: var(--accent);
+    font-weight: 750;
+    font-size: 15px;
+    padding-top: 1px;
+}
+
+.rule-text {
+    margin: 0;
+    font-size: 15px;
+    color: var(--text);
+    white-space: pre-line;
+}
+
+.rule-text p {
+    margin: 0 0 12px;
+}
+
+.rule-text p:last-child {
+    margin-bottom: 0;
+}
+
+.rule-text a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.rule-text a:hover {
+    text-decoration: underline;
+}
+
+.amendment {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    font-style: italic;
+}
+
+.subpoints {
+    margin: 10px 0 0;
+    padding-left: 22px;
+}
+
+.subpoints li {
+    margin: 7px 0;
+}
+
+.no-results {
+    display: none;
+    text-align: center;
+    color: var(--muted);
+    padding: 36px 16px;
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+}
+
+.results-count {
+    color: var(--muted);
+    font-size: 13px;
+    margin: -16px 0 16px;
+}
+
+@media (max-width: 600px) {
+    .container {
+        width: min(100% - 22px, 1000px);
+        padding-top: 22px;
+    }
+
+    .rule-card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .rule-title {
+        gap: 8px;
+    }
+
+    .rule-number {
+        min-width: 42px;
+        font-size: 14px;
+    }
+
+    .rule-text {
+        font-size: 14px;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <a class="back-link" href="../rules.html">← До всіх розділів</a>
+
+    <header class="header">
+        <span class="section-number">Розділ 10</span>
+        <h1>Початок руху та зміна його напрямку</h1>
+        <p class="subtitle">Правила початку руху, перестроювання, поворотів, розворотів і руху заднім ходом.</p>
+    </header>
+
+    <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input
+            type="search"
+            id="ruleSearch"
+            placeholder="Пошук за пунктом або текстом..."
+            autocomplete="off"
+        >
+    </div>
+
+    <div class="results-count" id="resultsCount"></div>
+
+    <main class="rules-list" id="rulesList">
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.1.</span>
+                <div class="rule-text">
+                    Перед початком руху, перестроюванням та будь-якою зміною напрямку руху водій повинен переконатися, що це буде безпечним і не створить перешкод або небезпеки іншим учасникам руху.
+                </div>
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.2.</span>
+                <div class="rule-text">
+                    Виїжджаючи на дорогу з житлової зони, дворів, місць стоянки, автозаправних станцій та інших прилеглих територій, водій повинен перед проїзною частиною чи тротуаром дати дорогу пішоходам і транспортним засобам, що рухаються по ній, а з'їжджаючи з дороги — велосипедистам і пішоходам, напрямок руху яких він перетинає.
+                </div>
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.3.</span>
+                <div class="rule-text">
+                    У разі перестроювання водій повинен дати дорогу транспортним засобам, що рухаються в попутному напрямку по тій смузі, на яку він має намір перестроїтися.
+
+                    <p>За одночасного перестроювання транспортних засобів, що рухаються в одному напрямку, водій, який знаходиться ліворуч, повинен дати дорогу транспортному засобу, що знаходиться праворуч.</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.4.</span>
+                <div class="rule-text">
+                    Перед поворотом праворуч та ліворуч, у тому числі в напрямку головної дороги, або розворотом водій повинен завчасно зайняти відповідне крайнє положення на проїзній частині, призначеній для руху в цьому напрямку, крім випадків, коли здійснюється поворот у разі в'їзду на перехрестя, де організовано круговий рух, напрямок руху визначено дорожніми знаками чи дорожньою розміткою або рух можливий лише в одному напрямку, установленому конфігурацією проїзної частини, дорожніми знаками чи розміткою.
+
+                    <p>Водій, що виконує поворот ліворуч або розворот поза перехрестям з відповідного крайнього положення на проїзній частині даного напрямку, повинен дати дорогу зустрічним транспортним засобам, а при виконанні цих маневрів не з крайнього лівого положення на проїзній частині — і попутним транспортним засобам. Водій, що виконує поворот ліворуч, повинен дати дорогу попутним транспортним засобам, які рухаються попереду нього і виконують розворот.</p>
+
+                    <p>За наявності трамвайної колії посередині проїзної частини водій нерейкового транспортного засобу, що виконує поворот ліворуч або розворот поза перехрестям, повинен дати дорогу трамваю.</p>
+                </div>
+            </div>
+            <div class="amendment">
+                Абзац перший пункту 10.4 — в редакції Постанови КМ
+                <a href="https://zakon.rada.gov.ua/laws/show/111-2013-%D0%BF#n118" target="_blank" rel="noopener noreferrer">№ 111 від 11.02.2013</a>.
+
+                <br><br>
+                Абзац другий пункту 10.4 — із змінами, внесеними згідно з Постановою КМ
+                <a href="https://zakon.rada.gov.ua/laws/show/111-2013-%D0%BF#n120" target="_blank" rel="noopener noreferrer">№ 111 від 11.02.2013</a>.
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.5.</span>
+                <div class="rule-text">
+                    Поворот необхідно виконувати так, щоб під час виїзду з перехрещення проїзних частин транспортний засіб не опинився на смузі зустрічного руху, а у разі повороту праворуч слід рухатися ближче до правого краю проїзної частини. Виїзд з перехрестя, де організовано круговий рух, може здійснюватися з будь-якої смуги, якщо напрямок руху не визначено дорожніми знаками чи розміткою і це не створить перешкод транспортним засобам, що рухаються в попутному напрямку праворуч.
+                </div>
+            </div>
+            <div class="amendment">
+                Пункт 10.5 — в редакції Постанови КМ
+                <a href="https://zakon.rada.gov.ua/laws/show/860-2017-%D0%BF#n9" target="_blank" rel="noopener noreferrer">№ 860 від 15.11.2017</a>.
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.6.</span>
+                <div class="rule-text">
+                    Якщо транспортний засіб через свої габарити або інші причини не може виконати поворот чи розворот з відповідного крайнього положення, дозволяється відступити від вимог <a href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF#n463" target="_blank" rel="noopener noreferrer">пункту 10.4</a> цих Правил, якщо це не суперечить вимогам заборонних чи наказових дорожніх знаків, дорожньої розмітки та не створить небезпеки чи перешкод іншим учасникам руху. У разі потреби, для забезпечення безпеки дорожнього руху, слід звернутися за допомогою до інших осіб.
+                </div>
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.7.</span>
+                <div class="rule-text">
+                    Розворот забороняється:
+                    <ul class="subpoints">
+                        <li>а) на залізничних переїздах;</li>
+                        <li>б) на мостах, шляхопроводах, естакадах і під ними;</li>
+                        <li>в) у тунелях;</li>
+                        <li>г) за видимості дороги менше 100 м хоча б в одному напрямку;</li>
+                        <li>ґ) на пішохідних переходах і ближче 10 м від них з обох боків, крім випадку дозволеного розвороту на перехресті;</li>
+                        <li>д) на автомагістралях, а також на дорогах для автомобілів, за винятком перехресть і місць, позначених дорожніми знаками 5.29 та 5.30.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="amendment">
+                Підпункт «д» пункту 10.7 — із змінами, внесеними згідно з Постановою КМ
+                <a href="https://zakon.rada.gov.ua/laws/show/1091-2021-%D0%BF#n30" target="_blank" rel="noopener noreferrer">№ 1091 від 29.09.2021</a>.
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.8.</span>
+                <div class="rule-text">
+                    Якщо в місці з'їзду з дороги є смуга гальмування, водій, який має намір повернути на іншу дорогу, повинен своєчасно перестроїтися на цю смугу і знижувати швидкість тільки на ній.
+
+                    <p>Якщо в місці в'їзду на дорогу є смуга розгону, водій має рухатися по ній і вливатися в транспортний потік, даючи дорогу транспортним засобам, що рухаються по цій дорозі.</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.9.</span>
+                <div class="rule-text">
+                    Під час руху транспортного засобу заднім ходом водій не повинен створювати небезпеки чи перешкод іншим учасникам руху. Для забезпечення безпеки руху він у разі потреби повинен звернутися за допомогою до інших осіб.
+                </div>
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.10.</span>
+                <div class="rule-text">
+                    Забороняється рух транспортних засобів заднім ходом на автомагістралях, дорогах для автомобілів, залізничних переїздах, пішохідних переходах, перехрестях, мостах, шляхопроводах, естакадах, у тунелях, на в'їздах і виїздах з них, а також на ділянках доріг з обмеженою оглядовістю чи недостатньою видимістю.
+
+                    <p>Дозволяється рух заднім ходом на дорогах з одностороннім рухом за умови дотримання вимог <a href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF#n477" target="_blank" rel="noopener noreferrer">пункту 10.9</a> цих Правил та неможливості під'їхати до об'єкта іншим чином.</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="rule-card">
+            <div class="rule-title">
+                <span class="rule-number">10.11.</span>
+                <div class="rule-text">
+                    У разі коли траєкторії руху транспортних засобів перетинаються, а черговість проїзду не обумовлена цими Правилами, дати дорогу повинен водій, до якого транспортний засіб наближається з правого боку.
+                </div>
+            </div>
+        </article>
+
+    </main>
+
+    <div class="no-results" id="noResults">
+        За вашим запитом нічого не знайдено.
+    </div>
+</div>
+
+<script>
+const searchInput = document.getElementById("ruleSearch");
+const ruleCards = [...document.querySelectorAll(".rule-card")];
+const noResults = document.getElementById("noResults");
+const resultsCount = document.getElementById("resultsCount");
+
+function updateSearch() {
+    const query = searchInput.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    ruleCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const matches = text.includes(query);
+
+        card.style.display = matches ? "" : "none";
+
+        if (matches) {
+            visibleCount++;
+        }
+    });
+
+    noResults.style.display = visibleCount === 0 ? "block" : "none";
+
+    resultsCount.textContent = query
+        ? `Знайдено пунктів: ${visibleCount}`
+        : `Усього пунктів: ${ruleCards.length}`;
+}
+
+searchInput.addEventListener("input", updateSearch);
+updateSearch();
+</script>
+
+</body>
