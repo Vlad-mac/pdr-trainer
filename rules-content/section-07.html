@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Розділ 7. Вимоги до осіб, які керують гужовим транспортом, і погоничів тварин</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    line-height: 1.6;
+}
+
+.container {
+    width: min(100% - 32px, 1000px);
+    margin: 0 auto;
+    padding: 30px 0 60px;
+}
+
+.back-link {
+    display: inline-block;
+    color: #94a3b8;
+    text-decoration: none;
+    margin-bottom: 24px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #38bdf8;
+}
+
+.hero {
+    padding: 30px;
+    margin-bottom: 28px;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #1e293b, #172554);
+}
+
+.section-number {
+    display: inline-block;
+    color: #38bdf8;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(24px, 4vw, 34px);
+    line-height: 1.25;
+    color: #f8fafc;
+}
+
+.hero p {
+    margin: 14px 0 0;
+    color: #94a3b8;
+}
+
+.search-box {
+    margin-bottom: 24px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 15px 18px;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    outline: none;
+    background: #1e293b;
+    color: #f8fafc;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.search-box input:focus {
+    border-color: #38bdf8;
+}
+
+.search-box input::placeholder {
+    color: #64748b;
+}
+
+.rules-list {
+    display: grid;
+    gap: 16px;
+}
+
+.rule-card {
+    padding: 22px 24px;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    background: #1e293b;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.rule-card:hover {
+    border-color: #475569;
+    transform: translateY(-2px);
+}
+
+.rule-card h2 {
+    margin: 0 0 10px;
+    color: #38bdf8;
+    font-size: 18px;
+}
+
+.rule-card p {
+    margin: 0;
+    color: #cbd5e1;
+}
+
+.rule-card ul {
+    margin: 12px 0 0;
+    padding-left: 24px;
+    color: #cbd5e1;
+}
+
+.rule-card li {
+    margin: 8px 0;
+}
+
+.rule-card li:last-child {
+    margin-bottom: 0;
+}
+
+.amendment {
+    display: block;
+    margin-top: 12px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.amendment a {
+    color: #38bdf8;
+    text-decoration: none;
+}
+
+.amendment a:hover {
+    text-decoration: underline;
+}
+
+.no-results {
+    display: none;
+    padding: 24px;
+    text-align: center;
+    color: #94a3b8;
+    border: 1px dashed #475569;
+    border-radius: 14px;
+}
+
+@media (max-width: 600px) {
+    .container {
+        width: min(100% - 24px, 1000px);
+        padding-top: 20px;
+    }
+
+    .hero {
+        padding: 22px;
+    }
+
+    .rule-card {
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <a href="../rules.html" class="back-link">← Назад до всіх розділів</a>
+
+    <header class="hero">
+        <span class="section-number">РОЗДІЛ 7</span>
+        <h1>Вимоги до осіб, які керують гужовим транспортом, і погоничів тварин</h1>
+        <p>Правила руху гужового транспорту та перегону тварин</p>
+    </header>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="ruleSearch"
+            placeholder="Пошук за пунктами або ключовими словами..."
+            aria-label="Пошук за правилами"
+        >
+    </div>
+
+    <main class="rules-list" id="rulesList">
+
+        <article class="rule-card">
+            <h2>7.1. Вікові обмеження</h2>
+            <p>
+                Керувати гужовим транспортом та переганяти тварин по дорозі
+                дозволяється особам, не молодшим 14-річного віку.
+            </p>
+        </article>
+
+        <article class="rule-card">
+            <h2>7.2. Обладнання гужового воза</h2>
+            <p>
+                Гужовий віз (сани) повинен бути обладнаний світлоповертачами:
+            </p>
+            <ul>
+                <li>спереду — білого кольору;</li>
+                <li>ззаду — червоного кольору.</li>
+            </ul>
+        </article>
+
+        <article class="rule-card">
+            <h2>7.3. Рух у темну пору доби</h2>
+            <p>
+                Для руху в темну пору доби та в умовах недостатньої видимості
+                на гужовому транспорті необхідно увімкнути ліхтарі:
+            </p>
+            <ul>
+                <li>спереду — білого кольору;</li>
+                <li>ззаду — червоного кольору.</li>
+            </ul>
+            <p style="margin-top: 10px;">
+                Ліхтарі встановлюються з лівого боку воза (саней).
+            </p>
+        </article>
+
+        <article class="rule-card">
+            <h2>7.4. Виїзд на дорогу з обмеженою оглядовістю</h2>
+            <p>
+                У разі виїзду на дорогу з прилеглої території або з другорядної
+                дороги в місцях з обмеженою оглядовістю водій воза (саней)
+                повинен вести тварину за вуздечку, повід.
+            </p>
+        </article>
+
+        <article class="rule-card">
+            <h2>7.5. Перевезення пасажирів</h2>
+            <p>
+                Перевозити людей гужовим транспортом дозволяється за наявності
+                умов, які б виключали можливість перебування пасажирів за
+                боковими та заднім габаритами транспортного засобу.
+            </p>
+        </article>
+
+        <article class="rule-card">
+            <h2>7.6. Перегін стада тварин</h2>
+            <p>
+                Переганяти стадо тварин по дорозі дозволяється лише у світлу
+                пору доби. При цьому залучається така кількість погоничів,
+                щоб можна було:
+            </p>
+            <ul>
+                <li>направляти тварин якомога ближче до правого краю дороги;</li>
+                <li>не створювати небезпеку та перешкод іншим учасникам дорожнього руху.</li>
+            </ul>
+        </article>
+
+        <article class="rule-card">
+            <h2>7.7. Заборони для погоничів і водіїв гужового транспорту</h2>
+            <p>Особам, що керують гужовим транспортом, і погоничам тварин забороняється:</p>
+            <ul>
+                <li>
+                    <strong>а)</strong> рухатися по автомобільних дорогах державного
+                    значення (за можливості рухатися автомобільними дорогами
+                    місцевого значення);
+                </li>
+                <li>
+                    <strong>б)</strong> використовувати вози, не обладнані
+                    світлоповертачами, без ліхтарів у темну пору доби та
+                    в умовах недостатньої видимості;
+                </li>
+                <li>
+                    <strong>в)</strong> залишати на смузі відведення дороги
+                    тварин без нагляду та випасати їх;
+                </li>
+                <li>
+                    <strong>г)</strong> вести тварин по дорогах з удосконаленим
+                    покриттям, якщо поруч є інші дороги;
+                </li>
+                <li>
+                    <strong>ґ)</strong> переганяти тварин по дорогах у темну
+                    пору доби та в умовах недостатньої видимості;
+                </li>
+                <li>
+                    <strong>д)</strong> переганяти тварин через залізничні колії
+                    і дороги з удосконаленим покриттям поза спеціально
+                    відведеними місцями.
+                </li>
+            </ul>
+            <span class="amendment">
+                Підпункт «а» пункту 7.7 в редакції
+                <a href="https://zakon.rada.gov.ua/laws/show/876-2008-%D0%BF"
+                   target="_blank" rel="noopener noreferrer">
+                    Постанови КМ № 876 від 01.10.2008
+                </a>.
+            </span>
+        </article>
+
+        <article class="rule-card">
+            <h2>7.8. Виконання інших вимог ПДР</h2>
+            <p>
+                Особи, які керують гужовим транспортом, і погоничі тварин
+                зобов'язані виконувати вимоги інших пунктів цих Правил,
+                що стосуються водіїв і пішоходів і не суперечать вимогам
+                цього розділу.
+            </p>
+        </article>
+
+    </main>
+
+    <div class="no-results" id="noResults">
+        За вашим запитом нічого не знайдено.
+    </div>
+
+</div>
+
+<script>
+const searchInput = document.getElementById("ruleSearch");
+const ruleCards = document.querySelectorAll(".rule-card");
+const noResults = document.getElementById("noResults");
+
+searchInput.addEventListener("input", function () {
+    const query = this.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    ruleCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const matches = text.includes(query);
+
+        card.style.display = matches ? "" : "none";
+
+        if (matches) {
+            visibleCount++;
+        }
+    });
+
+    noResults.style.display = visibleCount === 0 ? "block" : "none";
+});
+</script>
+
+</body>
