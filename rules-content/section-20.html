@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розділ 20. Рух через залізничні переїзди | PDR Trainer</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0b1220; color: #e5edf8; font-family: Arial, sans-serif; line-height: 1.7; }
+    header { background: #121d30; border-bottom: 1px solid #263750; padding: 16px 20px; }
+    .header-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .logo { color: #fff; font-size: 18px; font-weight: bold; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 30px 20px 60px; }
+    .hero { background: linear-gradient(135deg, #17253b, #121d30); border: 1px solid #263750; border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+    .section-label { display: inline-block; color: #93c5fd; background: #203957; border: 1px solid #31547b; border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; }
+    h1 { color: #fff; font-size: clamp(23px, 4vw, 32px); line-height: 1.3; margin: 0 0 10px; }
+    .hero p { color: #aebbd0; margin: 0; }
+    .tools { position: sticky; top: 0; z-index: 10; padding: 12px 0; background: #0b1220; }
+    .search { width: 100%; padding: 14px 17px; border: 1px solid #35465f; border-radius: 12px; background: #172538; color: #fff; font-size: 15px; outline: none; }
+    .search:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12); }
+    .search::placeholder { color: #91a0b5; }
+    .result-count { color: #91a0b5; font-size: 13px; text-align: right; margin: 8px 3px 0; }
+    .content { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+    .rule-card { padding: 20px 22px; background: #121d30; border: 1px solid #263750; border-radius: 14px; transition: border-color 0.2s; overflow-wrap: anywhere; }
+    .rule-card:hover { border-color: #426b9b; }
+    .rule-card h2 { color: #93c5fd; font-size: 18px; margin: 0 0 10px; line-height: 1.45; }
+    .rule-card p { margin: 0; color: #d7e0ed; }
+    .rule-card p + p { margin-top: 12px; }
+    .rule-card ul { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .rule-card li { background: #17253b; border-left: 3px solid #426b9b; border-radius: 7px; padding: 11px 14px; color: #d7e0ed; }
+    .no-results { display: none; background: #121d30; border: 1px solid #263750; border-radius: 12px; padding: 25px; text-align: center; color: #aebbd0; }
+    .footer { text-align: center; color: #8190a6; font-size: 13px; margin-top: 35px; line-height: 1.6; }
+    @media (max-width: 600px) {
+      header { padding: 13px 15px; }
+      .logo { font-size: 15px; }
+      .back-link { font-size: 12px; }
+      .wrap { padding: 18px 12px 40px; }
+      .hero { padding: 21px 17px; }
+      .rule-card { padding: 16px; }
+      .rule-card h2 { font-size: 16px; }
+      .rule-card li { padding: 10px 11px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">🚗 PDR Trainer</div>
+      <a class="back-link" href="../rules.html">← До всіх розділів</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <span class="section-label">РОЗДІЛ 20</span>
+      <h1>Рух через залізничні переїзди</h1>
+      <p>Правила перетину залізничних колій, заборони руху та дії у разі вимушеної зупинки.</p>
+    </section>
+
+    <div class="tools">
+      <input type="search" class="search" id="ruleSearch" placeholder="Пошук за пунктом або ключовим словом..." aria-label="Пошук у розділі">
+      <div class="result-count" id="resultCount"></div>
+    </div>
+
+    <section class="content" id="content">
+      <article class="rule-card"><h2>20.1. Перетин залізничних колій</h2><p>Водії транспортних засобів можуть перетинати залізничні колії лише на залізничних переїздах.</p></article>
+      <article class="rule-card"><h2>20.2. Дії водія під час під'їзду до переїзду</h2><p>Під'їжджаючи до переїзду, а також починаючи рух після зупинки перед ним, водій зобов'язаний керуватися вказівками і сигналами чергового по переїзду, положенням шлагбаума, світловою та звуковою сигналізацією, дорожніми знаками і дорожньою розміткою, а також переконатися в тому, що не наближається поїзд (локомотив, дрезина).</p></article>
+      <article class="rule-card"><h2>20.3. Місце зупинки перед переїздом</h2><p>Для пропуску поїзда, що наближається, і в інших випадках, коли рух через залізничний переїзд заборонено, водій повинен зупинитися перед дорожньою розміткою 1.12 (стоп-лінією), дорожнім знаком 2.2, шлагбаумом чи світлофором так, щоб бачити сигнали, а якщо засоби організації дорожнього руху відсутні — не ближче 10 м до найближчої рейки.</p></article>
+      <article class="rule-card"><h2>20.4. Рух в один ряд через переїзд</h2><p>Якщо перед переїздом немає дорожньої розмітки або дорожніх знаків, що визначають кількість смуг руху, рух транспортних засобів через переїзд дозволяється лише в один ряд.</p></article>
+      <article class="rule-card"><h2>20.5. Випадки, коли рух через переїзд заборонено</h2><p>Рух через переїзд забороняється, якщо:</p><ul>
+        <li>а) черговий по переїзду подає сигнал заборони руху — стоїть до водія грудьми або спиною з піднятим над головою жезлом (червоним ліхтарем чи прапорцем) або з витягнутими в сторони руками;</li>
+        <li>б) шлагбаум опущений або почав опускатися;</li>
+        <li>в) увімкнено заборонний сигнал світлофора чи звуковий сигнал незалежно від наявності та положення шлагбаума;</li>
+        <li>г) за переїздом утворився затор, який змусить водія зупинитися на переїзді;</li>
+        <li>ґ) до переїзду в межах видимості наближається поїзд (локомотив, дрезина).</li>
+      </ul></article>
+      <article class="rule-card"><h2>20.6. Рух машин і механізмів через переїзд</h2><p>Рух через переїзд сільськогосподарських, дорожніх, будівельних та інших машин і механізмів дозволяється тільки в транспортному стані.</p></article>
+      <article class="rule-card"><h2>20.7. Заборона об'їзду шлагбаума і черги</h2><p>Забороняється самовільно відкривати шлагбаум або об'їжджати його, а також об'їжджати транспортні засоби, які стоять перед переїздом, коли рух через нього заборонено.</p></article>
+      <article class="rule-card"><h2>20.8. Дії у разі вимушеної зупинки на переїзді</h2><p>У разі вимушеної зупинки транспортного засобу на переїзді водій зобов'язаний негайно висадити людей і вжити заходів для звільнення переїзду, а якщо це не вдається зробити, він повинен:</p><ul>
+        <li>а) коли є можливість, послати двох чоловік уздовж колій в обидва боки від переїзду не менш як на 1000 м (якщо одного, то в бік ймовірної появи поїзда, а на одноколійних переїздах — у бік гіршої видимості залізничної колії), пояснивши їм правила подавання сигналу зупинки машиністу поїзда (локомотива, дрезини), що наближається;</li>
+        <li>б) залишатися біля транспортного засобу і, подаючи сигнали загальної тривоги, вживати всіх заходів для звільнення переїзду;</li>
+        <li>в) у разі появи поїзда бігти йому назустріч, подаючи сигнал зупинки.</li>
+      </ul></article>
+      <article class="rule-card"><h2>20.9. Сигнали зупинки поїзда і загальної тривоги</h2><p>Сигналом зупинки поїзда (локомотива, дрезини) є круговий рух руки (у світлу пору — із шматком яскравої тканини або будь-яким добре помітним предметом, у темну пору доби і в умовах недостатньої видимості — з факелом або ліхтарем).</p><p>Сигналом загальної тривоги є серії звукових сигналів транспортного засобу, що складаються з одного довгого і трьох коротких сигналів.</p></article>
+      <article class="rule-card"><h2>20.10. Перегін тварин через переїзд</h2><p>Стадо тварин дозволяється переганяти через переїзд тільки за достатньої кількості погоничів, але не менше трьох. Переводити поодиноких тварин (не більше двох на одного погонича) необхідно лише за вуздечку, повід.</p></article>
+    </section>
+
+    <div class="no-results" id="noResults">За цим запитом нічого не знайдено.</div>
+    <div class="footer">Навчальний довідник PDR Trainer.<br>Для вивчення використовуй чинну редакцію Правил дорожнього руху України.</div>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById("ruleSearch");
+    const cards = document.querySelectorAll(".rule-card");
+    const resultCount = document.getElementById("resultCount");
+    const noResults = document.getElementById("noResults");
+    function filterRules() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      cards.forEach(card => {
+        const matches = card.textContent.toLowerCase().includes(query);
+        card.style.display = matches ? "" : "none";
+        if (matches) visibleCount++;
+      });
+      resultCount.textContent = query ? `Знайдено пунктів: ${visibleCount}` : `Показано ${visibleCount} пунктів`;
+      noResults.style.display = visibleCount === 0 ? "block" : "none";
+    }
+    searchInput.addEventListener("input", filterRules);
+    filterRules();
+  </script>
+</body>
+</html>
