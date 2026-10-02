@@ -709,3 +709,25 @@ body {
 .topbar .user-greeting {
     display: none;
 }
+
+
+/* Make sign-in and sign-out easy to distinguish while keeping their existing actions. */
+.topbar .menu a[href="auth.html"] {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+}
+
+.topbar .menu a[href="auth.html"]:hover {
+    background: #1d4ed8;
+}
+
+.topbar .menu a[onclick*="logoutUser"] {
+    border: 1px solid #526078;
+    color: #e5eaf2;
+}
+
+.topbar .menu a[onclick*="logoutUser"]:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
