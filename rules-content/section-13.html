@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розділ 13. Дистанція, інтервал, зустрічний роз'їзд | PDR Trainer</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0b1220; color: #e5edf8; font-family: Arial, sans-serif; line-height: 1.7; }
+    header { background: #121d30; border-bottom: 1px solid #263750; padding: 16px 20px; }
+    .header-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .logo { color: #fff; font-size: 18px; font-weight: bold; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 30px 20px 60px; }
+    .hero { background: linear-gradient(135deg, #17253b, #121d30); border: 1px solid #263750; border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+    .section-label { display: inline-block; color: #93c5fd; background: #203957; border: 1px solid #31547b; border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; }
+    h1 { color: #fff; font-size: clamp(23px, 4vw, 32px); line-height: 1.3; margin: 0 0 10px; }
+    .hero p { color: #aebbd0; margin: 0; }
+    .tools { position: sticky; top: 0; z-index: 10; padding: 12px 0; background: #0b1220; }
+    .search { width: 100%; padding: 14px 17px; border: 1px solid #35465f; border-radius: 12px; background: #172538; color: #fff; font-size: 15px; outline: none; }
+    .search:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12); }
+    .search::placeholder { color: #91a0b5; }
+    .result-count { color: #91a0b5; font-size: 13px; text-align: right; margin: 8px 3px 0; }
+    .content { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+    .rule-card { padding: 20px 22px; background: #121d30; border: 1px solid #263750; border-radius: 14px; transition: border-color 0.2s; overflow-wrap: anywhere; }
+    .rule-card:hover { border-color: #426b9b; }
+    .rule-card h2 { color: #93c5fd; font-size: 18px; margin: 0 0 10px; line-height: 1.45; }
+    .rule-card p { margin: 0; color: #d7e0ed; }
+    .rule-card p + p { margin-top: 12px; }
+    .no-results { display: none; background: #121d30; border: 1px solid #263750; border-radius: 12px; padding: 25px; text-align: center; color: #aebbd0; }
+    .footer { text-align: center; color: #8190a6; font-size: 13px; margin-top: 35px; line-height: 1.6; }
+    @media (max-width: 600px) {
+      header { padding: 13px 15px; }
+      .logo { font-size: 15px; }
+      .back-link { font-size: 12px; }
+      .wrap { padding: 18px 12px 40px; }
+      .hero { padding: 21px 17px; }
+      .rule-card { padding: 16px; }
+      .rule-card h2 { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">🚗 PDR Trainer</div>
+      <a class="back-link" href="../rules.html">← До всіх розділів</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <span class="section-label">РОЗДІЛ 13</span>
+      <h1>Дистанція, інтервал, зустрічний роз'їзд</h1>
+      <p>Вимоги до безпечної дистанції та інтервалу і правила зустрічного роз'їзду.</p>
+    </section>
+
+    <div class="tools">
+      <input type="search" class="search" id="ruleSearch" placeholder="Пошук за пунктом або ключовим словом..." aria-label="Пошук у розділі">
+      <div class="result-count" id="resultCount"></div>
+    </div>
+
+    <section class="content" id="content">
+      <article class="rule-card">
+        <h2>13.1. Безпечна дистанція та інтервал</h2>
+        <p>Водій залежно від швидкості руху, дорожньої обстановки, особливостей вантажу, що перевозиться, і стану транспортного засобу повинен дотримувати безпечної дистанції та безпечного інтервалу.</p>
+      </article>
+
+      <article class="rule-card">
+        <h2>13.2. Дистанція для повернення після обгону</h2>
+        <p>На дорогах поза населеними пунктами водії транспортних засобів, швидкість яких не перевищує 40 км/год, повинні дотримувати такої дистанції, щоб транспортні засоби, які виконують обгін, мали змогу безперешкодно повернутися на раніше займану смугу руху.</p>
+        <p>Ця вимога не діє, якщо водій тихохідного транспортного засобу подає попереджувальні сигнали про виконання обгону чи об'їзду.</p>
+      </article>
+
+      <article class="rule-card">
+        <h2>13.3. Безпечний інтервал під час маневрів</h2>
+        <p>Під час обгону, випередження, об'їзду перешкоди чи зустрічного роз'їзду необхідно дотримувати безпечного інтервалу, щоб не створювати небезпеки для дорожнього руху.</p>
+      </article>
+
+      <article class="rule-card">
+        <h2>13.4. Перевага під час утрудненого зустрічного роз'їзду</h2>
+        <p>Якщо зустрічний роз'їзд утруднений, водій, на смузі руху якого є перешкода чи габарити транспортного засобу, яким він керує, заважають зустрічному руху, повинен дати дорогу.</p>
+        <p>На ділянках доріг, позначених знаками 1.6 «Крутий підйом» і 1.7 «Крутий спуск», за наявності перешкоди дати дорогу повинен водій транспортного засобу, що рухається на спуск.</p>
+      </article>
+    </section>
+
+    <div class="no-results" id="noResults">За цим запитом нічого не знайдено.</div>
+    <div class="footer">Навчальний довідник PDR Trainer.<br>Для вивчення використовуй чинну редакцію Правил дорожнього руху України.</div>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById("ruleSearch");
+    const cards = document.querySelectorAll(".rule-card");
+    const resultCount = document.getElementById("resultCount");
+    const noResults = document.getElementById("noResults");
+
+    function filterRules() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      cards.forEach(card => {
+        const matches = card.textContent.toLowerCase().includes(query);
+        card.style.display = matches ? "" : "none";
+        if (matches) visibleCount++;
+      });
+      resultCount.textContent = query ? `Знайдено пунктів: ${visibleCount}` : `Показано ${visibleCount} пунктів`;
+      noResults.style.display = visibleCount === 0 ? "block" : "none";
+    }
+
+    searchInput.addEventListener("input", filterRules);
+    filterRules();
+  </script>
+</body>
+</html>
