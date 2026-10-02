@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розділ 15. Зупинка і стоянка | PDR Trainer</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0b1220; color: #e5edf8; font-family: Arial, sans-serif; line-height: 1.7; }
+    header { background: #121d30; border-bottom: 1px solid #263750; padding: 16px 20px; }
+    .header-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .logo { color: #fff; font-size: 18px; font-weight: bold; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 30px 20px 60px; }
+    .hero { background: linear-gradient(135deg, #17253b, #121d30); border: 1px solid #263750; border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+    .section-label { display: inline-block; color: #93c5fd; background: #203957; border: 1px solid #31547b; border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; }
+    h1 { color: #fff; font-size: clamp(23px, 4vw, 32px); line-height: 1.3; margin: 0 0 10px; }
+    .hero p { color: #aebbd0; margin: 0; }
+    .tools { position: sticky; top: 0; z-index: 10; padding: 12px 0; background: #0b1220; }
+    .search { width: 100%; padding: 14px 17px; border: 1px solid #35465f; border-radius: 12px; background: #172538; color: #fff; font-size: 15px; outline: none; }
+    .search:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12); }
+    .search::placeholder { color: #91a0b5; }
+    .result-count { color: #91a0b5; font-size: 13px; text-align: right; margin: 8px 3px 0; }
+    .content { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+    .rule-card { padding: 20px 22px; background: #121d30; border: 1px solid #263750; border-radius: 14px; transition: border-color 0.2s; overflow-wrap: anywhere; }
+    .rule-card:hover { border-color: #426b9b; }
+    .rule-card h2 { color: #93c5fd; font-size: 18px; margin: 0 0 10px; line-height: 1.45; }
+    .rule-card p { margin: 0; color: #d7e0ed; }
+    .rule-card p + p { margin-top: 12px; }
+    .rule-card a { color: #93c5fd; text-decoration: none; }
+    .rule-card a:hover { text-decoration: underline; }
+    .rule-card ul { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .rule-card li { background: #17253b; border-left: 3px solid #426b9b; border-radius: 7px; padding: 11px 14px; color: #d7e0ed; }
+    .amendment { margin-top: 12px; color: #91a0b5; font-size: 12px; line-height: 1.5; }
+    .no-results { display: none; background: #121d30; border: 1px solid #263750; border-radius: 12px; padding: 25px; text-align: center; color: #aebbd0; }
+    .footer { text-align: center; color: #8190a6; font-size: 13px; margin-top: 35px; line-height: 1.6; }
+    @media (max-width: 600px) {
+      header { padding: 13px 15px; }
+      .logo { font-size: 15px; }
+      .back-link { font-size: 12px; }
+      .wrap { padding: 18px 12px 40px; }
+      .hero { padding: 21px 17px; }
+      .rule-card { padding: 16px; }
+      .rule-card h2 { font-size: 16px; }
+      .rule-card li { padding: 10px 11px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">🚗 PDR Trainer</div>
+      <a class="back-link" href="../rules.html">← До всіх розділів</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <span class="section-label">РОЗДІЛ 15</span>
+      <h1>Зупинка і стоянка</h1>
+      <p>Де дозволено зупинятися та стояти і в яких місцях це заборонено.</p>
+    </section>
+
+    <div class="tools">
+      <input type="search" class="search" id="ruleSearch" placeholder="Пошук за пунктом або ключовим словом..." aria-label="Пошук у розділі">
+      <div class="result-count" id="resultCount"></div>
+    </div>
+
+    <section class="content" id="content">
+      <article class="rule-card"><h2>15.1. Місця для зупинки і стоянки</h2><p>Зупинка і стоянка транспортних засобів на дорозі повинні здійснюватись у спеціально відведених місцях чи на узбіччі.</p></article>
+      <article class="rule-card"><h2>15.2. Зупинка і стоянка біля краю проїзної частини</h2><p>За відсутності спеціально відведених місць чи узбіччя або коли зупинка чи стоянка там неможливі, вони дозволяються біля правого краю проїзної частини (якомога правіше, щоб не перешкоджати іншим учасникам дорожнього руху).</p></article>
+      <article class="rule-card"><h2>15.3. Зупинка і стоянка на лівому боці дороги</h2><p>У населених пунктах зупинка і стоянка транспортних засобів дозволяються на лівому боці дороги, що має по одній смузі для руху в кожному напрямку (без трамвайних колій посередині) і не розділена розміткою 1.1, а також на лівому боці дороги з одностороннім рухом.</p><p>Якщо дорога має бульвар або розділювальну смугу, зупинка і стоянка транспортних засобів біля них забороняються.</p></article>
+      <article class="rule-card"><h2>15.4. Розташування транспортних засобів під час стоянки</h2><p>Транспортні засоби не дозволяється ставити на проїзній частині в два і більше ряди. Велосипеди, мопеди і мотоцикли без бокового причепа дозволяється ставити на проїзній частині не більше ніж у два ряди.</p></article>
+      <article class="rule-card"><h2>15.5. Стоянка під кутом до краю проїзної частини</h2><p>Ставити транспортні засоби під кутом до краю проїзної частини дозволяється в місцях, де це не буде перешкоджати руху інших транспортних засобів.</p><p>Біля тротуарів або інших місць із пішохідним рухом ставити транспортні засоби під кутом дозволяється лише передньою частиною, а на підйомах — тільки задньою частиною.</p></article>
+      <article class="rule-card"><h2>15.6. Стоянка відповідно до дорожніх знаків і табличок</h2><p>Стоянка всіх транспортних засобів у місцях, позначених дорожніми знаками 5.42.1, 5.42.2, 5.43, встановленими з табличкою 7.6.1, дозволяється на проїзній частині вздовж тротуару, а встановленими з однією з табличок 7.6.2–7.6.6 — легкових автомобілів і мотоциклів тільки так, як показано на табличці.</p><div class="amendment">Пункт 15.6 із змінами, внесеними згідно з Постановою КМ <a href="https://zakon.rada.gov.ua/laws/show/1091-2021-%D0%BF#n33" target="_blank" rel="noopener noreferrer">№ 1091 від 29.09.2021</a>.</div></article>
+      <article class="rule-card"><h2>15.7. Стоянка на спусках і підйомах</h2><p>На спусках і підйомах, де спосіб поставлення не регламентується засобами регулювання руху, транспортні засоби необхідно ставити під кутом до краю проїзної частини так, щоб не створювати перешкод іншим учасникам дорожнього руху і виключити можливість для самовільного руху цих засобів.</p><p>На таких ділянках допускається ставити транспортний засіб уздовж краю проїзної частини, повернувши керовані колеса таким чином, щоб виключалась можливість самовільного руху транспортного засобу.</p></article>
+      <article class="rule-card"><h2>15.8. Зупинка на трамвайних коліях</h2><p>На трамвайній колії попутного напрямку, розташованій ліворуч на одному рівні з проїзною частиною для руху нерейкових транспортних засобів, дозволяється зупинка лише для виконання вимог цих Правил, а на розташованих біля правого краю проїзної частини — лише для посадки (висадки) пасажирів чи виконання вимог цих Правил.</p><p>У цих випадках не повинно створюватись перешкод для руху трамваїв.</p></article>
+      <article class="rule-card">
+        <h2>15.9. Місця, де зупинка забороняється</h2>
+        <p>Зупинка забороняється:</p>
+        <ul>
+          <li>а) на залізничних переїздах;</li>
+          <li>б) на трамвайних коліях (крім випадків, обумовлених <a href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF#n574" target="_blank" rel="noopener noreferrer">пунктом 15.8</a> цих Правил);</li>
+          <li>в) на естакадах, мостах, шляхопроводах і під ними, а також у тунелях;</li>
+          <li>г) на пішохідних переходах і ближче 10 м від них з обох боків, крім випадків надання переваги в русі;</li>
+          <li>ґ) на перехрестях та ближче 10 м від краю перехрещуваної проїзної частини за відсутності на них пішохідного переходу, за винятком зупинки для надання переваги в русі та зупинки проти бокового проїзду на Т-подібних перехрестях, де є суцільна лінія розмітки або розділювальна смуга;</li>
+          <li>д) у місцях, де відстань між суцільною лінією розмітки, розділювальною смугою чи протилежним краєм проїзної частини і транспортним засобом, що зупинився, менше 3 м;</li>
+          <li>е) ближче 30 м від посадкових майданчиків для зупинки маршрутних транспортних засобів, а коли їх немає — ближче 30 м від дорожнього знака такої зупинки з обох боків;</li>
+          <li>є) ближче 10 м від позначеного місця виконання дорожніх робіт і в зоні їх виконання, де це створить перешкоди технологічним транспортним засобам, що працюють;</li>
+          <li>ж) у місцях, де буде неможливим зустрічний роз'їзд або об'їзд транспортного засобу, що зупинився;</li>
+          <li>з) у місцях, де транспортний засіб закриває від інших водіїв сигнали світлофора або дорожні знаки;</li>
+          <li>и) ближче 10 м від виїздів з прилеглих територій і безпосередньо в місці виїзду.</li>
+        </ul>
+      </article>
+      <article class="rule-card">
+        <h2>15.10. Місця, де стоянка забороняється</h2>
+        <p>Стоянка забороняється:</p>
+        <ul>
+          <li>а) у місцях, де заборонена зупинка;</li>
+          <li>б) на тротуарах (крім місць, позначених відповідними дорожніми знаками, встановленими з табличками);</li>
+          <li>в) на тротуарах, за винятком легкових автомобілів та мотоциклів, які можуть бути поставлені на краю тротуарів, де для руху пішоходів залишається щонайменше 2 м;</li>
+          <li>г) ближче 50 м від залізничних переїздів;</li>
+          <li>ґ) поза населеними пунктами в зоні небезпечних поворотів і випуклих переломів поздовжнього профілю дороги з видимістю або оглядовістю менше 100 м хоча б в одному напрямку руху;</li>
+          <li>д) у місцях, де транспортний засіб, що стоїть, зробить неможливим рух інших транспортних засобів або створить перешкоду для руху пішоходів;</li>
+          <li>е) ближче 5 м від контейнерних майданчиків та/або контейнерів для збирання побутових відходів, місце розміщення або облаштування яких відповідає вимогам законодавства.<div class="amendment">Пункт 15.10 доповнено підпунктом «е» згідно з Постановою КМ <a href="https://zakon.rada.gov.ua/laws/show/435-2011-%D0%BF" target="_blank" rel="noopener noreferrer">№ 435 від 20.04.2011</a>.</div></li>
+          <li>є) на газонах.<div class="amendment">Пункт 15.10 доповнено підпунктом «є» згідно з Постановою КМ <a href="https://zakon.rada.gov.ua/laws/show/111-2013-%D0%BF#n124" target="_blank" rel="noopener noreferrer">№ 111 від 11.02.2013</a>.</div></li>
+        </ul>
+      </article>
+      <article class="rule-card"><h2>15.11. Стоянка в темну пору доби поза населеними пунктами</h2><p>У темну пору доби і в умовах недостатньої видимості стоянка поза населеними пунктами дозволяється лише на майданчиках для стоянки або за межами дороги.</p></article>
+      <article class="rule-card"><h2>15.12. Заходи перед залишенням транспортного засобу</h2><p>Водій не повинен залишати транспортний засіб, не вживши всіх заходів, щоб не допустити його самовільного руху, проникнення до нього і (або) незаконного заволодіння ним.</p></article>
+      <article class="rule-card"><h2>15.13. Відчинення дверей і вихід із транспортного засобу</h2><p>Забороняється відчиняти двері транспортного засобу, залишати їх відчиненими і виходити з транспортного засобу, якщо це загрожує безпеці і створює перешкоди іншим учасникам дорожнього руху.</p></article>
+      <article class="rule-card"><h2>15.14. Вимушена зупинка в забороненому місці</h2><p>У разі вимушеної зупинки в місці, де зупинку заборонено, водій повинен вжити всіх заходів, щоб прибрати транспортний засіб, а за неможливості це зробити — діяти згідно з вимогами <a href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF#n442" target="_blank" rel="noopener noreferrer">пунктів 9.9–9.11</a> цих Правил.</p></article>
+      <article class="rule-card">
+        <h2>15.15. Заборона встановлювати перешкоди на проїзній частині</h2>
+        <p>На проїзній частині забороняється встановлення предметів, що перешкоджають проїзду чи паркуванню транспортних засобів, за винятком випадків:</p>
+        <ul>
+          <li>оформлення дорожньо-транспортної пригоди;</li>
+          <li>виконання дорожніх робіт або робіт, пов'язаних із зайняттям проїзної частини;</li>
+          <li>обмеження або заборони руху транспортних засобів та пішоходів у випадках, передбачених законодавством.</li>
+        </ul>
+        <div class="amendment">Правила доповнено пунктом 15.15 згідно з Постановою КМ <a href="https://zakon.rada.gov.ua/laws/show/111-2013-%D0%BF#n126" target="_blank" rel="noopener noreferrer">№ 111 від 11.02.2013</a>.</div>
+      </article>
+    </section>
+
+    <div class="no-results" id="noResults">За цим запитом нічого не знайдено.</div>
+    <div class="footer">Навчальний довідник PDR Trainer.<br>Для вивчення використовуй чинну редакцію Правил дорожнього руху України.</div>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById("ruleSearch");
+    const cards = document.querySelectorAll(".rule-card");
+    const resultCount = document.getElementById("resultCount");
+    const noResults = document.getElementById("noResults");
+
+    function filterRules() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      cards.forEach(card => {
+        const matches = card.textContent.toLowerCase().includes(query);
+        card.style.display = matches ? "" : "none";
+        if (matches) visibleCount++;
+      });
+      resultCount.textContent = query ? `Знайдено пунктів: ${visibleCount}` : `Показано ${visibleCount} пунктів`;
+      noResults.style.display = visibleCount === 0 ? "block" : "none";
+    }
+
+    searchInput.addEventListener("input", filterRules);
+    filterRules();
+  </script>
+</body>
+</html>
