@@ -2318,6 +2318,7 @@ async function logoutUser() {
 
     currentUser = null;
     currentProfile = null;
+    syncAuthNavigation();
 
 
     window.location.href =
@@ -2328,6 +2329,34 @@ async function logoutUser() {
 /* =========================================================
    AUTH UI
 ========================================================= */
+
+function syncAuthNavigation() {
+    const isSignedIn = Boolean(currentUser);
+
+    document
+        .querySelectorAll('.topbar .menu a[href="auth.html"]')
+        .forEach((link) => {
+            link.classList.toggle("auth-hidden", isSignedIn);
+        });
+
+    document
+        .querySelectorAll('.topbar .menu a[onclick*="logoutUser"]')
+        .forEach((link) => {
+            link.classList.toggle("auth-visible", isSignedIn);
+        });
+
+    document
+        .querySelectorAll(".topbar .menu .user-greeting")
+        .forEach((greeting) => {
+            greeting.classList.toggle("auth-visible", isSignedIn);
+
+            if (!isSignedIn) {
+                greeting.textContent = "";
+            } else if (!greeting.textContent.trim()) {
+                greeting.textContent = "Ви увійшли";
+            }
+        });
+}
 
 function showAuth() {
 
@@ -2409,6 +2438,8 @@ async function loadUserProfile() {
                 ? `Вітаємо, ${currentProfile.full_name}`
                 : "Вітаємо";
     }
+
+    syncAuthNavigation();
 }
 
 
@@ -2730,6 +2761,7 @@ async function checkCurrentUser() {
     currentUser =
         data.user;
 
+    syncAuthNavigation();
 
     showApp();
 
