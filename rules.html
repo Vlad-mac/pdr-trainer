@@ -568,49 +568,52 @@ const sectionFiles = {
 
 const sectionTexts = {};
 
-async function loadSectionTexts() {
-    await Promise.all(
-        Object.entries(sectionFiles).map(async ([number, path]) => {
-            try {
-                const response = await fetch(path);
+function createRuleCard(topic) {
+    const card = document.createElement("details");
+    card.className = "rule-card";
 
-                if (!response.ok) {
-                    throw new Error(`Не вдалося завантажити ${path}`);
-                }
+    card.dataset.search = (
+        topic.number + " " +
+        topic.title + " " +
+        topic.description
+    ).toLowerCase();
 
-                const html = await response.text();
-                const documentHTML = new DOMParser().parseFromString(
-                    html,
-                    "text/html"
-                );
+    const summary = document.createElement("summary");
+    summary.className = "rule-summary";
 
-                // Беремо текст матеріалу без HTML-тегів
-                const content = documentHTML.querySelector("main") ||
-                                documentHTML.querySelector(".rule-content") ||
-                                documentHTML.body;
+    const number = document.createElement("span");
+    number.className = "rule-number";
+    number.textContent = topic.number;
 
-                sectionTexts[number] = content.textContent
-                    .replace(/\s+/g, " ")
-                    .trim()
-                    .toLowerCase();
+    const heading = document.createElement("div");
+    heading.className = "rule-heading";
 
-            } catch (error) {
-                console.error(error);
-                sectionTexts[number] = "";
-            }
-        })
-    );
+    const title = document.createElement("h2");
+    title.textContent = topic.title;
 
-    // Оновлюємо пошукові дані карток
-    document.querySelectorAll(".rule-card").forEach(card => {
-        const number = card.querySelector(".rule-number").textContent;
-        const sectionText = sectionTexts[number] || "";
+    const description = document.createElement("p");
+    description.textContent = topic.description;
 
-        card.dataset.search += " " + sectionText;
-    });
+    heading.append(title, description);
 
-    // Повторно застосовуємо поточний пошуковий запит
-    filterRules();
+    const chevron = document.createElement("span");
+    chevron.className = "rule-chevron";
+    chevron.textContent = "⌄";
+
+    summary.append(number, heading, chevron);
+
+    const content = document.createElement("div");
+    content.className = "rule-content";
+
+    const message = document.createElement("p");
+    message.textContent = sectionFiles[topic.number]
+        ? "Завантаження матеріалу..."
+        : "Матеріал цього розділу ще не додано.";
+
+    content.append(message);
+    card.append(summary, content);
+
+    return card;
 }
 
         function createRuleCard(topic) {
