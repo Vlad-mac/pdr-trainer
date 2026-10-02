@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -97,11 +98,21 @@
             border-color: #4c91e8;
         }
 
+        .rule-card[open] {
+            border-color: #4c91e8;
+        }
+
         .rule-summary {
             display: flex;
             align-items: center;
             gap: 16px;
             padding: 18px 20px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .rule-summary::-webkit-details-marker {
+            display: none;
         }
 
         .rule-number {
@@ -134,6 +145,16 @@
             color: #aebbd0;
             margin: 0;
             line-height: 1.4;
+        }
+
+        .rule-chevron {
+            color: #aebbd0;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .rule-card[open] .rule-chevron {
+            transform: rotate(180deg);
         }
 
         .rule-content {
@@ -290,155 +311,369 @@
 
     <script>
         const ruleTopics = [
-            { number: "01", title: "Загальні положення", description: "Основні терміни та визначення" },
-            { number: "02", title: "Обов’язки і права водіїв механічних транспортних засобів", description: "Документи, обов’язки та права водіїв" },
-            { number: "03", title: "Рух транспортних засобів із спеціальними сигналами", description: "Спеціальні світлові та звукові сигнали" },
-            { number: "04", title: "Обов’язки і права пішоходів", description: "Правила руху та переходу дороги" },
-            { number: "05", title: "Обов’язки і права пасажирів", description: "Посадка, висадка та безпека пасажирів" },
-            { number: "06", title: "Вимоги до велосипедистів", description: "Правила руху на велосипеді" },
-            { number: "07", title: "Вимоги до осіб, які керують гужовим транспортом, і погоничів тварин", description: "Особливості руху гужового транспорту" },
-            { number: "08", title: "Регулювання дорожнього руху", description: "Сигнали регулювальника та світлофора" },
-            { number: "09", title: "Попереджувальні сигнали", description: "Повороти, перестроювання та інші маневри" },
-            { number: "10", title: "Початок руху та зміна його напрямку", description: "Маневрування, повороти та розвороти" },
-            { number: "11", title: "Розташування транспортних засобів на дорозі", description: "Смуги руху та розташування автомобілів" },
-            { number: "12", title: "Швидкість руху", description: "Обмеження швидкості та умови руху" },
-            { number: "13", title: "Дистанція, інтервал, зустрічний роз’їзд", description: "Безпечна відстань між транспортними засобами" },
-            { number: "14", title: "Обгін", description: "Умови та правила виконання обгону" },
-            { number: "15", title: "Зупинка і стоянка", description: "Дозволені та заборонені місця зупинки" },
-            { number: "16", title: "Проїзд перехресть", description: "Регульовані та нерегульовані перехрестя" },
-            { number: "17", title: "Перевага маршрутних транспортних засобів", description: "Рух автобусів, тролейбусів та іншого транспорту" },
-            { number: "18", title: "Проїзд пішохідних переходів і зупинок транспортних засобів", description: "Правила проїзду переходів і зупинок" },
-            { number: "19", title: "Користування зовнішніми світловими приладами", description: "Фари, ліхтарі та світлові сигнали" },
-            { number: "20", title: "Рух через залізничні переїзди", description: "Безпечний проїзд залізничних переїздів" },
-            { number: "21", title: "Перевезення пасажирів", description: "Правила перевезення людей у транспорті" },
-            { number: "22", title: "Перевезення вантажу", description: "Вимоги до розміщення та перевезення вантажів" },
-            { number: "23", title: "Буксирування та експлуатація транспортних составів", description: "Правила буксирування та руху з причепом" },
-            { number: "24", title: "Навчальна їзда", description: "Вимоги до навчання водінню" },
-            { number: "25", title: "Рух транспортних засобів у колонах", description: "Організований рух транспортних засобів" },
-            { number: "26", title: "Рух у житловій та пішохідній зоні", description: "Особливості руху в житлових і пішохідних зонах" },
-            { number: "27", title: "Рух по автомагістралях і дорогах для автомобілів", description: "Правила руху на швидкісних дорогах" },
-            { number: "28", title: "Рух по гірських дорогах і на крутих спусках", description: "Особливості руху в гірській місцевості" },
-            { number: "29", title: "Міжнародний рух", description: "Вимоги до міжнародного дорожнього руху" },
-            { number: "30", title: "Номерні, розпізнавальні знаки, написи і позначення", description: "Номерні знаки та позначення на транспорті" },
-            { number: "31", title: "Технічний стан транспортних засобів та їх обладнання", description: "Вимоги до справності та обладнання автомобіля" },
-            { number: "32", title: "Окремі питання дорожнього руху, що потребують узгодження", description: "Випадки, які потребують погодження" },
-            { number: "33", title: "Дорожні знаки", description: "Види дорожніх знаків та правила їх застосування" },
-            { number: "33.1", title: "Попереджувальні знаки", description: "Знаки, що попереджають про небезпеку" },
-            { number: "33.2", title: "Знаки пріоритету", description: "Знаки черговості проїзду" },
-            { number: "33.3", title: "Заборонні знаки", description: "Знаки, що вводять обмеження та заборони" },
-            { number: "33.4", title: "Наказові знаки", description: "Знаки, що встановлюють обов’язкові напрямки руху" },
-            { number: "33.5", title: "Інформаційно-вказівні знаки", description: "Напрямки, маршрути та особливості руху" },
-            { number: "33.6", title: "Знаки сервісу", description: "Позначення об’єктів обслуговування" },
-            { number: "33.7", title: "Таблички до дорожніх знаків", description: "Додаткова інформація до дорожніх знаків" },
-            { number: "34", title: "Дорожня розмітка", description: "Горизонтальна та вертикальна дорожня розмітка" }
+            {
+                number: "01",
+                title: "Загальні положення",
+                description: "Основні терміни та визначення"
+            },
+            {
+                number: "02",
+                title: "Обов’язки і права водіїв механічних транспортних засобів",
+                description: "Документи, обов’язки та права водіїв"
+            },
+            {
+                number: "03",
+                title: "Рух транспортних засобів із спеціальними сигналами",
+                description: "Спеціальні світлові та звукові сигнали"
+            },
+            {
+                number: "04",
+                title: "Обов’язки і права пішоходів",
+                description: "Правила руху та переходу дороги"
+            },
+            {
+                number: "05",
+                title: "Обов’язки і права пасажирів",
+                description: "Посадка, висадка та безпека пасажирів"
+            },
+            {
+                number: "06",
+                title: "Вимоги до велосипедистів",
+                description: "Правила руху на велосипеді"
+            },
+            {
+                number: "07",
+                title: "Вимоги до осіб, які керують гужовим транспортом, і погоничів тварин",
+                description: "Особливості руху гужового транспорту"
+            },
+            {
+                number: "08",
+                title: "Регулювання дорожнього руху",
+                description: "Сигнали регулювальника та світлофора"
+            },
+            {
+                number: "09",
+                title: "Попереджувальні сигнали",
+                description: "Повороти, перестроювання та інші маневри"
+            },
+            {
+                number: "10",
+                title: "Початок руху та зміна його напрямку",
+                description: "Маневрування, повороти та розвороти"
+            },
+            {
+                number: "11",
+                title: "Розташування транспортних засобів на дорозі",
+                description: "Смуги руху та розташування автомобілів"
+            },
+            {
+                number: "12",
+                title: "Швидкість руху",
+                description: "Обмеження швидкості та умови руху"
+            },
+            {
+                number: "13",
+                title: "Дистанція, інтервал, зустрічний роз’їзд",
+                description: "Безпечна відстань між транспортними засобами"
+            },
+            {
+                number: "14",
+                title: "Обгін",
+                description: "Умови та правила виконання обгону"
+            },
+            {
+                number: "15",
+                title: "Зупинка і стоянка",
+                description: "Дозволені та заборонені місця зупинки"
+            },
+            {
+                number: "16",
+                title: "Проїзд перехресть",
+                description: "Регульовані та нерегульовані перехрестя"
+            },
+            {
+                number: "17",
+                title: "Перевага маршрутних транспортних засобів",
+                description: "Рух автобусів, тролейбусів та іншого транспорту"
+            },
+            {
+                number: "18",
+                title: "Проїзд пішохідних переходів і зупинок транспортних засобів",
+                description: "Правила проїзду переходів і зупинок"
+            },
+            {
+                number: "19",
+                title: "Користування зовнішніми світловими приладами",
+                description: "Фари, ліхтарі та світлові сигнали"
+            },
+            {
+                number: "20",
+                title: "Рух через залізничні переїзди",
+                description: "Безпечний проїзд залізничних переїздів"
+            },
+            {
+                number: "21",
+                title: "Перевезення пасажирів",
+                description: "Правила перевезення людей у транспорті"
+            },
+            {
+                number: "22",
+                title: "Перевезення вантажу",
+                description: "Вимоги до розміщення та перевезення вантажів"
+            },
+            {
+                number: "23",
+                title: "Буксирування та експлуатація транспортних составів",
+                description: "Правила буксирування та руху з причепом"
+            },
+            {
+                number: "24",
+                title: "Навчальна їзда",
+                description: "Вимоги до навчання водінню"
+            },
+            {
+                number: "25",
+                title: "Рух транспортних засобів у колонах",
+                description: "Організований рух транспортних засобів"
+            },
+            {
+                number: "26",
+                title: "Рух у житловій та пішохідній зоні",
+                description: "Особливості руху в житлових і пішохідних зонах"
+            },
+            {
+                number: "27",
+                title: "Рух по автомагістралях і дорогах для автомобілів",
+                description: "Правила руху на швидкісних дорогах"
+            },
+            {
+                number: "28",
+                title: "Рух по гірських дорогах і на крутих спусках",
+                description: "Особливості руху в гірській місцевості"
+            },
+            {
+                number: "29",
+                title: "Міжнародний рух",
+                description: "Вимоги до міжнародного дорожнього руху"
+            },
+            {
+                number: "30",
+                title: "Номерні, розпізнавальні знаки, написи і позначення",
+                description: "Номерні знаки та позначення на транспорті"
+            },
+            {
+                number: "31",
+                title: "Технічний стан транспортних засобів та їх обладнання",
+                description: "Вимоги до справності та обладнання автомобіля"
+            },
+            {
+                number: "32",
+                title: "Окремі питання дорожнього руху, що потребують узгодження",
+                description: "Випадки, які потребують погодження"
+            },
+            {
+                number: "33",
+                title: "Дорожні знаки",
+                description: "Види дорожніх знаків та правила їх застосування"
+            },
+            {
+                number: "33.1",
+                title: "Попереджувальні знаки",
+                description: "Знаки, що попереджають про небезпеку"
+            },
+            {
+                number: "33.2",
+                title: "Знаки пріоритету",
+                description: "Знаки черговості проїзду"
+            },
+            {
+                number: "33.3",
+                title: "Заборонні знаки",
+                description: "Знаки, що вводять обмеження та заборони"
+            },
+            {
+                number: "33.4",
+                title: "Наказові знаки",
+                description: "Знаки, що встановлюють обов’язкові напрямки руху"
+            },
+            {
+                number: "33.5",
+                title: "Інформаційно-вказівні знаки",
+                description: "Напрямки, маршрути та особливості руху"
+            },
+            {
+                number: "33.6",
+                title: "Знаки сервісу",
+                description: "Позначення об’єктів обслуговування"
+            },
+            {
+                number: "33.7",
+                title: "Таблички до дорожніх знаків",
+                description: "Додаткова інформація до дорожніх знаків"
+            },
+            {
+                number: "34",
+                title: "Дорожня розмітка",
+                description: "Горизонтальна та вертикальна дорожня розмітка"
+            }
         ];
 
         const rulesList = document.getElementById("rulesList");
         const searchInput = document.getElementById("ruleSearch");
         const results = document.getElementById("rulesResults");
         const emptyMessage = document.getElementById("rulesEmpty");
+        // Файли з текстами розділів
+const sectionFiles = {
+  "01": "rules-content/section-01.html",
+  "02": "rules-content/section-02.html",
+  "03": "rules-content/section-03.html",
+  "04": "rules-content/section-04.html",
+  "05": "rules-content/section-05.html",
+  "06": "rules-content/section-06.html",
+  "07": "rules-content/section-07.html",
+  "08": "rules-content/section-08.html",
+  "09": "rules-content/section-09.html",
+  "10": "rules-content/section-10.html",
+  "11": "rules-content/section-11.html",
+  "12": "rules-content/section-12.html",
+  "13": "rules-content/section-13.html",
+  "14": "rules-content/section-14.html",
+  "15": "rules-content/section-15.html",
+  "16": "rules-content/section-16.html",
+  "17": "rules-content/section-17.html",
+  "18": "rules-content/section-18.html",
+  "19": "rules-content/section-19.html",
+  "20": "rules-content/section-20.html",
+  "21": "rules-content/section-21.html",
+  "22": "rules-content/section-22.html",
+  "23": "rules-content/section-23.html",
+  "24": "rules-content/section-24.html",
+  "25": "rules-content/section-25.html",
+  "26": "rules-content/section-26.html",
+  "27": "rules-content/section-27.html",
+  "28": "rules-content/section-28.html",
+  "29": "rules-content/section-29.html",
+  "30": "rules-content/section-30.html",
+  "31": "rules-content/section-31.html",
+  "32": "rules-content/section-32.html",
+  "33": "rules-content/section-33.html",
+  "34": "rules-content/section-34.html",
+  "35": "rules-content/section-35.html",
+  "36": "rules-content/section-36.html",
+  "37": "rules-content/section-37.html",
+  "38": "rules-content/section-38.html",
+  "39": "rules-content/section-39.html",
+  "40": "rules-content/section-40.html"
+};
 
-        const sectionFiles = {
-            "01": "rules-content/section-01.html",
-            "02": "rules-content/section-02.html",
-            "03": "rules-content/section-03.html",
-            "04": "rules-content/section-04.html",
-            "05": "rules-content/section-05.html",
-            "06": "rules-content/section-06.html",
-            "07": "rules-content/section-07.html",
-            "08": "rules-content/section-08.html",
-            "09": "rules-content/section-09.html",
-            "10": "rules-content/section-10.html",
-            "11": "rules-content/section-11.html",
-            "12": "rules-content/section-12.html",
-            "13": "rules-content/section-13.html",
-            "14": "rules-content/section-14.html",
-            "15": "rules-content/section-15.html",
-            "16": "rules-content/section-16.html",
-            "17": "rules-content/section-17.html",
-            "18": "rules-content/section-18.html",
-            "19": "rules-content/section-19.html",
-            "20": "rules-content/section-20.html",
-            "21": "rules-content/section-21.html",
-            "22": "rules-content/section-22.html",
-            "23": "rules-content/section-23.html",
-            "24": "rules-content/section-24.html",
-            "25": "rules-content/section-25.html",
-            "26": "rules-content/section-26.html",
-            "27": "rules-content/section-27.html",
-            "28": "rules-content/section-28.html",
-            "29": "rules-content/section-29.html",
-            "30": "rules-content/section-30.html",
-            "31": "rules-content/section-31.html",
-            "32": "rules-content/section-32.html",
-            "33": "rules-content/section-33.html",
-            "34": "rules-content/section-34.html",
-            "35": "rules-content/section-35.html",
-            "36": "rules-content/section-36.html",
-            "37": "rules-content/section-37.html",
-            "38": "rules-content/section-38.html",
-            "39": "rules-content/section-39.html",
-            "40": "rules-content/section-40.html"
-        };
+const sectionTexts = {};
 
-        const sectionTexts = {};
+async function loadSectionTexts() {
+    await Promise.all(
+        Object.entries(sectionFiles).map(async ([number, path]) => {
+            try {
+                const response = await fetch(path);
 
-        async function loadSectionTexts() {
-            const entries = Object.entries(sectionFiles);
-
-            await Promise.all(entries.map(async ([number, file]) => {
-                try {
-                    const response = await fetch(file);
-
-                    if (!response.ok) {
-                        throw new Error(`Помилка завантаження: ${response.status}`);
-                    }
-
-                    sectionTexts[number] = await response.text();
-                } catch (error) {
-                    console.error(`Не вдалося завантажити розділ ${number}:`, error);
-                    sectionTexts[number] = "<p>Матеріал цього розділу поки недоступний.</p>";
+                if (!response.ok) {
+                    throw new Error(`Не вдалося завантажити ${path}`);
                 }
-            }));
 
-            document.querySelectorAll(".rule-card").forEach(card => {
-                const number = card.dataset.number;
-                const content = card.querySelector(".rule-content");
+                const html = await response.text();
+                const documentHTML = new DOMParser().parseFromString(
+                    html,
+                    "text/html"
+                );
 
-                if (content) {
-                    content.innerHTML = sectionTexts[number] ||
-                        "<p>Матеріал цього розділу поки недоступний.</p>";
-                }
-            });
-        }
+                // Беремо текст матеріалу без HTML-тегів
+                const content = documentHTML.querySelector("main") ||
+                                documentHTML.querySelector(".rule-content") ||
+                                documentHTML.body;
+
+                sectionTexts[number] = content.textContent
+                    .replace(/\s+/g, " ")
+                    .trim()
+                    .toLowerCase();
+
+            } catch (error) {
+                console.error(error);
+                sectionTexts[number] = "";
+            }
+        })
+    );
+
+    // Оновлюємо пошукові дані карток
+    document.querySelectorAll(".rule-card").forEach(card => {
+        const number = card.querySelector(".rule-number").textContent;
+        const sectionText = sectionTexts[number] || "";
+
+        card.dataset.search += " " + sectionText;
+    });
+
+    // Повторно застосовуємо поточний пошуковий запит
+    filterRules();
+}
 
         function createRuleCard(topic) {
-            const card = document.createElement("article");
-            card.className = "rule-card";
-            card.dataset.number = topic.number;
-            card.dataset.search = (
-                topic.number + " " + topic.title + " " + topic.description
-            ).toLowerCase();
+    const card = document.createElement("details");
+    card.className = "rule-card";
 
-            const summary = document.createElement("div");
-            summary.className = "rule-summary";
+    card.dataset.search = (
+        topic.number + " " +
+        topic.title + " " +
+        topic.description
+    ).toLowerCase();
 
-            summary.innerHTML = `
-                <span class="rule-number">${topic.number}</span>
-                <div class="rule-heading">
-                    <h2>${topic.title}</h2>
-                    <p>${topic.description}</p>
-                </div>
-            `;
+    const summary = document.createElement("summary");
+    summary.className = "rule-summary";
 
-            const content = document.createElement("div");
-            content.className = "rule-content";
-            content.innerHTML = sectionTexts[topic.number] ||
-                "<p>Завантаження матеріалу...</p>";
+    const number = document.createElement("span");
+    number.className = "rule-number";
+    number.textContent = topic.number;
 
-            card.append(summary, content);
-            return card;
-        }
+    const heading = document.createElement("div");
+    heading.className = "rule-heading";
+
+    const title = document.createElement("h2");
+    title.textContent = topic.title;
+
+    const description = document.createElement("p");
+    description.textContent = topic.description;
+
+    heading.append(title, description);
+
+    const chevron = document.createElement("span");
+    chevron.className = "rule-chevron";
+
+    const sectionPath = sectionFiles[topic.number];
+
+    if (sectionPath && ["01", "02"].includes(topic.number)) {
+        chevron.textContent = "→";
+        chevron.style.transform = "none";
+    } else {
+        chevron.textContent = "⌄";
+    }
+
+    summary.append(number, heading, chevron);
+
+    const content = document.createElement("div");
+    content.className = "rule-content";
+
+    const message = document.createElement("p");
+    message.textContent =
+        "Матеріал цього розділу буде додано на наступному етапі.";
+
+    content.append(message);
+    card.append(summary, content);
+
+    if (sectionPath && ["01", "02"].includes(topic.number)) {
+        summary.addEventListener("click", function(event) {
+            event.preventDefault();
+            window.location.href = sectionPath;
+        });
+    }
+
+    return card;
+}
 
         function renderRules() {
             rulesList.replaceChildren(
@@ -472,8 +707,8 @@
 
         searchInput.addEventListener("input", filterRules);
 
-        renderRules();
-        loadSectionTexts();
+renderRules();
+loadSectionTexts();
     </script>
 </body>
 </html>
