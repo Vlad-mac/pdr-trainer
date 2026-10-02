@@ -705,9 +705,26 @@ body {
 }
 
 
-/* Keep the account greeting out of the compact, shared top navigation. */
-.topbar .user-greeting {
-    display: none;
+/* Show sign-in or account controls according to the Supabase session. */
+.topbar .menu a.auth-hidden,
+.topbar .menu a[onclick*="logoutUser"] {
+    display: none !important;
+}
+
+.topbar .menu a[onclick*="logoutUser"].auth-visible,
+.topbar .menu .user-greeting.auth-visible {
+    display: inline-flex;
+}
+
+.topbar .menu .user-greeting.auth-visible {
+    align-items: center;
+    max-width: min(340px, 28vw);
+}
+
+@media (max-width: 640px) {
+    .topbar .menu .user-greeting.auth-visible {
+        max-width: min(62vw, 260px);
+    }
 }
 
 
