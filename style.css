@@ -713,7 +713,7 @@ body {
 
 .topbar .menu a[onclick*="logoutUser"].auth-visible,
 .topbar .menu .user-greeting.auth-visible {
-    display: inline-flex;
+    display: inline-flex !important;
 }
 
 .topbar .menu .user-greeting.auth-visible {
