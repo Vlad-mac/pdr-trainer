@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розділ 19. Користування зовнішніми світловими приладами | PDR Trainer</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0b1220; color: #e5edf8; font-family: Arial, sans-serif; line-height: 1.7; }
+    header { background: #121d30; border-bottom: 1px solid #263750; padding: 16px 20px; }
+    .header-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .logo { color: #fff; font-size: 18px; font-weight: bold; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 30px 20px 60px; }
+    .hero { background: linear-gradient(135deg, #17253b, #121d30); border: 1px solid #263750; border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+    .section-label { display: inline-block; color: #93c5fd; background: #203957; border: 1px solid #31547b; border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: bold; margin-bottom: 12px; }
+    h1 { color: #fff; font-size: clamp(23px, 4vw, 32px); line-height: 1.3; margin: 0 0 10px; }
+    .hero p { color: #aebbd0; margin: 0; }
+    .tools { position: sticky; top: 0; z-index: 10; padding: 12px 0; background: #0b1220; }
+    .search { width: 100%; padding: 14px 17px; border: 1px solid #35465f; border-radius: 12px; background: #172538; color: #fff; font-size: 15px; outline: none; }
+    .search:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12); }
+    .search::placeholder { color: #91a0b5; }
+    .result-count { color: #91a0b5; font-size: 13px; text-align: right; margin: 8px 3px 0; }
+    .content { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+    .rule-card { padding: 20px 22px; background: #121d30; border: 1px solid #263750; border-radius: 14px; transition: border-color 0.2s; overflow-wrap: anywhere; }
+    .rule-card:hover { border-color: #426b9b; }
+    .rule-card h2 { color: #93c5fd; font-size: 18px; margin: 0 0 10px; line-height: 1.45; }
+    .rule-card p { margin: 0; color: #d7e0ed; }
+    .rule-card p + p { margin-top: 12px; }
+    .rule-card a { color: #93c5fd; text-decoration: none; }
+    .rule-card a:hover { text-decoration: underline; }
+    .rule-card ul { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .rule-card li { background: #17253b; border-left: 3px solid #426b9b; border-radius: 7px; padding: 11px 14px; color: #d7e0ed; }
+    .amendment { margin-top: 12px; color: #91a0b5; font-size: 12px; line-height: 1.5; }
+    .no-results { display: none; background: #121d30; border: 1px solid #263750; border-radius: 12px; padding: 25px; text-align: center; color: #aebbd0; }
+    .footer { text-align: center; color: #8190a6; font-size: 13px; margin-top: 35px; line-height: 1.6; }
+    @media (max-width: 600px) {
+      header { padding: 13px 15px; }
+      .logo { font-size: 15px; }
+      .back-link { font-size: 12px; }
+      .wrap { padding: 18px 12px 40px; }
+      .hero { padding: 21px 17px; }
+      .rule-card { padding: 16px; }
+      .rule-card h2 { font-size: 16px; }
+      .rule-card li { padding: 10px 11px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">🚗 PDR Trainer</div>
+      <a class="back-link" href="../rules.html">← До всіх розділів</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <span class="section-label">РОЗДІЛ 19</span>
+      <h1>Користування зовнішніми світловими приладами</h1>
+      <p>Вимоги до використання фар, ліхтарів і світлових сигналів.</p>
+    </section>
+
+    <div class="tools">
+      <input type="search" class="search" id="ruleSearch" placeholder="Пошук за пунктом або ключовим словом..." aria-label="Пошук у розділі">
+      <div class="result-count" id="resultCount"></div>
+    </div>
+
+    <section class="content" id="content">
+      <article class="rule-card">
+        <h2>19.1. Світлові пристрої під час руху</h2>
+        <p>У темну пору доби та в умовах недостатньої видимості незалежно від ступеня освітлення дороги, а також у тунелях на транспортному засобі, що рухається, повинні бути ввімкнені такі світлові пристрої:</p>
+        <ul>
+          <li>а) на всіх механічних транспортних засобах — фари ближнього (дальнього) світла;</li>
+          <li>б) на мопедах (велосипедах) і гужових возах (санях) — фари або ліхтарі;</li>
+          <li>в) на причепах та транспортних засобах, що буксируються, — габаритні ліхтарі.</li>
+        </ul>
+        <div class="amendment"><strong>Примітка.</strong> В умовах недостатньої видимості на механічних транспортних засобах дозволяється замість фар ближнього (дальнього) світла ввімкнути протитуманні фари.</div>
+      </article>
+
+      <article class="rule-card"><h2>19.2. Перемикання дальнього світла на ближнє</h2><p>Дальнє світло слід перемикати на ближнє не менш як за 250 м до зустрічного транспортного засобу, а також тоді, коли воно може засліпити інших водіїв, зокрема тих, що рухаються в попутному напрямку.</p><p>Світло необхідно перемикати і на більшій відстані, якщо водій зустрічного транспортного засобу періодичним перемиканням світла фар покаже потребу в цьому.</p></article>
+      <article class="rule-card"><h2>19.3. Дії водія у разі засліплення</h2><p>У разі погіршення видимості в напрямку руху, викликаного світлом фар зустрічних транспортних засобів, водій повинен зменшити швидкість до такої, яка б не перевищувала безпечної за умовами фактичної видимості дороги в напрямку руху, а в разі засліплення — зупинитися, не змінюючи смуги руху, і увімкнути аварійну світлову сигналізацію. Відновлення руху дозволяється лише після того, як пройдуть негативні наслідки засліплення.</p><div class="amendment">Пункт 19.3 в редакції Постанови КМ <a href="https://zakon.rada.gov.ua/laws/show/1029-2011-%D0%BF" target="_blank" rel="noopener noreferrer">№ 1029 від 26.09.2011</a>.</div></article>
+      <article class="rule-card"><h2>19.4. Світлові пристрої під час зупинки на дорозі</h2><p>Під час зупинки на дорозі в темну пору доби і в умовах недостатньої видимості на транспортному засобі мають бути ввімкнені габаритні або стоянкові ліхтарі, а при вимушеній зупинці додатково — аварійна світлова сигналізація.</p><p>В умовах недостатньої видимості дозволяється додатково увімкнути ближнє світло або протитуманні фари та задні протитуманні ліхтарі.</p><p>Якщо габаритні ліхтарі несправні, транспортний засіб слід прибрати за межі дороги, а якщо це неможливо, його необхідно позначити відповідно до вимог <a href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF#n451" target="_blank" rel="noopener noreferrer">пунктів 9.10</a> і <a href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF#n454" target="_blank" rel="noopener noreferrer">9.11</a> цих Правил.</p></article>
+      <article class="rule-card"><h2>19.5. Використання протитуманних фар</h2><p>Протитуманні фари можна використовувати в умовах недостатньої видимості як окремо, так і з ближнім або дальнім світлом фар, а в темну пору доби на неосвітлених ділянках доріг — лише разом з ближнім або дальнім світлом фар.</p></article>
+      <article class="rule-card"><h2>19.6. Використання фари-прожектора і фари-шукача</h2><p>Фарою-прожектором і фарою-шукачем можуть користуватися лише водії оперативних транспортних засобів під час виконання службових завдань, вживши заходів для того, щоб не засліплювати інших учасників дорожнього руху.</p></article>
+      <article class="rule-card"><h2>19.7. Заборона підключення задніх протитуманних ліхтарів</h2><p>Забороняється підключати задні протитуманні ліхтарі до сигналів гальмування.</p></article>
+      <article class="rule-card"><h2>19.8. Використання знака автопоїзда</h2><p>Знак автопоїзда, встановлений згідно з вимогами <a href="https://zakon.rada.gov.ua/laws/show/1306-2001-%D0%BF#n809" target="_blank" rel="noopener noreferrer">підпункту «а» пункту 30.3</a> цих Правил, повинен бути постійно увімкнений під час руху, а в темну пору доби або в умовах недостатньої видимості — і під час вимушеної зупинки, зупинки чи стоянки на дорозі.</p></article>
+      <article class="rule-card"><h2>19.9. Використання заднього протитуманного ліхтаря</h2><p>Задній протитуманний ліхтар дозволяється використовувати виключно в умовах недостатньої видимості як у світлу, так і в темну пору доби.</p><div class="amendment">Пункт 19.9 із змінами, внесеними згідно з Постановою КМ <a href="https://zakon.rada.gov.ua/laws/show/111-2013-%D0%BF#n133" target="_blank" rel="noopener noreferrer">№ 111 від 11.02.2013</a>.</div></article>
+    </section>
+
+    <div class="no-results" id="noResults">За цим запитом нічого не знайдено.</div>
+    <div class="footer">Навчальний довідник PDR Trainer.<br>Для вивчення використовуй чинну редакцію Правил дорожнього руху України.</div>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById("ruleSearch");
+    const cards = document.querySelectorAll(".rule-card");
+    const resultCount = document.getElementById("resultCount");
+    const noResults = document.getElementById("noResults");
+    function filterRules() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      cards.forEach(card => {
+        const matches = card.textContent.toLowerCase().includes(query);
+        card.style.display = matches ? "" : "none";
+        if (matches) visibleCount++;
+      });
+      resultCount.textContent = query ? `Знайдено пунктів: ${visibleCount}` : `Показано ${visibleCount} пунктів`;
+      noResults.style.display = visibleCount === 0 ? "block" : "none";
+    }
+    searchInput.addEventListener("input", filterRules);
+    filterRules();
+  </script>
+</body>
+</html>
