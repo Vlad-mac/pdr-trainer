@@ -460,3 +460,246 @@ body {
         grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
     }
 }
+
+
+/* Shared visual system for the app pages */
+:root {
+    color-scheme: dark;
+    --site-bg: #101827;
+    --site-surface: #172235;
+    --site-surface-raised: #1b2940;
+    --site-border: #2b3a53;
+    --site-text: #f5f7fb;
+    --site-muted: #b7c3d5;
+    --site-blue: #2563eb;
+    --site-blue-light: #60a5fa;
+}
+
+body {
+    background: var(--site-bg);
+    color: var(--site-text);
+    line-height: 1.6;
+}
+
+.topbar {
+    min-height: 76px;
+    padding: 12px clamp(16px, 3vw, 36px);
+    background: rgba(16, 24, 39, 0.96);
+    border-bottom: 1px solid var(--site-border);
+}
+
+.logo {
+    font-size: clamp(20px, 2vw, 28px);
+    letter-spacing: -0.03em;
+}
+
+.menu {
+    gap: 4px;
+}
+
+.menu a {
+    color: #d9e2f0;
+    padding: 9px 12px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.menu a:hover {
+    background: rgba(37, 99, 235, 0.16);
+    color: #fff;
+}
+
+.user-greeting {
+    max-width: min(340px, 24vw);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: #1c2b43;
+    border-color: #314b70;
+}
+
+.page {
+    width: min(1160px, calc(100% - 40px));
+    margin: clamp(22px, 4vw, 42px) auto 64px;
+}
+
+.hero,
+.card-section,
+.panel {
+    background: var(--site-bg);
+    border: 1px solid #222e42;
+    border-radius: 22px;
+    box-shadow: none;
+}
+
+.hero {
+    padding: clamp(28px, 5vw, 52px);
+    margin-bottom: 24px;
+}
+
+.hero h1 {
+    letter-spacing: -0.035em;
+    line-height: 1.12;
+}
+
+.hero p {
+    color: var(--site-muted);
+    line-height: 1.65;
+}
+
+.card-section {
+    padding: clamp(20px, 3vw, 30px);
+    margin-bottom: 24px;
+}
+
+.card-section h2,
+.panel h2,
+.panel h3 {
+    color: var(--site-text);
+    letter-spacing: -0.02em;
+}
+
+.panel {
+    padding: clamp(18px, 3vw, 28px);
+    color: var(--site-muted);
+}
+
+.card {
+    min-height: 120px;
+    padding: clamp(18px, 2.5vw, 26px);
+    background: var(--site-surface);
+    border: 1px solid var(--site-border);
+    border-radius: 22px;
+    color: var(--site-text);
+}
+
+.clickable:hover {
+    background: #1b2a42;
+    border-color: #42618f;
+}
+
+.btn,
+.nav-btn {
+    min-height: 48px;
+    border-radius: 14px;
+    font-weight: 700;
+}
+
+.btn-primary {
+    background: var(--site-blue);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #526078;
+}
+
+.auth-screen {
+    background: var(--site-bg);
+}
+
+.auth-card {
+    background: var(--site-surface);
+    border: 1px solid var(--site-border);
+    border-radius: 24px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.auth-form input {
+    min-height: 50px;
+    background: #111b2b;
+    border-color: #34445e;
+    border-radius: 14px;
+}
+
+.question-text {
+    color: var(--site-text);
+}
+
+.option-btn,
+.question-square {
+    background: #1b2940;
+    border-color: #35445b;
+    border-radius: 14px;
+}
+
+.option-btn:hover:not(:disabled),
+.question-square:hover {
+    background: #243651;
+    border-color: #49658a;
+}
+
+:focus-visible {
+    outline: 3px solid rgba(96, 165, 250, 0.75);
+    outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+    .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+        padding: 14px 20px 10px;
+    }
+
+    .menu {
+        justify-content: flex-start;
+    }
+
+    .user-greeting {
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 640px) {
+    .topbar {
+        position: sticky;
+        padding: 12px 14px 8px;
+    }
+
+    .menu {
+        width: calc(100vw - 28px);
+        justify-content: flex-start;
+    }
+
+    .menu a,
+    .user-greeting {
+        font-size: 14px;
+        padding: 8px 10px;
+    }
+
+    .page {
+        width: calc(100% - 24px);
+        margin: 18px auto 40px;
+    }
+
+    .hero,
+    .card-section {
+        border-radius: 20px;
+    }
+
+    .hero {
+        padding: 26px 22px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .card-section {
+        padding: 20px 16px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    }
+
+    .card {
+        min-height: 96px;
+        border-radius: 18px;
+    }
+
+    .panel {
+        padding: 18px;
+        border-radius: 18px;
+    }
+}
