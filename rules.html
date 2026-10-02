@@ -102,6 +102,10 @@
             border-color: #4c91e8;
         }
 
+        .rule-card-static .rule-summary {
+            cursor: default;
+        }
+
         .rule-summary {
             display: flex;
             align-items: center;
@@ -556,7 +560,13 @@ const sectionFiles = {
   "30": "rules-content/section-30.html",
   "31": "rules-content/section-31.html",
   "32": "rules-content/section-32.html",
-  "33": "rules-content/section-33.html",
+  "33.1": "rules-content/section-33.1.html",
+  "33.2": "rules-content/section-33.2.html",
+  "33.3": "rules-content/section-33.3.html",
+  "33.4": "rules-content/section-33.4.html",
+  "33.5": "rules-content/section-33.5.html",
+  "33.6": "rules-content/section-33.6.html",
+  "33.7": "rules-content/section-33.7.html",
   "34": "rules-content/section-34.html",
   "35": "rules-content/section-35.html",
   "36": "rules-content/section-36.html",
@@ -614,8 +624,12 @@ async function loadSectionTexts() {
 }
 
         function createRuleCard(topic) {
-    const card = document.createElement("details");
+    const isTopic33Parent = topic.number === "33";
+    const card = document.createElement(isTopic33Parent ? "div" : "details");
     card.className = "rule-card";
+    if (isTopic33Parent) {
+        card.classList.add("rule-card-static");
+    }
 
     card.dataset.search = (
         topic.number + " " +
@@ -623,7 +637,7 @@ async function loadSectionTexts() {
         topic.description
     ).toLowerCase();
 
-    const summary = document.createElement("summary");
+    const summary = document.createElement(isTopic33Parent ? "div" : "summary");
     summary.className = "rule-summary";
 
     const number = document.createElement("span");
@@ -649,11 +663,19 @@ async function loadSectionTexts() {
     if (sectionPath) {
         chevron.textContent = "→";
         chevron.style.transform = "none";
+    } else if (isTopic33Parent) {
+        chevron.textContent = "";
+        summary.style.cursor = "default";
     } else {
         chevron.textContent = "⌄";
     }
 
     summary.append(number, heading, chevron);
+
+    if (isTopic33Parent) {
+        card.append(summary);
+        return card;
+    }
 
     const content = document.createElement("div");
     content.className = "rule-content";
