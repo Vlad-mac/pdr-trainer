@@ -568,116 +568,65 @@ const sectionFiles = {
 
 const sectionTexts = {};
 
-function createRuleCard(topic) {
-    const card = document.createElement("details");
-    card.className = "rule-card";
+        
+async function loadSectionTexts() {
+    const entries = Object.entries(sectionFiles);
 
-    card.dataset.search = (
-        topic.number + " " +
-        topic.title + " " +
-        topic.description
-    ).toLowerCase();
+    await Promise.all(entries.map(async ([number, file]) => {
+        try {
+            const response = await fetch(file);
 
-    const summary = document.createElement("summary");
-    summary.className = "rule-summary";
+            if (!response.ok) {
+                throw new Error(`Помилка завантаження: ${response.status}`);
+            }
 
-    const number = document.createElement("span");
-    number.className = "rule-number";
-    number.textContent = topic.number;
+            sectionTexts[number] = await response.text();
+        } catch (error) {
+            console.error(`Не вдалося завантажити розділ ${number}:`, error);
+            sectionTexts[number] = "<p>Матеріал цього розділу поки недоступний.</p>";
+        }
+    }));
 
-    const heading = document.createElement("div");
-    heading.className = "rule-heading";
+    document.querySelectorAll(".rule-card").forEach(card => {
+        const number = card.dataset.number;
+        const content = card.querySelector(".rule-content");
 
-    const title = document.createElement("h2");
-    title.textContent = topic.title;
-
-    const description = document.createElement("p");
-    description.textContent = topic.description;
-
-    heading.append(title, description);
-
-    const chevron = document.createElement("span");
-    chevron.className = "rule-chevron";
-    chevron.textContent = "⌄";
-
-    summary.append(number, heading, chevron);
-
-    const content = document.createElement("div");
-    content.className = "rule-content";
-
-    const message = document.createElement("p");
-    message.textContent = sectionFiles[topic.number]
-        ? "Завантаження матеріалу..."
-        : "Матеріал цього розділу ще не додано.";
-
-    content.append(message);
-    card.append(summary, content);
-
-    return card;
-}
-
-        function createRuleCard(topic) {
-    const card = document.createElement("details");
-    card.className = "rule-card";
-
-    card.dataset.search = (
-        topic.number + " " +
-        topic.title + " " +
-        topic.description
-    ).toLowerCase();
-
-    const summary = document.createElement("summary");
-    summary.className = "rule-summary";
-
-    const number = document.createElement("span");
-    number.className = "rule-number";
-    number.textContent = topic.number;
-
-    const heading = document.createElement("div");
-    heading.className = "rule-heading";
-
-    const title = document.createElement("h2");
-    title.textContent = topic.title;
-
-    const description = document.createElement("p");
-    description.textContent = topic.description;
-
-    heading.append(title, description);
-
-    const chevron = document.createElement("span");
-    chevron.className = "rule-chevron";
-
-    const sectionPath = sectionFiles[topic.number];
-
-   if (sectionPath && ["01", "02", "03"].includes(topic.number)) {
-        chevron.textContent = "→";
-        chevron.style.transform = "none";
-    } else {
-        chevron.textContent = "⌄";
-    }
-
-    summary.append(number, heading, chevron);
-
-    const content = document.createElement("div");
-    content.className = "rule-content";
-
-    const message = document.createElement("p");
-    message.textContent =
-        "Матеріал цього розділу буде додано на наступному етапі.";
-
-    content.append(message);
-    card.append(summary, content);
-
-  if (sectionPath && ["01", "02", "03"].includes(topic.number)) {
-    summary.addEventListener("click", function(event) {
-        event.preventDefault();
-        window.location.href = sectionPath;
+        if (content) {
+            content.innerHTML = sectionTexts[number] ||
+                "<p>Матеріал цього розділу поки недоступний.</p>";
+        }
     });
 }
 
+function createRuleCard(topic) {
+    const card = document.createElement("details");
+    card.className = "rule-card";
+    card.dataset.number = topic.number;
+    card.dataset.search = (
+        topic.number + " " + topic.title + " " + topic.description
+    ).toLowerCase();
+
+    const summary = document.createElement("summary");
+    summary.className = "rule-summary";
+
+    summary.innerHTML = `
+        <span class="rule-number">${topic.number}</span>
+        <div class="rule-heading">
+            <h2>${topic.title}</h2>
+            <p>${topic.description}</p>
+        </div>
+        <span class="rule-chevron">⌄</span>
+    `;
+
+    const content = document.createElement("div");
+    content.className = "rule-content";
+    content.innerHTML = sectionTexts[topic.number] ||
+        "<p>Завантаження матеріалу...</p>";
+
+    card.append(summary, content);
     return card;
 }
-
+        
         function renderRules() {
             rulesList.replaceChildren(
                 ...ruleTopics.map(createRuleCard)
