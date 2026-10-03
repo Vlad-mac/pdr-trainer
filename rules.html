@@ -288,7 +288,7 @@
                     id="rulesResults"
                     aria-live="polite"
                 >
-                    Показано 41 розділ
+                    Показано 40 розділів
                 </div>
             </section>
 
@@ -713,7 +713,7 @@ async function loadSectionTexts() {
 
                 card.style.display = matches ? "" : "none";
 
-                if (matches) {
+                if (matches && !card.classList.contains("rule-card-static")) {
                     visibleCount++;
                 }
             });
