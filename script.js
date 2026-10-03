@@ -2052,8 +2052,14 @@ function renderTeacherDashboard(students, statsByUserId) {
     const tbody = document.getElementById("student-dashboard-rows");
     const summary = document.getElementById("student-dashboard-summary");
     const status = document.getElementById("student-dashboard-status");
+    const isAdmin = currentProfile?.role === "admin";
 
     if (!tbody || !summary || !status) return;
+
+    const refHeader = document.getElementById("student-dashboard-ref-header");
+    const createdHeader = document.getElementById("student-dashboard-created-header");
+    if (refHeader) refHeader.hidden = !isAdmin;
+    if (createdHeader) createdHeader.hidden = !isAdmin;
 
     const now = Date.now();
     const isActive = (student) =>
@@ -2079,7 +2085,7 @@ function renderTeacherDashboard(students, statsByUserId) {
     if (sortedStudents.length === 0) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
-        cell.colSpan = 5;
+        cell.colSpan = isAdmin ? 7 : 5;
         cell.className = "student-dashboard-empty";
         cell.textContent =
             currentProfile?.role === "teacher"
@@ -2106,7 +2112,17 @@ function renderTeacherDashboard(students, statsByUserId) {
 
         const values = [
             student.full_name || "Не вказано",
-            student.email || "Не вказано",
+            student.email || "Не вказано"
+        ];
+
+        if (isAdmin) {
+            values.push(
+                student.teacher_ref_code || "—",
+                formatDashboardDate(student.created_at)
+            );
+        }
+
+        values.push(
             active
                 ? "Активна"
                 : hasExpiredSubscription
@@ -2114,7 +2130,7 @@ function renderTeacherDashboard(students, statsByUserId) {
                     : "Немає оплати",
             formatDashboardDate(student.paid_until),
             successText
-        ];
+        );
 
         for (const value of values) {
             const cell = document.createElement("td");
@@ -2149,7 +2165,9 @@ async function loadTeacherDashboard() {
     const [profilesResult, statsResult] = await Promise.all([
         supabaseClient
             .from("profiles")
-            .select("user_id, full_name, email, paid_until")
+            .select(isAdmin
+                ? "user_id, full_name, email, paid_until, teacher_ref_code, created_at"
+                : "user_id, full_name, email, paid_until")
             .eq("role", "student")
             .order("full_name", { ascending: true }),
         supabaseClient.rpc("get_student_success_summary")
