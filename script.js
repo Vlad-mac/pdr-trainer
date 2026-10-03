@@ -2036,6 +2036,147 @@ async function openStats() {
 
 
 /* =========================================================
+   TEACHER / ADMIN STUDENT DASHBOARD
+========================================================= */
+
+function formatDashboardDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+        ? "—"
+        : date.toLocaleDateString("uk-UA");
+}
+
+function renderTeacherDashboard(students, statsByUserId) {
+    const tbody = document.getElementById("student-dashboard-rows");
+    const summary = document.getElementById("student-dashboard-summary");
+    const status = document.getElementById("student-dashboard-status");
+
+    if (!tbody || !summary || !status) return;
+
+    const now = Date.now();
+    const isActive = (student) =>
+        Boolean(student.paid_until) &&
+        new Date(student.paid_until).getTime() > now;
+
+    const sortedStudents = [...students].sort((a, b) => {
+        const activeOrder = Number(isActive(b)) - Number(isActive(a));
+        if (activeOrder !== 0) return activeOrder;
+
+        return (a.full_name || "").localeCompare(
+            b.full_name || "",
+            "uk"
+        );
+    });
+
+    const activeCount = sortedStudents.filter(isActive).length;
+    summary.textContent =
+        `Студентів: ${sortedStudents.length} · Активні підписки: ${activeCount}`;
+
+    tbody.replaceChildren();
+
+    if (sortedStudents.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 5;
+        cell.className = "student-dashboard-empty";
+        cell.textContent =
+            currentProfile?.role === "teacher"
+                ? "За вашим реферальним посиланням студентів поки немає."
+                : "Студентських профілів поки немає.";
+        row.appendChild(cell);
+        tbody.appendChild(row);
+        status.textContent = "";
+        return;
+    }
+
+    for (const student of sortedStudents) {
+        const row = document.createElement("tr");
+        const stat = statsByUserId.get(student.user_id);
+        const answered = Number(stat?.answered_count) || 0;
+        const correct = Number(stat?.correct_count) || 0;
+        const successText = answered > 0
+            ? `${Math.round((correct / answered) * 100)}% (${correct}/${answered})`
+            : "Ще немає відповідей";
+        const active = isActive(student);
+        const hasExpiredSubscription =
+            Boolean(student.paid_until) &&
+            new Date(student.paid_until).getTime() <= now;
+
+        const values = [
+            student.full_name || "Не вказано",
+            student.email || "Не вказано",
+            active
+                ? "Активна"
+                : hasExpiredSubscription
+                    ? "Неактивна"
+                    : "Немає оплати",
+            formatDashboardDate(student.paid_until),
+            successText
+        ];
+
+        for (const value of values) {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        }
+
+        if (active) row.classList.add("student-dashboard-active");
+        tbody.appendChild(row);
+    }
+
+    status.textContent = "";
+}
+
+async function loadTeacherDashboard() {
+    const status = document.getElementById("student-dashboard-status");
+    const title = document.getElementById("student-dashboard-title");
+    const description = document.getElementById("student-dashboard-description");
+
+    if (!status || !title || !description || !currentUser || !currentProfile) {
+        return;
+    }
+
+    const isAdmin = currentProfile.role === "admin";
+    title.textContent = isAdmin ? "Студенти" : "Мої студенти";
+    description.textContent = isAdmin
+        ? "Усі студентські профілі та їхні результати."
+        : "Студенти, які зареєструвалися за вашим реферальним посиланням.";
+
+    status.textContent = "Завантажуємо дані…";
+
+    const [profilesResult, statsResult] = await Promise.all([
+        supabaseClient
+            .from("profiles")
+            .select("user_id, full_name, email, paid_until")
+            .eq("role", "student")
+            .order("full_name", { ascending: true }),
+        supabaseClient.rpc("get_student_success_summary")
+    ]);
+
+    if (profilesResult.error || statsResult.error) {
+        console.error(
+            "Не вдалося завантажити дані кабінету студентів:",
+            profilesResult.error || statsResult.error
+        );
+        status.textContent =
+            "Не вдалося завантажити дані. Спробуйте оновити сторінку.";
+        return;
+    }
+
+    const statsByUserId = new Map(
+        (statsResult.data || []).map((stat) => [stat.user_id, stat])
+    );
+
+    renderTeacherDashboard(
+        profilesResult.data || [],
+        statsByUserId
+    );
+}
+
+
+/* =========================================================
    PROFILE
 ========================================================= */
 
@@ -2356,8 +2497,40 @@ function syncAuthNavigation() {
                 greeting.textContent = "Ви увійшли";
             }
         });
+
+    syncPrivilegedDashboardNavigation();
 }
 
+
+function syncPrivilegedDashboardNavigation() {
+    const mayViewStudents =
+        Boolean(currentUser) &&
+        Boolean(currentProfile) &&
+        ["teacher", "admin"].includes(currentProfile.role);
+
+    document
+        .querySelectorAll(".topbar .menu")
+        .forEach((menu) => {
+            const existingLink = menu.querySelector(
+                '[data-privileged-dashboard-link="true"]'
+            );
+
+            if (!mayViewStudents) {
+                existingLink?.remove();
+                return;
+            }
+
+            if (existingLink) return;
+
+            const link = document.createElement("a");
+            link.href = "teacher.html";
+            link.dataset.privilegedDashboardLink = "true";
+            link.textContent = "Студенти";
+
+            const greeting = menu.querySelector(".user-greeting");
+            menu.insertBefore(link, greeting || null);
+        });
+}
 function showAuth() {
 
     const auth =
@@ -2751,61 +2924,60 @@ async function changePasswordFromForm() {
 ========================================================= */
 
 async function checkCurrentUser() {
+    const { data } = await supabaseClient.auth.getUser();
+    currentUser = data?.user || null;
 
-    const {
-        data
-    } = await supabaseClient.auth
-        .getUser();
+    const isTeacherDashboard =
+        window.location.pathname.endsWith("/teacher.html") ||
+        window.location.pathname === "teacher.html";
 
-
-    currentUser =
-        data.user;
+    if (isTeacherDashboard && !currentUser) {
+        window.location.replace("index.html");
+        return;
+    }
 
     syncAuthNavigation();
-
     showApp();
 
-
     if (currentUser) {
-
         await refreshProfile();
+        syncAuthNavigation();
+
+        if (
+            isTeacherDashboard &&
+            !["teacher", "admin"].includes(currentProfile?.role)
+        ) {
+            window.location.replace("index.html");
+            return;
+        }
 
         await loadUserProfile();
 
-
-        if (
-            location.pathname.includes(
-                "profile.html"
-            )
-        ) {
+        if (location.pathname.includes("profile.html")) {
             await loadProfilePage();
         }
 
-
-        if (
-            location.pathname.includes(
-                "stats.html"
-            )
-        ) {
+        if (location.pathname.includes("stats.html")) {
             await renderStats();
         }
 
+        if (
+            isTeacherDashboard &&
+            ["teacher", "admin"].includes(currentProfile?.role)
+        ) {
+            await loadTeacherDashboard();
+        }
 
         if (
-            location.pathname.includes(
-                "topics.html"
-            ) &&
+            location.pathname.includes("topics.html") &&
             isTopicsLocked()
         ) {
             showTopicsLockedMessage();
         }
     }
 
-
-    document.body.style.visibility =
-        "visible";
+    document.body.style.visibility = "visible";
 }
-
 
 /* =========================================================
    INITIALIZATION
