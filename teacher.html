@@ -3,28 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDR Trainer — Кабінет викладача</title>
-    <meta name="description" content="PDR Trainer — кабінет викладача для контролю прогресу студентів, аналізу помилок і перегляду результатів навчання.">
+    <title>PDR Trainer — Студенти</title>
+    <meta name="description" content="Захищений кабінет для перегляду студентів і їхніх результатів навчання.">
     <link rel="stylesheet" href="style.css">
 </head>
-<body style="visibility:hidden;">
-
-    <div id="auth-screen" class="auth-screen">
-        <div class="auth-card">
-            <h1>Реєстрація</h1>
-
-            <div class="auth-form">
-                <input type="text" id="auth-name" placeholder="ПІБ">
-                <input type="email" id="auth-email" placeholder="Email">
-                <input type="password" id="auth-password" placeholder="Пароль">
-
-                <button class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
-                <button class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
-            </div>
-
-            <p id="auth-message" class="auth-message"></p>
-        </div>
-    </div>
+<body class="student-dashboard-page" style="visibility:hidden;">
 
     <div id="app-content" style="display:none;">
         <header class="topbar">
@@ -39,20 +22,46 @@
             </nav>
         </header>
 
-        <main class="page">
+        <main class="page student-dashboard-main">
             <section class="hero">
-                <h1>Кабінет викладача</h1>
-                <p>
-                    Тут викладач зможе переглядати прогрес студентів, аналізувати помилки та контролювати результати.
+                <h1 id="student-dashboard-title">Мої студенти</h1>
+                <p id="student-dashboard-description">
+                    Студенти, які зареєструвалися за вашим реферальним посиланням.
                 </p>
             </section>
 
-            <section class="card-section">
-                <h2>Функції викладача</h2>
-                <div class="panel">
-                    <p>Поки що тут буде місце для майбутнього кабінету викладача.</p>
-                    <p>Згодом можна додати перегляд статистики студентів, їхні результати та прогрес по темах.</p>
+            <section class="card-section student-dashboard-section">
+                <div class="student-dashboard-heading">
+                    <div>
+                        <h2>Список студентів</h2>
+                        <p>Активні підписки відображаються першими.</p>
+                    </div>
+                    <div id="student-dashboard-summary" class="student-dashboard-summary"></div>
                 </div>
+
+                <p id="student-dashboard-status" class="student-dashboard-status" role="status" aria-live="polite">
+                    Завантажуємо дані…
+                </p>
+
+                <div class="student-dashboard-table-wrap">
+                    <table class="student-dashboard-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">ПІБ</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Підписка</th>
+                                <th scope="col">Активна до</th>
+                                <th scope="col">Успіх</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-dashboard-rows"></tbody>
+                    </table>
+                </div>
+
+                <p class="student-dashboard-note">
+                    Успіх обчислюється за останньою збереженою відповіддю на кожне питання,
+                    а не за історією всіх спроб.
+                </p>
             </section>
         </main>
     </div>
