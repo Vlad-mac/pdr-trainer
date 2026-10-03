@@ -2057,9 +2057,7 @@ function renderTeacherDashboard(students, statsByUserId) {
     if (!tbody || !summary || !status) return;
 
     const refHeader = document.getElementById("student-dashboard-ref-header");
-    const createdHeader = document.getElementById("student-dashboard-created-header");
     if (refHeader) refHeader.hidden = !isAdmin;
-    if (createdHeader) createdHeader.hidden = !isAdmin;
 
     const now = Date.now();
     const isActive = (student) =>
@@ -2085,7 +2083,7 @@ function renderTeacherDashboard(students, statsByUserId) {
     if (sortedStudents.length === 0) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
-        cell.colSpan = isAdmin ? 7 : 5;
+        cell.colSpan = isAdmin ? 7 : 6;
         cell.className = "student-dashboard-empty";
         cell.textContent =
             currentProfile?.role === "teacher"
@@ -2116,11 +2114,10 @@ function renderTeacherDashboard(students, statsByUserId) {
         ];
 
         if (isAdmin) {
-            values.push(
-                student.teacher_ref_code || "—",
-                formatDashboardDate(student.created_at)
-            );
+            values.push(student.teacher_ref_code || "—");
         }
+
+        values.push(formatDashboardDate(student.created_at));
 
         values.push(
             active
@@ -2167,7 +2164,7 @@ async function loadTeacherDashboard() {
             .from("profiles")
             .select(isAdmin
                 ? "user_id, full_name, email, paid_until, teacher_ref_code, created_at"
-                : "user_id, full_name, email, paid_until")
+                : "user_id, full_name, email, paid_until, created_at")
             .eq("role", "student")
             .order("full_name", { ascending: true }),
         supabaseClient.rpc("get_student_success_summary")
