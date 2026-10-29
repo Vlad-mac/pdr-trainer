@@ -667,8 +667,8 @@ async function startPayment(event) {
 
         document.body.appendChild(form);
 
-        paymentSubmitted = true;
         form.submit();
+        paymentSubmitted = true;
 
     } catch (err) {
         console.error(
