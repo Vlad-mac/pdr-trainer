@@ -2346,11 +2346,27 @@ async function registerFromForm() {
     }
 
 
-    message.style.color =
-        "#86efac";
+    if (!data.session) {
 
-    message.textContent =
-        "Реєстрація успішна. Тепер увійди.";
+        message.style.color =
+            "#86efac";
+
+        message.textContent =
+            "Реєстрація успішна. Тепер увійди у профіль.";
+
+        return;
+    }
+
+
+    currentUser = user;
+
+    await refreshProfile();
+    await loadUserProfile();
+    await applyAccessRulesAfterLogin();
+
+
+    window.location.href =
+        "index.html";
 }
 
 
