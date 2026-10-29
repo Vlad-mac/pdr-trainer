@@ -393,6 +393,26 @@ async function startPayment(event) {
         return;
     }
 
+    // Відкриваємо вкладку в межах кліку: Safari може заблокувати
+    // window.open/form target, якщо викликати його після await.
+    const paymentTargetName = "wayforpay_" + Date.now();
+    const paymentWindow = window.open("about:blank", paymentTargetName);
+    let paymentSubmitted = false;
+
+    if (paymentWindow) {
+        try {
+            paymentWindow.document.open();
+            paymentWindow.document.write(
+                "<!doctype html><html lang='uk'><meta charset='utf-8'>" +
+                "<title>Підготовка оплати</title><body style='font:16px sans-serif;" +
+                "padding:32px;color:#243149'>Підготовлюємо безпечне вікно оплати…</body></html>"
+            );
+            paymentWindow.document.close();
+        } catch (windowError) {
+            console.warn("Could not show payment loading page:", windowError);
+        }
+    }
+
     try {
         const { data: sessionData } =
             await supabaseClient.auth.getSession();
@@ -408,14 +428,14 @@ async function startPayment(event) {
         }
 
         const response = await fetch(
-            `${SUPABASE_URL}/functions/v1/start-payment-ts`,
+            \`${SUPABASE_URL}/functions/v1/start-payment-ts\`,
             {
                 method: "POST",
 
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization":
-                        `Bearer ${accessToken}`
+                        \`Bearer ${accessToken}\`
                 },
 
                 body: JSON.stringify({
@@ -513,7 +533,7 @@ async function startPayment(event) {
                 );
 
                 alert(
-                    `Сервер не повернув поле ${field}.`
+                    \`Сервер не повернув поле ${field}.\`
                 );
 
                 return;
@@ -527,7 +547,11 @@ async function startPayment(event) {
             "https://secure.wayforpay.com/pay";
 
         form.acceptCharset = "utf-8";
-        form.target = "_blank";
+        // Якщо браузер заблокував popup, продовжуємо оплату в цій вкладці.
+        form.target =
+            paymentWindow && !paymentWindow.closed
+                ? paymentTargetName
+                : "_self";
         form.style.display = "none";
 
         const fields = {
@@ -643,6 +667,7 @@ async function startPayment(event) {
 
         document.body.appendChild(form);
 
+        paymentSubmitted = true;
         form.submit();
 
     } catch (err) {
@@ -654,6 +679,14 @@ async function startPayment(event) {
         alert(
             "Помилка запуску оплати."
         );
+    } finally {
+        if (
+            !paymentSubmitted &&
+            paymentWindow &&
+            !paymentWindow.closed
+        ) {
+            paymentWindow.close();
+        }
     }
 }
 
