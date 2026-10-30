@@ -2616,6 +2616,57 @@ function showApp() {
    USER PROFILE
 ========================================================= */
 
+function renderHomeSubscriptionStatus() {
+    const card = document.querySelector(".home-payment");
+    if (!card || !currentProfile) return;
+
+    const isPrivileged = ["teacher", "admin"].includes(currentProfile.role);
+    const paidUntil = currentProfile.paid_until
+        ? new Date(currentProfile.paid_until)
+        : null;
+    const isSubscriptionActive =
+        paidUntil &&
+        !Number.isNaN(paidUntil.getTime()) &&
+        paidUntil.getTime() > Date.now();
+
+    if (!isSubscriptionActive && !isPrivileged) return;
+
+    const kicker = card.querySelector(".home-payment-kicker");
+    const title = card.querySelector("#home-payment-title");
+    const description = card.querySelector(".home-payment-copy > p");
+    const note = card.querySelector(".home-payment-note");
+    const price = card.querySelector(".home-payment-price");
+    const button = card.querySelector(".home-payment-action .btn");
+
+    card.classList.add("home-payment-active");
+    kicker.textContent = isPrivileged ? "ДОСТУП ВИКЛАДАЧА" : "ПІДПИСКА АКТИВНА";
+    title.textContent = isPrivileged
+        ? "У вас повний доступ"
+        : "Навчайся без обмежень";
+    description.textContent = isPrivileged
+        ? "Для вашого профілю доступ до тестів відкритий."
+        : "Усі тематичні тести доступні у межах активної підписки.";
+
+    if (isSubscriptionActive) {
+        const date = paidUntil.toLocaleDateString("uk-UA", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+        price.textContent = `Доступ активний до ${date}`;
+        price.setAttribute("aria-label", `Підписка активна до ${date}`);
+    } else {
+        price.textContent = "Повний доступ до тестів";
+        price.setAttribute("aria-label", "Для профілю викладача або адміністратора доступ до тестів відкритий");
+    }
+
+    note.textContent = isPrivileged
+        ? "Статус доступу визначається вашим профілем."
+        : "Дату завершення підписки оновлено за даними вашого профілю.";
+    button.hidden = true;
+}
+
+
 async function loadUserProfile() {
 
     if (!currentUser) return;
@@ -2644,6 +2695,7 @@ async function loadUserProfile() {
     }
 
     syncAuthNavigation();
+    renderHomeSubscriptionStatus();
 }
 
 
