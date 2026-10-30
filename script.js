@@ -2664,6 +2664,7 @@ function renderHomeSubscriptionStatus() {
         ? "Статус доступу визначається вашим профілем."
         : "Дату завершення підписки оновлено за даними вашого профілю.";
     button.hidden = true;
+    button.style.display = "none";
 }
 
 
