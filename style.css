@@ -9,7 +9,7 @@ html {
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.68) 0%, rgba(17, 24, 39, 0.76) 100%);
     color: #e5e7eb;
 }
 
@@ -525,7 +525,8 @@ body {
 .hero,
 .card-section,
 .panel {
-    background: var(--site-bg);
+    background: rgba(16, 24, 39, 0.82);
+    backdrop-filter: blur(4px);
     border: 1px solid #222e42;
     border-radius: 22px;
     box-shadow: none;
