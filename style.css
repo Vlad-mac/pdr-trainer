@@ -847,3 +847,54 @@ body {
         box-sizing: border-box;
     }
 }
+
+
+/* Autumn header theme — variant C.
+   To restore the standard header, set --header-background, --header-border,
+   --header-art-opacity and --header-accent to their neutral values below. */
+:root {
+    --header-background: linear-gradient(112deg, #23151f 0%, #301821 20%, #151a2a 52%, #26151d 78%, #171827 100%);
+    --header-border: rgba(214, 91, 34, 0.52);
+    --header-art-opacity: 1;
+    --header-accent: #fb923c;
+    --header-accent-deep: #c2410c;
+}
+.topbar {
+    background: var(--header-background);
+    border-bottom-color: var(--header-border);
+    isolation: isolate;
+}
+.topbar::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background: url("images/autumn-header.svg") center / cover no-repeat;
+    opacity: var(--header-art-opacity);
+    pointer-events: none;
+}
+.topbar > * {
+    position: relative;
+    z-index: 1;
+}
+.topbar .logo {
+    text-shadow: 0 2px 16px rgba(251, 146, 60, 0.22);
+}
+.topbar .menu a:hover {
+    background: rgba(251, 146, 60, 0.16);
+    color: #fff3e7;
+}
+.topbar .menu a[href="auth.html"],
+.topbar .menu a[onclick*="logoutUser"] {
+    background: linear-gradient(135deg, var(--header-accent), var(--header-accent-deep));
+    color: #fff;
+    box-shadow: 0 5px 18px rgba(194, 65, 12, 0.2);
+}
+.topbar .menu a[href="auth.html"]:hover,
+.topbar .menu a[onclick*="logoutUser"]:hover {
+    filter: brightness(1.08);
+}
+.topbar .user-greeting {
+    background: rgba(124, 54, 31, 0.34);
+    border-color: rgba(251, 146, 60, 0.32);
+}
