@@ -2371,6 +2371,130 @@ async function registerFromForm() {
 
 
 /* =========================================================
+   PASSWORD RECOVERY
+========================================================= */
+
+function setPasswordRecoveryView(active) {
+    const normalElements = [
+        "auth-name",
+        "auth-email",
+        "auth-password",
+        "auth-register-button",
+        "auth-login-button",
+        "auth-forgot-password-button"
+    ];
+
+    normalElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.style.display = active ? "none" : "";
+    });
+
+    const recoveryForm = document.getElementById("auth-recovery-form");
+    if (recoveryForm) {
+        recoveryForm.style.display = active ? "flex" : "none";
+    }
+}
+
+function initializePasswordRecovery() {
+    if (!document.getElementById("auth-recovery-form")) return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("recovery") === "1") {
+        setPasswordRecoveryView(true);
+        const message = document.getElementById("auth-message");
+        if (message) {
+            message.textContent = "Посилання підтверджено. Введи новий пароль.";
+            message.style.color = "#86efac";
+        }
+    }
+
+    supabaseClient.auth.onAuthStateChange(event => {
+        if (event === "PASSWORD_RECOVERY") {
+            setPasswordRecoveryView(true);
+            const message = document.getElementById("auth-message");
+            if (message) {
+                message.textContent = "Введи новий пароль для свого облікового запису.";
+                message.style.color = "#86efac";
+            }
+        }
+    });
+}
+
+async function requestPasswordRecovery() {
+    const email = document.getElementById("auth-email")?.value.trim();
+    const message = document.getElementById("auth-message");
+
+    if (!email) {
+        message.textContent = "Введи email, з яким реєструвався.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    const button = document.getElementById("auth-forgot-password-button");
+    if (button) button.disabled = true;
+
+    const redirectTo = new URL("auth.html?recovery=1", window.location.origin).toString();
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo });
+
+    if (button) button.disabled = false;
+
+    if (error) {
+        console.error("Не вдалося надіслати лист для відновлення пароля:", error);
+        message.textContent = "Не вдалося надіслати лист. Перевір адресу або спробуй пізніше.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    message.textContent = "Якщо для цієї адреси є обліковий запис, на неї надіслано лист із посиланням для відновлення пароля. Перевір також папку «Спам».";
+    message.style.color = "#86efac";
+}
+
+async function saveRecoveredPassword() {
+    const password = document.getElementById("recovery-new-password")?.value.trim();
+    const confirmation = document.getElementById("recovery-confirm-password")?.value.trim();
+    const message = document.getElementById("auth-message");
+
+    if (!password || !confirmation) {
+        message.textContent = "Заповни обидва поля.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    if (password.length < 6) {
+        message.textContent = "Пароль має містити щонайменше 6 символів.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    if (password !== confirmation) {
+        message.textContent = "Паролі не збігаються.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    const button = document.querySelector("#auth-recovery-form button");
+    if (button) button.disabled = true;
+
+    const { error } = await supabaseClient.auth.updateUser({ password });
+
+    if (button) button.disabled = false;
+
+    if (error) {
+        console.error("Не вдалося оновити пароль:", error);
+        message.textContent = "Не вдалося оновити пароль. Можливо, посилання застаріло — запроси нове.";
+        message.style.color = "#fca5a5";
+        return;
+    }
+
+    message.textContent = "Пароль успішно оновлено. Переходимо на сайт…";
+    message.style.color = "#86efac";
+    window.setTimeout(() => {
+        window.location.href = "index.html";
+    }, 1500);
+}
+
+
+/* =========================================================
    LOGIN
 ========================================================= */
 
@@ -3068,6 +3192,8 @@ async function checkCurrentUser() {
 ========================================================= */
 
 initReferralCode();
+
+initializePasswordRecovery();
 
 loadQuestions();
 
