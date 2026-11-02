@@ -23,12 +23,20 @@
                 <input type="email" id="auth-email" placeholder="Email">
                 <input type="password" id="auth-password" placeholder="Пароль">
 
-                <button type="button" class="btn btn-primary" onclick="registerFromForm()">Зареєструватися</button>
-                <button type="button" class="btn btn-secondary" onclick="loginFromForm()">Увійти</button>
+                <button type="button" class="btn btn-primary" id="auth-register-button" onclick="registerFromForm()">Зареєструватися</button>
+                <button type="button" class="btn btn-secondary" id="auth-login-button" onclick="loginFromForm()">Увійти</button>
+                <button type="button" class="btn btn-secondary" id="auth-forgot-password-button" onclick="requestPasswordRecovery()">Забули пароль?</button>
                 <button type="button" class="btn btn-secondary" onclick="location.href='index.html'">Повернутися на сайт</button>
             </div>
 
-            <p id="auth-message" class="auth-message"></p>
+            <div id="auth-recovery-form" class="auth-form" style="display: none;">
+                <p class="auth-subtitle">Створи новий пароль для свого облікового запису.</p>
+                <input type="password" id="recovery-new-password" placeholder="Новий пароль" autocomplete="new-password">
+                <input type="password" id="recovery-confirm-password" placeholder="Повтори новий пароль" autocomplete="new-password">
+                <button type="button" class="btn btn-primary" onclick="saveRecoveredPassword()">Зберегти новий пароль</button>
+            </div>
+
+            <p id="auth-message" class="auth-message" aria-live="polite"></p>
         </div>
     </div>
 
