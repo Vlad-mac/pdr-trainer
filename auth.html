@@ -6,23 +6,18 @@
     <title>PDR Trainer — Вхід / Реєстрація</title>
     <meta name="description" content="Вхід або реєстрація в PDR Trainer.">
     <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="page-background.css">
+    <link rel="stylesheet" href="page-background.css">
 </head>
 <body>
+    <main class="auth-screen">
+        <section class="auth-card" aria-labelledby="auth-title">
+            <h1 id="auth-title">Вхід / Реєстрація</h1>
+            <p id="auth-subtitle" class="auth-subtitle">Увійдіть до свого облікового запису або зареєструйтеся, щоб отримати доступ до сервісу.</p>
 
-    <div class="auth-screen">
-        <div class="auth-card">
-            <h1>Вхід / Реєстрація</h1>
-
-            <p class="auth-subtitle">
-                Увійдіть до свого облікового запису або зареєструйтеся, щоб отримати доступ до сервісу.
-            </p>
-
-            <div class="auth-form">
-                <input type="text" id="auth-name" placeholder="ПІБ">
-                <input type="email" id="auth-email" placeholder="Email">
-                <input type="password" id="auth-password" placeholder="Пароль">
-
+            <div id="auth-main-form" class="auth-form">
+                <input type="text" id="auth-name" placeholder="ПІБ" autocomplete="name">
+                <input type="email" id="auth-email" placeholder="Email" autocomplete="email">
+                <input type="password" id="auth-password" placeholder="Пароль" autocomplete="current-password">
                 <button type="button" class="btn btn-primary" id="auth-register-button" onclick="registerFromForm()">Зареєструватися</button>
                 <button type="button" class="btn btn-secondary" id="auth-login-button" onclick="loginFromForm()">Увійти</button>
                 <button type="button" class="btn btn-secondary" id="auth-forgot-password-button" onclick="requestPasswordRecovery()">Забули пароль?</button>
@@ -30,16 +25,21 @@
             </div>
 
             <div id="auth-recovery-form" class="auth-form" style="display: none;">
-                <p class="auth-subtitle">Створи новий пароль для свого облікового запису.</p>
-                <input type="password" id="recovery-new-password" placeholder="Новий пароль" autocomplete="new-password">
-                <input type="password" id="recovery-confirm-password" placeholder="Повтори новий пароль" autocomplete="new-password">
+                <label class="auth-field" for="recovery-new-password">
+                    <span>Новий пароль</span>
+                    <input type="password" id="recovery-new-password" placeholder="Щонайменше 6 символів" autocomplete="new-password">
+                </label>
+                <label class="auth-field" for="recovery-confirm-password">
+                    <span>Підтвердіть новий пароль</span>
+                    <input type="password" id="recovery-confirm-password" placeholder="Введіть пароль ще раз" autocomplete="new-password">
+                </label>
                 <button type="button" class="btn btn-primary" onclick="saveRecoveredPassword()">Зберегти новий пароль</button>
+                <a class="auth-return-link" href="auth.html">Повернутися до входу</a>
             </div>
 
             <p id="auth-message" class="auth-message" aria-live="polite"></p>
-        </div>
-    </div>
-
+        </section>
+    </main>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
