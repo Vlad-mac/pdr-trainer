@@ -2375,24 +2375,31 @@ async function registerFromForm() {
 ========================================================= */
 
 function setPasswordRecoveryView(active) {
-    const normalElements = [
-        "auth-name",
-        "auth-email",
-        "auth-password",
-        "auth-register-button",
-        "auth-login-button",
-        "auth-forgot-password-button"
-    ];
+    const authCard = document.querySelector(".auth-card");
+    if (authCard) authCard.classList.toggle("auth-recovery-mode", active);
 
-    normalElements.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) element.style.display = active ? "none" : "";
-    });
+    const title = document.getElementById("auth-title");
+    if (title) title.textContent = active ? "Створення нового пароля" : "Вхід / Реєстрація";
+
+    const subtitle = document.getElementById("auth-subtitle");
+    if (subtitle) {
+        subtitle.textContent = active
+            ? "Введіть новий пароль двічі, щоб підтвердити зміну."
+            : "Увійдіть до свого облікового запису або зареєструйтеся, щоб отримати доступ до сервісу.";
+    }
+
+    const normalForm = document.getElementById("auth-main-form");
+    if (normalForm) {
+        normalForm.style.display = active ? "none" : "";
+    } else {
+        ["auth-name", "auth-email", "auth-password", "auth-register-button", "auth-login-button", "auth-forgot-password-button"].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.style.display = active ? "none" : "";
+        });
+    }
 
     const recoveryForm = document.getElementById("auth-recovery-form");
-    if (recoveryForm) {
-        recoveryForm.style.display = active ? "flex" : "none";
-    }
+    if (recoveryForm) recoveryForm.style.display = active ? "grid" : "none";
 }
 
 function initializePasswordRecovery() {
