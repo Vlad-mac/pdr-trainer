@@ -111,36 +111,61 @@ async function loadQuestions() {
 async function loadUserStatsFromSupabase() {
     if (!currentUser) return [];
 
-    const { data, error } = await supabaseClient
-        .from("user_stats")
-        .select(`
-            topic,
-            question_id,
-            correct,
-            created_at,
-            time_spent_seconds
-        `)
-        .eq("user_id", currentUser.id)
-        .order("created_at", {
-            ascending: true
-        });
+    const pageSize = 1000;
+    const allData = [];
+    let offset = 0;
 
-    if (error) {
-        console.error(
-            "Не вдалося завантажити статистику з Supabase:",
-            error
-        );
+    while (true) {
+        const { data, error } = await supabaseClient
+            .from("user_stats")
+            .select(`
+                id,
+                topic,
+                question_id,
+                correct,
+                created_at,
+                time_spent_seconds
+            `)
+            .eq("user_id", currentUser.id)
+            .order("id", {
+                ascending: true
+            })
+            .range(offset, offset + pageSize - 1);
 
-        return [];
+        if (error) {
+            console.error(
+                "Не вдалося завантажити статистику з Supabase:",
+                error
+            );
+
+            return [];
+        }
+
+        const page = data || [];
+        allData.push(...page);
+
+        if (page.length < pageSize) {
+            break;
+        }
+
+        offset += pageSize;
     }
 
-    return (data || []).map((item) => ({
-        topic: item.topic,
-        questionId: item.question_id,
-        correct: item.correct,
-        timeSpentSeconds: Number(item.time_spent_seconds) || 0,
-        time: item.created_at
-    }));
+    return allData
+        .sort((a, b) => {
+            const dateDifference =
+                new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime();
+
+            return dateDifference || a.id - b.id;
+        })
+        .map((item) => ({
+            topic: item.topic,
+            questionId: item.question_id,
+            correct: item.correct,
+            timeSpentSeconds: Number(item.time_spent_seconds) || 0,
+            time: item.created_at
+        }));
 }
 
 
